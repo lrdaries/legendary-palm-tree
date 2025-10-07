@@ -3,57 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diva's Closet - International Luxury Fashion Hub | Designer Clothing & Accessories</title>
-    <meta name="description" content="Shop the latest designer fashion at Diva's Closet. International luxury clothing, accessories, and exclusive collections. Free worldwide shipping on orders over $200.">
-    <meta name="keywords" content="luxury fashion, designer clothing, international fashion, women's fashion, designer accessories, Diva's Closet">
-    <meta property="og:title" content="Diva's Closet - International Luxury Fashion Hub">
-    <meta property="og:description" content="Discover exclusive designer collections and luxury fashion from around the world.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://divascloset.com">
-    <meta name="twitter:card" content="summary_large_image">
-    <link rel="canonical" href="https://divascloset.com">
+    
     <!-- Primary Meta Tags -->
-    <title>Divas Kloset - Premium Fashion Brand | Shop Men's & Women's Clothing Online</title>
-    <meta name="title" content="Divas Kloset - Premium Fashion Brand | Shop Men's & Women's Clothing Online">
-    <meta name="description" content="Discover premium fashion at Divas Kloset. Shop high-quality men's and women's clothing, accessories, and footwear. Free shipping on orders over $100. Trendy styles for every occasion.">
-    <meta name="keywords" content="fashion, clothing, men's clothing, women's clothing, premium fashion, online shopping, style, trendy clothes, fashion brand, accessories, footwear, divas kloset">
-    <meta name="author" content="Divas Kloset">
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-    <meta name="googlebot" content="index, follow">
-    <meta name="bingbot" content="index, follow">
-    <meta name="yandexbot" content="index, follow">
+    <title>Diva's Kloset - Premium Fashion Brand | Shop Men's & Women's Clothing Online</title>
+    <meta name="description" content="Discover premium fashion at Diva's Kloset. Shop high-quality men's and women's clothing, accessories, and footwear. Free shipping on orders over $100.">
+    <meta name="keywords" content="luxury fashion, designer clothing, international fashion, women's fashion, designer accessories">
+    <meta name="author" content="Diva's Kloset">
+    <meta name="robots" content="index, follow">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://divaskloset.com/">
-    <meta property="og:title" content="Divas Kloset - Premium Fashion Brand | Shop Men's & Women's Clothing Online">
-    <meta property="og:description" content="Discover premium fashion at Divas Kloset. Shop high-quality men's and women's clothing, accessories, and footwear. Free shipping on orders over $100.">
+    <meta property="og:title" content="Diva's Kloset - Premium Fashion Brand">
+    <meta property="og:description" content="Discover premium fashion at Diva's Kloset. Shop high-quality clothing and accessories.">
     <meta property="og:image" content="https://divaskloset.com/images/og-image.jpg">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="Divas Kloset - Premium Fashion Brand">
-    <meta property="og:site_name" content="Divas Kloset">
-    <meta property="og:locale" content="en_US">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://divaskloset.com/">
-    <meta property="twitter:title" content="Divas Kloset - Premium Fashion Brand | Shop Men's & Women's Clothing Online">
-    <meta property="twitter:description" content="Discover premium fashion at Divas Kloset. Shop high-quality men's and women's clothing, accessories, and footwear. Free shipping on orders over $100.">
-    <meta property="twitter:image" content="https://divaskloset.com/images/twitter-card.jpg">
-    <meta property="twitter:image:alt" content="Divas Kloset - Premium Fashion Brand">
-    <meta property="twitter:site" content="@divaskloset">
-    <meta property="twitter:creator" content="@divaskloset">
+    <meta property="twitter:title" content="Diva's Kloset - Premium Fashion Brand">
+    <meta property="twitter:description" content="Discover premium fashion at Diva's Kloset.">
     
-    <!-- Additional SEO Meta Tags -->
-    <meta name="theme-color" content="#667eea">
-    <meta name="msapplication-TileColor" content="#667eea">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="Divas Kloset">
+    <link rel="canonical" href="https://divaskloset.com">
+    <meta name="theme-color" content="#E47026">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -88,17 +62,6 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         }
         
-        .shimmer {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-        }
-        
-        @keyframes shimmer {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-        
         .fade-in {
             animation: fadeIn 0.5s ease-in;
         }
@@ -116,7 +79,50 @@
             from { transform: translateX(100%); }
             to { transform: translateX(0); }
         }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #E47026;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .modal-overlay {
+            backdrop-filter: blur(4px);
+        }
     </style>
+    <script>
+        // Tailwind Config
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#E47026',
+                        secondary: '#FF6F61',
+                        accent: '#4A90E2',
+                        background: '#F9F9F9',
+                        textPrimary: '#333333',
+                        textSecondary: '#777777'
+                    },
+                    fontFamily: {
+                        playfair: ['"Playfair Display"', 'serif'],
+                        inter: ['"Inter"', 'sans-serif']
+                    }
+                }
+            }
+        };
+    </script>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
 </head>
 <body class="bg-gray-50">
     <!-- Announcement Bar -->
@@ -130,20 +136,23 @@
             <div class="flex justify-between items-center">
                 <!-- Logo -->
                 <div class="flex items-center space-x-2">
-                    <h1 class="playfair text-3xl font-bold text-gray-900">Diva's Closet</h1>
+                    <div class="w-12 h-12 bg-gradient-to-br from-orange-400 to-pink-400 rounded-full flex items-center justify-center">
+                        <span class="text-white font-bold text-xl">DK</span>
+                    </div>
+                    <h1 class="playfair text-3xl font-bold text-gray-900">Diva's Kloset</h1>
                 </div>
                 
                 <!-- Navigation -->
                 <div class="hidden lg:flex items-center space-x-8">
-                    <a href="#new" class="text-gray-700 hover:text-black transition">New Arrivals</a>
-                    <a href="#collections" class="text-gray-700 hover:text-black transition">Collections</a>
-                    <a href="#sale" class="text-gray-700 hover:text-black transition">Sale</a>
+                    <button onclick="App.scrollToProducts()" class="text-gray-700 hover:text-black transition">New Arrivals</button>
+                    <a href="/cllient/collections.html" class="text-gray-700 hover:text-black transition">Collections</a>
+                    <!--<a href="#sale" class="text-gray-700 hover:text-black transition">Sale</a>-->
                 </div>
                 
                 <!-- Right Actions -->
                 <div class="flex items-center space-x-4">
                     <!-- Currency Selector -->
-                    <select id="currency-selector" class="bg-transparent border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:border-black">
+                    <select id="currency-selector" class="bg-transparent border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:border-black" aria-label="Select Currency">
                         <option value="USD">$ USD</option>
                         <option value="EUR">€ EUR</option>
                         <option value="GBP">£ GBP</option>
@@ -156,23 +165,23 @@
                     </select>
                     
                     <!-- Search -->
-                    <button class="text-gray-700 hover:text-black transition">
+                    <button onclick="App.toggleSearch()" class="text-gray-700 hover:text-black transition" aria-label="Search">
                         <i class="fas fa-search text-xl"></i>
                     </button>
                     
                     <!-- User -->
-                    <button id="user-btn" class="text-gray-700 hover:text-black transition">
+                    <button id="user-btn" onclick="App.toggleAuth()" class="text-gray-700 hover:text-black transition" aria-label="User Account">
                         <i class="fas fa-user text-xl"></i>
                     </button>
                     
                     <!-- Cart -->
-                    <button id="cart-btn" class="relative text-gray-700 hover:text-black transition">
+                    <button id="cart-btn" onclick="App.toggleCart()" class="relative text-gray-700 hover:text-black transition" aria-label="Shopping Cart">
                         <i class="fas fa-shopping-bag text-xl"></i>
                         <span id="cart-count" class="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
                     </button>
                     
                     <!-- Mobile Menu -->
-                    <button id="mobile-menu-btn" class="lg:hidden">
+                    <button id="mobile-menu-btn" onclick="App.toggleMobileMenu()" class="lg:hidden" aria-label="Menu">
                         <i class="fas fa-bars text-xl"></i>
                     </button>
                 </div>
@@ -181,26 +190,27 @@
     </header>
 
     <!-- Hero Section -->
-    <section id="Hero" class="relative h-screen bg-gradient-to-r from-purple-50 to-pink-50 overflow-hidden">
+    <section class="relative h-screen bg-[url('https://images.pexels.com/photos/6706765/pexels-photo-6706765.jpeg')] bg-cover bg-center overflow-hidden">
         <div class="container mx-auto px-4 h-full flex items-center">
             <div class="w-full lg:w-1/2 z-10">
                 <h2 class="playfair text-5xl lg:text-7xl font-bold text-gray-900 mb-6 fade-in">
                     Elegance Redefined
                 </h2>
                 <p class="text-xl text-gray-700 mb-8 fade-in">
-                    Discover our exclusive Spring/Summer 2025 collection featuring designs from Paris, Milan, and Tokyo.
+                    Shop the latest designer fashion at Diva's Kloset. International luxury clothing, accessories, and exclusive collections.
                 </p>
                 <div class="flex space-x-4 fade-in">
-                    <button onclick="showProducts()" class="bg-black text-white px-8 py-4 rounded hover:bg-gray-800 transition transform hover:scale-105">
+                    <button onclick="window.location.href = 'collections.html'" class="bg-black text-white px-8 py-4 rounded hover:bg-gray-500 transition transform hover:scale-105">
                         Shop Collection
                     </button>
-                    <button class="border-2 border-black text-black px-8 py-4 rounded hover:bg-black hover:text-white transition">
+                    <button class="border-2 border-black text-gray-700 px-8 py-4 rounded hover:bg-black hover:text-white transition">
                         Watch Runway
                     </button>
                 </div>
             </div>
         </div>
-        <div class="absolute right-0 top-0 w-1/2 h-full bg-gradient-to-l from-transparent to-purple-50 lg:block hidden"></div>
+        <div class="absolute right-0 top-1/4 w-96 h-96 bg-orange-300 rounded-full opacity-20 blur-3xl"></div>
+        <div class="absolute left-1/4 bottom-1/4 w-64 h-64 bg-pink-300 rounded-full opacity-20 blur-3xl"></div>
     </section>
 
     <!-- Featured Categories -->
@@ -208,42 +218,35 @@
         <div class="container mx-auto px-4">
             <h3 class="playfair text-4xl font-bold text-center mb-12">Shop by Category</h3>
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="relative group cursor-pointer overflow-hidden rounded-lg">
-                    <div class="aspect-square bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center">
-                        <div class="text-center">
-                            <i class="fas fa-tshirt text-4xl mb-4 text-purple-600"></i>
-                            <h4 class="text-xl font-semibold">Clothing</h4>
+                <button onclick="App.filterByCategory('Clothing')" class="relative group cursor-pointer overflow-hidden rounded-lg">
+                    <div class="aspect-square bg-[url('https://images.pexels.com/photos/102129/pexels-photo-102129.jpeg')] bg-cover bg-center flex items-center justify-center hover:from-pink-200 hover:to-purple-200 transition">
+                        <div class="text-align text-white">
+                            <h4 class="text-4xl font-semibold">Clothing</h4>
                         </div>
                     </div>
-                    <div class="absolute inset-0 bg-black bg-opacity-20 opacity-0 group-hover:opacity-100 transition"></div>
-                </div>
-                <div class="relative group cursor-pointer overflow-hidden rounded-lg">
-                    <div class="aspect-square bg-gradient-to-br from-blue-100 to-cyan-100 flex items-center justify-center">
-                        <div class="text-center">
-                            <i class="fas fa-shoe-prints text-4xl mb-4 text-blue-600"></i>
+                </button>
+
+                <button onclick="App.filterByCategory('Shoes')" class="relative group cursor-pointer overflow-hidden rounded-lg">
+                    <div class="aspect-square bg-[url('https://images.pexels.com/photos/345415/pexels-photo-345415.jpeg')] bg-cover bg-center flex items-center justify-center hover:from-blue-200 hover:to-cyan-200 transition">
+                        <div class="text-left text-white">
                             <h4 class="text-xl font-semibold">Shoes</h4>
                         </div>
                     </div>
-                    <div class="absolute inset-0 bg-black bg-opacity-20 opacity-0 group-hover:opacity-100 transition"></div>
-                </div>
-                <div class="relative group cursor-pointer overflow-hidden rounded-lg">
-                    <div class="aspect-square bg-gradient-to-br from-yellow-100 to-orange-100 flex items-center justify-center">
-                        <div class="text-center">
-                            <i class="fas fa-bag-shopping text-4xl mb-4 text-orange-600"></i>
+                </button>
+                <button onclick="App.filterByCategory('Bags')" class="relative group cursor-pointer overflow-hidden rounded-lg">
+                    <div class="aspect-square bg-[url('https://images.pexels.com/photos/1038000/pexels-photo-1038000.jpeg')] bg-cover bg-center flex items-center justify-center hover:from-yellow-200 hover:to-orange-200 transition">
+                        <div class="text-center text-gray-700">
                             <h4 class="text-xl font-semibold">Bags</h4>
                         </div>
                     </div>
-                    <div class="absolute inset-0 bg-black bg-opacity-20 opacity-0 group-hover:opacity-100 transition"></div>
-                </div>
-                <div class="relative group cursor-pointer overflow-hidden rounded-lg">
-                    <div class="aspect-square bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center">
-                        <div class="text-center">
-                            <i class="fas fa-gem text-4xl mb-4 text-emerald-600"></i>
+                </button>
+                <button onclick="App.filterByCategory('Jewelry')" class="relative group cursor-pointer overflow-hidden rounded-lg">
+                    <div class="aspect-square bg-[url('https://images.pexels.com/photos/998521/pexels-photo-998521.jpeg')] bg-cover bg-center flex items-center justify-center hover:from-green-200 hover:to-emerald-200 transition">
+                        <div class="text-center text-black">
                             <h4 class="text-xl font-semibold">Jewelry</h4>
                         </div>
                     </div>
-                    <div class="absolute inset-0 bg-black bg-opacity-20 opacity-0 group-hover:opacity-100 transition"></div>
-                </div>
+                </button>
             </div>
         </div>
     </section>
@@ -251,40 +254,34 @@
     <!-- Products Section -->
     <section id="products" class="py-16 bg-gray-50">
         <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center mb-12">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-4">
                 <h3 class="playfair text-4xl font-bold">New Arrivals</h3>
-                <div class="flex space-x-4">
-                    <select class="bg-white border border-gray-300 rounded px-4 py-2">
-                        <option>Sort by: Featured</option>
-                        <option>Price: Low to High</option>
-                        <option>Price: High to Low</option>
-                        <option>Newest First</option>
+                <div class="flex flex-wrap gap-4">
+                    <select id="sort-select" onchange="App.sortProducts(this.value)" class="bg-white border border-gray-300 rounded px-4 py-2" aria-label="Sort products">
+                        <option value="featured">Sort by: Featured</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="name">Name: A-Z</option>
                     </select>
-                    <button class="bg-white border border-gray-300 rounded px-4 py-2">
-                        <i class="fas fa-filter mr-2"></i>Filter
+                    <button onclick="App.clearFilters()" class="bg-white border border-gray-300 rounded px-4 py-2 hover:bg-gray-50">
+                        <i class="fas fa-redo mr-2"></i>Reset
                     </button>
                 </div>
             </div>
             
-            <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 min-h-[400px]">
                 <!-- Products will be dynamically loaded here -->
-            </div>
-            
-            <div class="text-center mt-12">
-                <button class="bg-black text-white px-8 py-3 rounded hover:bg-gray-800 transition">
-                    Load More Products
-                </button>
             </div>
         </div>
     </section>
 
     <!-- Newsletter -->
-    <section class="py-16 bg-black text-white">
+    <section class="py-16 bg-gray-900 text-white">
         <div class="container mx-auto px-4 text-center">
             <h3 class="playfair text-4xl font-bold mb-4">Join the Diva's Club</h3>
             <p class="text-lg mb-8">Get exclusive access to new collections and member-only sales</p>
-            <form class="max-w-md mx-auto flex gap-4">
-                <input type="email" placeholder="Enter your email" class="flex-1 px-4 py-3 rounded text-black" required>
+            <form onsubmit="App.handleNewsletter(event)" class="max-w-md mx-auto flex gap-4">
+                <input type="email" id="newsletter-email" placeholder="Enter your email" class="flex-1 px-4 py-3 rounded text-black" required>
                 <button type="submit" class="bg-white text-black px-6 py-3 rounded font-semibold hover:bg-gray-100 transition">
                     Subscribe
                 </button>
@@ -293,26 +290,26 @@
     </section>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-12">
+    <footer class="bg-black text-white py-12">
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div>
-                    <h4 class="playfair text-2xl font-bold mb-4">Diva's Closet</h4>
+                    <h4 class="playfair text-2xl font-bold mb-4">Diva's Kloset</h4>
                     <p class="text-gray-400">Your destination for international luxury fashion.</p>
                     <div class="flex space-x-4 mt-4">
-                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram text-xl"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook text-xl"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter text-xl"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-pinterest text-xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white" aria-label="Instagram"><i class="fab fa-instagram text-xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white" aria-label="Facebook"><i class="fab fa-facebook text-xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white" aria-label="Twitter"><i class="fab fa-twitter text-xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white" aria-label="Pinterest"><i class="fab fa-pinterest text-xl"></i></a>
                     </div>
                 </div>
                 <div>
                     <h5 class="font-semibold mb-4">Customer Service</h5>
                     <ul class="space-y-2 text-gray-400">
                         <li><a href="#" class="hover:text-white">Contact Us</a></li>
-                        <li><a href="#" class="hover:text-white">Shipping Info</a></li>
+                        <li><a href="/cllient/pages/shipping.html" class="hover:text-white">Shipping Info</a></li>
                         <li><a href="#" class="hover:text-white">Returns & Exchanges</a></li>
-                        <li><a href="#" class="hover:text-white">Size Guide</a></li>
+                        <li><a href="/cllient/pages/guide.html" class="hover:text-white">Size Guide</a></li>
                     </ul>
                 </div>
                 <div>
@@ -321,7 +318,7 @@
                         <li><a href="#" class="hover:text-white">Our Story</a></li>
                         <li><a href="#" class="hover:text-white">Sustainability</a></li>
                         <li><a href="#" class="hover:text-white">Press</a></li>
-                        <li><a href="#" class="hover:text-white">Careers</a></li>
+                        <li><a href="/cllient/pages/careers.html" class="hover:text-white">Careers</a></li>
                     </ul>
                 </div>
                 <div>
@@ -336,23 +333,22 @@
                 </div>
             </div>
             <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-                <p>&copy; 2025 Diva's Closet. All rights reserved. | <a href="#" class="hover:text-white">Privacy Policy</a> | <a href="#" class="hover:text-white">Terms of Service</a></p>
+                <p>&copy; 2025 Diva's Kloset. All rights reserved. | <a href="#" class="hover:text-white">Privacy Policy</a> | <a href="#" class="hover:text-white">Terms of Service</a></p>
             </div>
         </div>
     </footer>
 
     <!-- Cart Sidebar -->
-    <div id="cart-sidebar" class="fixed right-0 top-0 h-full w-96 bg-white shadow-2xl transform translate-x-full transition-transform z-50">
+    <div id="cart-sidebar" class="fixed right-0 top-0 h-full w-full md:w-96 bg-white shadow-2xl transform translate-x-full transition-transform z-50">
         <div class="p-6 border-b">
             <div class="flex justify-between items-center">
                 <h3 class="text-2xl font-bold">Shopping Cart</h3>
-                <button id="close-cart" class="text-gray-500 hover:text-black">
+                <button onclick="App.toggleCart()" class="text-gray-500 hover:text-black" aria-label="Close cart">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
         </div>
-        <div id="cart-items" class="flex-1 overflow-y-auto p-6">
-            <!-- Cart items will be dynamically added here -->
+        <div id="cart-items" class="flex-1 overflow-y-auto p-6 h-[calc(100vh-280px)]">
             <p class="text-gray-500 text-center">Your cart is empty</p>
         </div>
         <div class="border-t p-6">
@@ -360,100 +356,144 @@
                 <span class="font-semibold">Subtotal:</span>
                 <span id="cart-subtotal" class="font-bold">$0.00</span>
             </div>
-            <button onclick="proceedToCheckout()" class="w-full bg-black text-white py-3 rounded hover:bg-gray-800 transition">
+            <button onclick="App.proceedToCheckout()" class="w-full bg-black text-white py-3 rounded hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed" id="checkout-btn">
                 Proceed to Checkout
             </button>
-            <button class="w-full border border-gray-300 py-3 rounded mt-2 hover:bg-gray-50 transition">
+            <button onclick="App.toggleCart()" class="w-full border border-gray-300 py-3 rounded mt-2 hover:bg-gray-50 transition">
                 Continue Shopping
             </button>
         </div>
     </div>
 
-    <!-- Checkout Modal -->
-    <div id="checkout-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
-        <div class="bg-white w-full max-w-4xl mx-auto mt-20 rounded-lg shadow-2xl max-h-[80vh] overflow-y-auto">
-            <div class="p-6 border-b">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-2xl font-bold">Checkout</h3>
-                    <button onclick="closeCheckout()" class="text-gray-500 hover:text-black">
-                        <i class="fas fa-times text-xl"></i>
+    <!-- Search Modal -->
+    <div id="search-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden modal-overlay">
+        <div class="flex items-start justify-center pt-20 px-4">
+            <div class="bg-white rounded-lg p-6 w-full max-w-2xl">
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-search text-gray-400"></i>
+                    <input type="text" id="search-input" placeholder="Search for products..." class="flex-1 text-lg outline-none" oninput="App.handleSearch(this.value)">
+                    <button onclick="App.toggleSearch()" class="text-gray-500 hover:text-black" aria-label="Close search">
+                        <i class="fas fa-times"></i>
                     </button>
                 </div>
-            </div>
-            <div class="p-6">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div>
-                        <h4 className="text-lg font-semibold mb-4">Billing Information</h4>
-                        <form id="checkout-form" class="space-y-4">
-                            <div class="grid grid-cols-2 gap-4">
-                                <input type="text" placeholder="First Name" class="border rounded px-4 py-2 w-full" required>
-                                <input type="text" placeholder="Last Name" class="border rounded px-4 py-2 w-full" required>
-                            </div>
-                            <input type="email" placeholder="Email Address" class="border rounded px-4 py-2 w-full" required>
-                            <input type="tel" placeholder="Phone Number" class="border rounded px-4 py-2 w-full" required>
-                            <input type="text" placeholder="Address Line 1" class="border rounded px-4 py-2 w-full" required>
-                            <input type="text" placeholder="Address Line 2" class="border rounded px-4 py-2 w-full">
-                            <div class="grid grid-cols-2 gap-4">
-                                <input type="text" placeholder="City" class="border rounded px-4 py-2 w-full" required>
-                                <input type="text" placeholder="Postal Code" class="border rounded px-4 py-2 w-full" required>
-                            </div>
-                            <select class="border rounded px-4 py-2 w-full" required>
-                                <option value="">Select Country</option>
-                                <option value="US">United States</option>
-                                <option value="UK">United Kingdom</option>
-                                <option value="EU">Nigeria</option>
-                                <option value="CA">Canada</option>
-                                <option value="AU">Australia</option>
-                                <option value="FR">France</option>
-                                <option value="DE">Germany</option>
-                                <option value="JP">Japan</option>
-                                <option value="CN">China</option>
-                                <option value="IN">India</option>
-                            </select>
-                            
-                            <h4 class="text-lg font-semibold mt-6 mb-4">Payment Information</h4>
-                            <div class="border-2 border-dashed border-gray-300 rounded p-4 text-center">
-                                <i class="fas fa-credit-card text-4xl text-gray-400 mb-2"></i>
-                                <p class="text-gray-500">Stripe Payment Integration</p>
-                                <p class="text-sm text-gray-400">Card details will be securely processed</p>
-                            </div>
-                            
-                            <div class="flex items-center">
-                                <input type="checkbox" id="save-info" class="mr-2">
-                                <label for="save-info" class="text-sm">Save information for next time</label>
-                            </div>
-                        </form>
+                <div id="search-results" class="mt-4">
+                    <div class="text-sm text-gray-500">
+                        Popular: Dresses, Handbags, Summer Collection, Designer Shoes
                     </div>
-                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden modal-overlay">
+        <div class="flex items-center justify-center px-4 min-h-screen">
+            <div class="bg-white rounded-lg p-8 w-full max-w-md relative">
+                <h3 id="auth-title" class="text-2xl font-bold mb-6">Sign In</h3>
+                <form id="auth-form" onsubmit="App.handleAuth(event)" class="space-y-4">
                     <div>
-                        <h4 class="text-lg font-semibold mb-4">Order Summary</h4>
-                        <div id="checkout-items" class="space-y-4 mb-6">
-                            <!-- Items will be displayed here -->
-                        </div>
-                        <div class="border-t pt-4 space-y-2">
-                            <div class="flex justify-between">
-                                <span>Subtotal:</span>
-                                <span id="checkout-subtotal">$0.00</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span>Shipping:</span>
-                                <span id="checkout-shipping">$0.00</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span>Tax:</span>
-                                <span id="checkout-tax">$0.00</span>
-                            </div>
-                            <div class="flex justify-between font-bold text-lg border-t pt-2">
-                                <span>Total:</span>
-                                <span id="checkout-total">$0.00</span>
-                            </div>
-                        </div>
-                        <button onclick="processPayment()" class="w-full bg-black text-white py-3 rounded mt-6 hover:bg-gray-800 transition">
-                            Complete Order
+                        <input type="email" id="auth-email" placeholder="Email" class="w-full border rounded px-4 py-2 focus:outline-none focus:border-black" required>
+                    </div>
+                    <div>
+                        <input type="password" id="auth-password" placeholder="Password (min 6 characters)" class="w-full border rounded px-4 py-2 focus:outline-none focus:border-black" required minlength="6">
+                    </div>
+                    <button type="submit" class="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition">
+                        <span id="auth-btn-text">Sign In</span>
+                    </button>
+                </form>
+                <p class="text-center mt-4 text-gray-600">
+                    <span id="auth-switch-text">Don't have an account?</span>
+                    <button onclick="App.switchAuthMode()" class="text-black font-semibold hover:underline ml-1" id="auth-switch-btn">Sign Up</button>
+                </p>
+                <button onclick="App.toggleAuth()" class="absolute top-4 right-4 text-gray-500 hover:text-black" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden modal-overlay overflow-y-auto">
+        <div class="min-h-screen flex items-center justify-center px-4 py-8">
+            <div class="bg-white w-full max-w-4xl rounded-lg shadow-2xl">
+                <div class="p-6 border-b">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-2xl font-bold">Checkout</h3>
+                        <button onclick="App.closeCheckout()" class="text-gray-500 hover:text-black" aria-label="Close checkout">
+                            <i class="fas fa-times text-xl"></i>
                         </button>
-                        <div class="flex items-center justify-center mt-4 text-sm text-gray-500">
-                            <i class="fas fa-lock mr-2"></i>
-                            Secure Checkout Powered by Stripe
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="text-lg font-semibold mb-4">Billing Information</h4>
+                            <form id="checkout-form" onsubmit="App.processPayment(event)" class="space-y-4">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <input type="text" placeholder="First Name" class="border rounded px-4 py-2 w-full focus:outline-none focus:border-black" required>
+                                    <input type="text" placeholder="Last Name" class="border rounded px-4 py-2 w-full focus:outline-none focus:border-black" required>
+                                </div>
+                                <input type="email" placeholder="Email Address" class="border rounded px-4 py-2 w-full focus:outline-none focus:border-black" required>
+                                <input type="tel" placeholder="Phone Number" class="border rounded px-4 py-2 w-full focus:outline-none focus:border-black" required>
+                                <input type="text" placeholder="Address Line 1" class="border rounded px-4 py-2 w-full focus:outline-none focus:border-black" required>
+                                <input type="text" placeholder="Address Line 2" class="border rounded px-4 py-2 w-full focus:outline-none focus:border-black">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <input type="text" placeholder="City" class="border rounded px-4 py-2 w-full focus:outline-none focus:border-black" required>
+                                    <input type="text" placeholder="Postal Code" class="border rounded px-4 py-2 w-full focus:outline-none focus:border-black" required>
+                                </div>
+                                <select class="border rounded px-4 py-2 w-full focus:outline-none focus:border-black" required>
+                                    <option value="">Select Country</option>
+                                    <option value="US">United States</option>
+                                    <option value="UK">United Kingdom</option>
+                                    <option value="NG">Nigeria</option>
+                                    <option value="CA">Canada</option>
+                                    <option value="AU">Australia</option>
+                                    <option value="FR">France</option>
+                                    <option value="DE">Germany</option>
+                                    <option value="JP">Japan</option>
+                                    <option value="CN">China</option>
+                                    <option value="IN">India</option>
+                                </select>
+                                
+                                <h4 class="text-lg font-semibold mt-6 mb-4">Payment Information</h4>
+                                <div class="border-2 border-dashed border-gray-300 rounded p-4 text-center">
+                                    <i class="fas fa-credit-card text-4xl text-gray-400 mb-2"></i>
+                                    <p class="text-gray-500">Stripe Payment Integration</p>
+                                    <p class="text-sm text-gray-400">Card details will be securely processed</p>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <div>
+                            <h4 class="text-lg font-semibold mb-4">Order Summary</h4>
+                            <div id="checkout-items" class="space-y-4 mb-6">
+                                <!-- Items will be displayed here -->
+                            </div>
+                            <div class="border-t pt-4 space-y-2">
+                                <div class="flex justify-between">
+                                    <span>Subtotal:</span>
+                                    <span id="checkout-subtotal">$0.00</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Shipping:</span>
+                                    <span id="checkout-shipping">$0.00</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Tax:</span>
+                                    <span id="checkout-tax">$0.00</span>
+                                </div>
+                                <div class="flex justify-between font-bold text-lg border-t pt-2">
+                                    <span>Total:</span>
+                                    <span id="checkout-total">$0.00</span>
+                                </div>
+                            </div>
+                            <button onclick="App.processPayment(event)" class="w-full bg-black text-white py-3 rounded mt-6 hover:bg-gray-800 transition">
+                                Complete Order
+                            </button>
+                            <div class="flex items-center justify-center mt-4 text-sm text-gray-500">
+                                <i class="fas fa-lock mr-2"></i>
+                                Secure Checkout Powered by Stripe
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -461,509 +501,557 @@
         </div>
     </div>
 
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="fixed right-0 top-0 h-full w-80 bg-white shadow-2xl transform translate-x-full transition-transform z-50">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="text-2xl font-bold">Menu</h3>
+                <button onclick="App.toggleMobileMenu()" class="text-gray-500 hover:text-black" aria-label="Close menu">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <nav class="space-y-4">
+                <button onclick="App.scrollToProducts(); App.toggleMobileMenu();" class="block w-full text-left text-lg font-medium hover:text-gray-600 py-2">New Arrivals</button>
+                <a href="#collections" class="block text-lg font-medium hover:text-gray-600 py-2">Collections</a>
+                <a href="#sale" class="block text-lg font-medium text-red-600 py-2">Sale</a>
+            </nav>
+        </div>
+    </div>
+
     <script>
-       
-
-
-
-        // State Management
-        let cart = [];
-        let currentCurrency = 'USD';
-        let exchangeRates = {
-            USD: 1,
-            EUR: 0.85,
-            GBP: 0.73,
-            JPY: 110.0,
-            NGN: 1550.0,
-            AUD: 1.35,
-            CAD: 1.25,
-            CNY: 6.45,
-            INR: 74.5
-        };
-        
-        // Sample Products Data
-        const products = [
-            { id: 1, name: 'Silk Evening Dress', price: 899, category: 'Dresses', image: 'dress1', color: 'Midnight Blue' },
-            { id: 2, name: 'Cashmere Coat', price: 1299, category: 'Outerwear', image: 'coat1', color: 'Camel' },
-            { id: 3, name: 'Designer Handbag', price: 2499, category: 'Bags', image: 'bag1', color: 'Black' },
-            { id: 4, name: 'Leather Boots', price: 599, category: 'Shoes', image: 'boots1', color: 'Brown' },
-            { id: 5, name: 'Diamond Necklace', price: 3999, category: 'Jewelry', image: 'necklace1', color: 'Silver' },
-            { id: 6, name: 'Summer Maxi Dress', price: 399, category: 'Dresses', image: 'dress2', color: 'Floral' },
-            { id: 7, name: 'Wool Blazer', price: 799, category: 'Jackets', image: 'blazer1', color: 'Navy' },
-            { id: 8, name: 'Stiletto Heels', price: 499, category: 'Shoes', image: 'heels1', color: 'Red' }
-        ];
-        
-        // Currency Conversion
-        function convertCurrency(amount, from, to) {
-            if (from === to) return amount;
-            const amountInUSD = amount / exchangeRates[from];
-            return amountInUSD * exchangeRates[to];
-        }
-        
-        function formatPrice(price) {
-            const symbols = {
-                USD: '$',
-                EUR: '€',
-                GBP: '£',
-                NGN: '₦',
-                JPY: '¥',
-                AUD: 'A$',
-                CAD: 'C$',
-                CNY: '¥',
-                INR: '₹'
-            };
-            const convertedPrice = convertCurrency(price, 'USD', currentCurrency);
-            return `${symbols[currentCurrency]}${convertedPrice.toFixed(2)}`;
-        }
-        
-        // Product Display
-        function displayProducts() {
-            const grid = document.getElementById('products-grid');
-            grid.innerHTML = products.map(product => `
-                <div class="product-card bg-white rounded-lg overflow-hidden shadow-sm cursor-pointer">
-                    <div class="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 relative group">
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <i class="fas fa-image text-4xl text-gray-400"></i>
-                        </div>
-                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition"></div>
-                        <button onclick="quickAddToCart(${product.id})" class="absolute bottom-4 left-4 right-4 bg-white text-black py-2 rounded opacity-0 group-hover:opacity-100 transition transform translate-y-2 group-hover:translate-y-0">
-                            Quick Add
-                        </button>
-                    </div>
-                    <div class="p-4">
-                        <h4 class="font-semibold text-lg mb-1">${product.name}</h4>
-                        <p class="text-gray-500 text-sm mb-2">${product.color}</p>
-                        <p class="font-bold text-lg">${formatPrice(product.price)}</p>
-                    </div>
-                </div>
-            `).join('');
-        }
-        
-        // Cart Management
-        function addToCart(productId) {
-            const product = products.find(p => p.id === productId);
-            if (!product) return;
-            
-            const existingItem = cart.find(item => item.id === productId);
-            if (existingItem) {
-                existingItem.quantity++;
-            } else {
-                cart.push({ ...product, quantity: 1 });
-            }
-            
-            updateCartUI();
-            saveCartToStorage();
-            showNotification('Added to cart!');
-        }
-        
-        function quickAddToCart(productId) {
-            event.stopPropagation();
-            addToCart(productId);
-        }
-        
-        function removeFromCart(productId) {
-            cart = cart.filter(item => item.id !== productId);
-            updateCartUI();
-            saveCartToStorage();
-        }
-        
-        function updateQuantity(productId, quantity) {
-            const item = cart.find(item => item.id === productId);
-            if (item) {
-                item.quantity = Math.max(1, quantity);
-                updateCartUI();
-                saveCartToStorage();
-            }
-        }
-        
-        function updateCartUI() {
-            const cartCount = document.getElementById('cart-count');
-            const cartItems = document.getElementById('cart-items');
-            const cartSubtotal = document.getElementById('cart-subtotal');
-            
-            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-            cartCount.textContent = totalItems;
-            
-            if (cart.length === 0) {
-                cartItems.innerHTML = '<p class="text-gray-500 text-center">Your cart is empty</p>';
-                cartSubtotal.textContent = formatPrice(0);
-                return;
-            }
-            
-            const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-            
-            cartItems.innerHTML = cart.map(item => `
-                <div class="flex items-center space-x-4 mb-4 pb-4 border-b">
-                    <div class="w-20 h-20 bg-gray-200 rounded flex items-center justify-center">
-                        <i class="fas fa-image text-gray-400"></i>
-                    </div>
-                    <div class="flex-1">
-                        <h4 class="font-semibold">${item.name}</h4>
-                        <p class="text-gray-500 text-sm">${item.color}</p>
-                        <div class="flex items-center mt-2">
-                            <button onclick="updateQuantity(${item.id}, ${item.quantity - 1})" class="text-gray-500 hover:text-black">
-                                <i class="fas fa-minus"></i>
-                            </button>
-                            <span class="mx-3">${item.quantity}</span>
-                            <button onclick="updateQuantity(${item.id}, ${item.quantity + 1})" class="text-gray-500 hover:text-black">
-                                <i class="fas fa-plus"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p class="font-semibold">${formatPrice(item.price * item.quantity)}</p>
-                        <button onclick="removeFromCart(${item.id})" class="text-red-500 hover:text-red-700 text-sm mt-1">
-                            Remove
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-            
-            cartSubtotal.textContent = formatPrice(subtotal);
-        }
-        
-        function saveCartToStorage() {
-            // In production, this would sync with Supabase
-            localStorage.setItem('cart', JSON.stringify(cart));
-        }
-        
-        function loadCartFromStorage() {
-            const savedCart = localStorage.getItem('cart');
-            if (savedCart) {
-                cart = JSON.parse(savedCart);
-                updateCartUI();
-            }
-        }
-        
-        // Checkout Management
-        function proceedToCheckout() {
-            if (cart.length === 0) {
-                showNotification('Your cart is empty', 'error');
-                return;
-            }
-            
-            document.getElementById('cart-sidebar').classList.add('translate-x-full');
-            document.getElementById('checkout-modal').classList.remove('hidden');
-            updateCheckoutSummary();
-        }
-        
-        function closeCheckout() {
-            document.getElementById('checkout-modal').classList.add('hidden');
-        }
-        
-        function updateCheckoutSummary() {
-            const checkoutItems = document.getElementById('checkout-items');
-            const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-            const shipping = subtotal > 200 ? 0 : 25;
-            const tax = subtotal * 0.08;
-            const total = subtotal + shipping + tax;
-            
-            checkoutItems.innerHTML = cart.map(item => `
-                <div class="flex justify-between items-center">
-                    <div>
-                        <p class="font-semibold">${item.name}</p>
-                        <p class="text-sm text-gray-500">Qty: ${item.quantity}</p>
-                    </div>
-                    <p class="font-semibold">${formatPrice(item.price * item.quantity)}</p>
-                </div>
-            `).join('');
-            
-            document.getElementById('checkout-subtotal').textContent = formatPrice(subtotal);
-            document.getElementById('checkout-shipping').textContent = formatPrice(shipping);
-            document.getElementById('checkout-tax').textContent = formatPrice(tax);
-            document.getElementById('checkout-total').textContent = formatPrice(total);
-        }
-        
-        function processPayment() {
-            const form = document.getElementById('checkout-form');
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
-            }
-            
-            // In production, this would integrate with Stripe
-            showNotification('Processing payment...', 'info');
-            
-            setTimeout(() => {
-                cart = [];
-                updateCartUI();
-                saveCartToStorage();
-                closeCheckout();
-                showNotification('Order placed successfully! Check your email for confirmation.', 'success');
-            }, 2000);
-        }
-        
-        // Notification System
-        function showNotification(message, type = 'success') {
-            const colors = {
-                success: 'bg-green-500',
-                error: 'bg-red-500',
-                info: 'bg-blue-500'
-            };
-            
-            const notification = document.createElement('div');
-            notification.className = `fixed top-20 right-4 ${colors[type]} text-white px-6 py-3 rounded shadow-lg z-50 fade-in`;
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
-        }
-        
-        // Search Functionality
-        function initSearch() {
-            const searchBtn = document.querySelector('.fa-search').parentElement;
-            searchBtn.addEventListener('click', () => {
-                const searchModal = createSearchModal();
-                document.body.appendChild(searchModal);
-            });
-        }
-        
-        function createSearchModal() {
-            const modal = document.createElement('div');
-            modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center pt-20';
-            modal.innerHTML = `
-                <div class="bg-white rounded-lg p-6 w-full max-w-2xl">
-                    <div class="flex items-center space-x-4">
-                        <i class="fas fa-search text-gray-400"></i>
-                        <input type="text" placeholder="Search for products..." class="flex-1 text-lg outline-none" autofocus>
-                        <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-black">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    <div class="mt-4 text-sm text-gray-500">
-                        Popular: Dresses, Handbags, Summer Collection, Designer Shoes
-                    </div>
-                </div>
-            `;
-            
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.remove();
+        // Application State Manager
+        const App = (() => {
+            // State
+            let state = {
+                cart: [],
+                currentCurrency: 'USD',
+                authMode: 'signin',
+                currentUser: null,
+                filteredProducts: null,
+                exchangeRates: {
+                    USD: 1,
+                    EUR: 0.85,
+                    GBP: 0.73,
+                    JPY: 110.0,
+                    NGN: 1550.0,
+                    AUD: 1.35,
+                    CAD: 1.25,
+                    CNY: 6.45,
+                    INR: 74.5
                 }
-            });
-            
-            return modal;
-        }
-        
-        // User Authentication Modal
-        function initUserAuth() {
-            const userBtn = document.getElementById('user-btn');
-            userBtn.addEventListener('click', () => {
-                const authModal = createAuthModal();
-                document.body.appendChild(authModal);
-            });
-        }
-        
-        function createAuthModal() {
-            const modal = document.createElement('div');
-            modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center';
-            modal.innerHTML = `
-                <div class="bg-white rounded-lg p-8 w-full max-w-md">
-                    <h3 class="text-2xl font-bold mb-6">Sign In</h3>
-                    <form class="space-y-4">
-                        <input type="email" placeholder="Email" class="w-full border rounded px-4 py-2" required>
-                        <input type="password" placeholder="Password" class="w-full border rounded px-4 py-2" required>
-                        <button type="submit" class="w-full bg-black text-white py-2 rounded hover:bg-gray-800">
-                            Sign In
-                        </button>
-                    </form>
-                    <p class="text-center mt-4 text-gray-600">
-                        Don't have an account? 
-                        <a href="#" class="text-black font-semibold hover:underline">Sign Up</a>
-                    </p>
-                    <button onclick="this.closest('.fixed').remove()" class="absolute top-4 right-4 text-gray-500 hover:text-black">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            `;
-            
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.remove();
+            };
+
+            // Products Data
+            const products = [
+                { id: 1, name: 'Silk Evening Dress', price: 899, category: 'Clothing', color: 'Midnight Blue', stock: 5 },
+                { id: 2, name: 'Cashmere Coat', price: 1299, category: 'Clothing', color: 'Camel', stock: 3 },
+                { id: 3, name: 'Designer Handbag', price: 2499, category: 'Bags', color: 'Black', stock: 8 },
+                { id: 4, name: 'Leather Boots', price: 599, category: 'Shoes', color: 'Brown', stock: 12 },
+                { id: 5, name: 'Diamond Necklace', price: 3999, category: 'Jewelry', color: 'Silver', stock: 2 },
+                { id: 6, name: 'Summer Maxi Dress', price: 399, category: 'Clothing', color: 'Floral', stock: 15 },
+                { id: 7, name: 'Wool Blazer', price: 799, category: 'Clothing', color: 'Navy', stock: 7 },
+                { id: 8, name: 'Stiletto Heels', price: 499, category: 'Shoes', color: 'Red', stock: 10 }
+            ];
+
+            // Utility Functions
+            const utils = {
+                sanitizeHTML(str) {
+                    const div = document.createElement('div');
+                    div.textContent = str;
+                    return div.innerHTML;
+                },
+
+                convertCurrency(amount, from, to) {
+                    if (from === to) return amount;
+                    const amountInUSD = amount / state.exchangeRates[from];
+                    return amountInUSD * state.exchangeRates[to];
+                },
+
+                formatPrice(price) {
+                    const symbols = {
+                        USD: ' $', EUR: '€', GBP: '£', NGN: '₦',
+                        JPY: '¥', AUD: 'A$', CAD: 'C$', CNY: '¥', INR: '₹'
+                    };
+                    const converted = this.convertCurrency(price, 'USD', state.currentCurrency);
+                    return `${symbols[state.currentCurrency]}${converted.toFixed(2)}`;
+                },
+
+                showNotification(message, type = 'success') {
+                    const colors = {
+                        success: 'bg-green-500',
+                        error: 'bg-red-500',
+                        info: 'bg-blue-500'
+                    };
+                    
+                    const notification = document.createElement('div');
+                    notification.className = `fixed top-20 right-4 ${colors[type]} text-white px-6 py-3 rounded shadow-lg z-50 fade-in`;
+                    notification.textContent = message;
+                    document.body.appendChild(notification);
+                    
+                    setTimeout(() => notification.remove(), 3000);
+                },
+
+                saveToStorage(key, data) {
+                    try {
+                        localStorage.setItem(key, JSON.stringify(data));
+                    } catch (e) {
+                        console.error('Storage error:', e);
+                    }
+                },
+
+                loadFromStorage(key) {
+                    try {
+                        const data = localStorage.getItem(key);
+                        return data ? JSON.parse(data) : null;
+                    } catch (e) {
+                        console.error('Storage error:', e);
+                        return null;
+                    }
                 }
-            });
-            
-            return modal;
-        }
-        
-        // Mobile Menu
-        function initMobileMenu() {
-            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-            const mobileMenu = createMobileMenu();
-            document.body.appendChild(mobileMenu);
-            
-            mobileMenuBtn.addEventListener('click', () => {
-                mobileMenu.classList.toggle('translate-x-full');
-            });
-        }
-        
-        function createMobileMenu() {
-            const menu = document.createElement('div');
-            menu.className = 'fixed right-0 top-0 h-full w-80 bg-white shadow-2xl transform translate-x-full transition-transform z-50';
-            menu.innerHTML = `
-                <div class="p-6">
-                    <div class="flex justify-between items-center mb-8">
-                        <h3 class="text-2xl font-bold">Menu</h3>
-                        <button onclick="this.closest('.fixed').classList.add('translate-x-full')" class="text-gray-500 hover:text-black">
-                            <i class="fas fa-times text-xl"></i>
-                        </button>
-                    </div>
-                    <nav class="space-y-4">
-                        <a href="#new" class="block text-lg font-medium hover:text-gray-600">New Arrivals</a>
-                        <a href="#collections" class="block text-lg font-medium hover:text-gray-600">Collections</a>
-                        <a href="#sale" class="block text-lg font-medium text-red-600">Sale</a>
-                    </nav>
-                </div>
-            `;
-            return menu;
-        }
-        
-        // Currency Selector
-        document.getElementById('currency-selector').addEventListener('change', (e) => {
-            currentCurrency = e.target.value;
-            displayProducts();
-            updateCartUI();
-            updateCheckoutSummary();
-            document.getElementById('announcement-currency').textContent = currentCurrency;
-        });
-        
-        // Cart Sidebar Toggle
-        document.getElementById('cart-btn').addEventListener('click', () => {
-            document.getElementById('cart-sidebar').classList.toggle('translate-x-full');
-        });
-        
-        document.getElementById('close-cart').addEventListener('click', () => {
-            document.getElementById('cart-sidebar').classList.add('translate-x-full');
-        });
-        
-        // Live Exchange Rates (Mock API call)
-        async function fetchExchangeRates() {
-            // In production, this would fetch from a real API
-            // For now, using mock data
-            console.log('Exchange rates updated');
-        }
-        
-        // Product Filtering and Sorting
-        function filterProducts(category) {
-            const filtered = category === 'all' 
-                ? products 
-                : products.filter(p => p.category === category);
-            displayFilteredProducts(filtered);
-        }
-        
-        function sortProducts(sortBy) {
-            let sorted = [...products];
-            switch(sortBy) {
-                case 'price-low':
-                    sorted.sort((a, b) => a.price - b.price);
-                    break;
-                case 'price-high':
-                    sorted.sort((a, b) => b.price - a.price);
-                    break;
-                case 'name':
-                    sorted.sort((a, b) => a.name.localeCompare(b.name));
-                    break;
-            }
-            displayFilteredProducts(sorted);
-        }
-        
-        function displayFilteredProducts(productList) {
-            const grid = document.getElementById('products-grid');
-            grid.innerHTML = productList.map(product => `
-                <div class="product-card bg-white rounded-lg overflow-hidden shadow-sm cursor-pointer">
-                    <div class="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 relative group">
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <i class="fas fa-image text-4xl text-gray-400"></i>
+            };
+
+            // Cart Management
+            const cart = {
+                add(productId) {
+                    const product = products.find(p => p.id === productId);
+                    if (!product) {
+                        utils.showNotification('Product not found', 'error');
+                        return;
+                    }
+
+                    const existingItem = state.cart.find(item => item.id === productId);
+                    
+                    if (existingItem) {
+                        if (existingItem.quantity >= product.stock) {
+                            utils.showNotification('Maximum stock reached', 'error');
+                            return;
+                        }
+                        existingItem.quantity++;
+                    } else {
+                        state.cart.push({ ...product, quantity: 1 });
+                    }
+                    
+                    this.update();
+                    utils.saveToStorage('cart', state.cart);
+                    utils.showNotification('Added to cart!');
+                },
+
+                remove(productId) {
+                    state.cart = state.cart.filter(item => item.id !== productId);
+                    this.update();
+                    utils.saveToStorage('cart', state.cart);
+                },
+
+                updateQuantity(productId, quantity) {
+                    const item = state.cart.find(item => item.id === productId);
+                    if (!item) return;
+
+                    const product = products.find(p => p.id === productId);
+                    
+                    if (quantity > product.stock) {
+                        utils.showNotification(`Only ${product.stock} items available`, 'error');
+                        return;
+                    }
+
+                    if (quantity < 1) {
+                        this.remove(productId);
+                        return;
+                    }
+
+                    item.quantity = quantity;
+                    this.update();
+                    utils.saveToStorage('cart', state.cart);
+                },
+
+                clear() {
+                    state.cart = [];
+                    this.update();
+                    utils.saveToStorage('cart', state.cart);
+                },
+
+                update() {
+                    const cartCount = document.getElementById('cart-count');
+                    const cartItems = document.getElementById('cart-items');
+                    const cartSubtotal = document.getElementById('cart-subtotal');
+                    const checkoutBtn = document.getElementById('checkout-btn');
+                    
+                    const totalItems = state.cart.reduce((sum, item) => sum + item.quantity, 0);
+                    cartCount.textContent = totalItems;
+                    
+                    if (state.cart.length === 0) {
+                        cartItems.innerHTML = '<p class="text-gray-500 text-center">Your cart is empty</p>';
+                        cartSubtotal.textContent = utils.formatPrice(0);
+                        checkoutBtn.disabled = true;
+                        return;
+                    }
+
+                    checkoutBtn.disabled = false;
+                    const subtotal = state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+                    
+                    cartItems.innerHTML = state.cart.map(item => `
+                        <div class="flex items-center space-x-4 mb-4 pb-4 border-b">
+                            <div class="w-20 h-20 bg-gradient-to-br from-purple-100 to-pink-100 rounded flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-image text-gray-400"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="font-semibold truncate">${utils.sanitizeHTML(item.name)}</h4>
+                                <p class="text-gray-500 text-sm">${utils.sanitizeHTML(item.color)}</p>
+                                <div class="flex items-center mt-2 space-x-2">
+                                    <button onclick="App.updateQuantity(${item.id}, ${item.quantity - 1})" class="w-8 h-8 flex items-center justify-center border rounded hover:bg-gray-100" aria-label="Decrease quantity">
+                                        <i class="fas fa-minus text-sm"></i>
+                                    </button>
+                                    <span class="w-8 text-center">${item.quantity}</span>
+                                    <button onclick="App.updateQuantity(${item.id}, ${item.quantity + 1})" class="w-8 h-8 flex items-center justify-center border rounded hover:bg-gray-100" aria-label="Increase quantity">
+                                        <i class="fas fa-plus text-sm"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="text-right flex-shrink-0">
+                                <p class="font-semibold">${utils.formatPrice(item.price * item.quantity)}</p>
+                                <button onclick="App.removeFromCart(${item.id})" class="text-red-500 hover:text-red-700 text-sm mt-1">
+                                    Remove
+                                </button>
+                            </div>
                         </div>
-                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition"></div>
-                        <button onclick="quickAddToCart(${product.id})" class="absolute bottom-4 left-4 right-4 bg-white text-black py-2 rounded opacity-0 group-hover:opacity-100 transition transform translate-y-2 group-hover:translate-y-0">
-                            Quick Add
-                        </button>
-                    </div>
-                    <div class="p-4">
-                        <h4 class="font-semibold text-lg mb-1">${product.name}</h4>
-                        <p class="text-gray-500 text-sm mb-2">${product.color}</p>
-                        <p class="font-bold text-lg">${formatPrice(product.price)}</p>
-                    </div>
-                </div>
-            `).join('');
-        }
-        
-        // Wishlist Management
-        let wishlist = [];
-        
-        function addToWishlist(productId) {
-            if (!wishlist.includes(productId)) {
-                wishlist.push(productId);
-                saveWishlistToStorage();
-                showNotification('Added to wishlist!');
+                    `).join('');
+                    
+                    cartSubtotal.textContent = utils.formatPrice(subtotal);
+                },
+
+                getSubtotal() {
+                    return state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+                }
+            };
+
+            // Product Management
+            const productManager = {
+                display(productList = products) {
+                    const grid = document.getElementById('products-grid');
+                    
+                    if (productList.length === 0) {
+                        grid.innerHTML = '<div class="col-span-full text-center py-12"><p class="text-gray-500 text-lg">No products found</p></div>';
+                        return;
+                    }
+
+                    grid.innerHTML = productList.map(product => `
+                        <div class="product-card bg-white rounded-lg overflow-hidden shadow-sm">
+                            <div class="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 relative group">
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <i class="fas fa-image text-4xl text-gray-400"></i>
+                                </div>
+                                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition"></div>
+                                <button onclick="App.addToCart(${product.id})" class="absolute bottom-4 left-4 right-4 bg-white text-black py-2 rounded opacity-0 group-hover:opacity-100 transition transform translate-y-2 group-hover:translate-y-0 hover:bg-gray-100" aria-label="Add ${product.name} to cart">
+                                    Quick Add
+                                </button>
+                                ${product.stock < 5 ? `<div class="absolute top-4 right-4 bg-red-500 text-white text-xs px-2 py-1 rounded">Only ${product.stock} left</div>` : ''}
+                            </div>
+                            <div class="p-4">
+                                <h4 class="font-semibold text-lg mb-1">${utils.sanitizeHTML(product.name)}</h4>
+                                <p class="text-gray-500 text-sm mb-2">${utils.sanitizeHTML(product.color)}</p>
+                                <p class="font-bold text-lg">${utils.formatPrice(product.price)}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                },
+
+                filter(category) {
+                    const filtered = products.filter(p => p.category === category);
+                    state.filteredProducts = filtered;
+                    this.display(filtered);
+                    this.scrollToSection();
+                },
+
+                sort(sortBy) {
+                    const productList = state.filteredProducts || products;
+                    let sorted = [...productList];
+                    
+                    switch(sortBy) {
+                        case 'price-low':
+                            sorted.sort((a, b) => a.price - b.price);
+                            break;
+                        case 'price-high':
+                            sorted.sort((a, b) => b.price - a.price);
+                            break;
+                        case 'name':
+                            sorted.sort((a, b) => a.name.localeCompare(b.name));
+                            break;
+                        default:
+                            sorted = productList;
+                    }
+                    
+                    this.display(sorted);
+                },
+
+                search(query) {
+                    if (!query || query.trim() === '') {
+                        document.getElementById('search-results').innerHTML = `
+                            <div class="text-sm text-gray-500">
+                                Popular: Dresses, Handbags, Summer Collection, Designer Shoes
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    const searchTerm = query.toLowerCase();
+                    const results = products.filter(p => 
+                        p.name.toLowerCase().includes(searchTerm) ||
+                        p.category.toLowerCase().includes(searchTerm) ||
+                        p.color.toLowerCase().includes(searchTerm)
+                    );
+
+                    if (results.length === 0) {
+                        document.getElementById('search-results').innerHTML = `
+                            <div class="text-sm text-gray-500 py-4">No products found for "${utils.sanitizeHTML(query)}"</div>
+                        `;
+                        return;
+                    }
+
+                    document.getElementById('search-results').innerHTML = `
+                        <div class="mt-4 space-y-2">
+                            ${results.map(product => `
+                                <div class="p-3 hover:bg-gray-50 rounded cursor-pointer" onclick="App.addToCart(${product.id}); App.toggleSearch();">
+                                    <div class="font-semibold">${utils.sanitizeHTML(product.name)}</div>
+                                    <div class="text-sm text-gray-500">${utils.formatPrice(product.price)}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                },
+
+                clearFilters() {
+                    state.filteredProducts = null;
+                    this.display(products);
+                    document.getElementById('sort-select').value = 'featured';
+                },
+
+                scrollToSection() {
+                    document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+                }
+            };
+
+            // Checkout Management
+            const checkout = {
+                open() {
+                    if (state.cart.length === 0) {
+                        utils.showNotification('Your cart is empty', 'error');
+                        return;
+                    }
+                    
+                    ui.toggleCart();
+                    document.getElementById('checkout-modal').classList.remove('hidden');
+                    this.updateSummary();
+                },
+
+                close() {
+                    document.getElementById('checkout-modal').classList.add('hidden');
+                },
+
+                updateSummary() {
+                    const checkoutItems = document.getElementById('checkout-items');
+                    const subtotal = cart.getSubtotal();
+                    const shipping = subtotal > 200 ? 0 : 25;
+                    const tax = subtotal * 0.08;
+                    const total = subtotal + shipping + tax;
+                    
+                    checkoutItems.innerHTML = state.cart.map(item => `
+                        <div class="flex justify-between items-center py-2">
+                            <div>
+                                <p class="font-semibold">${utils.sanitizeHTML(item.name)}</p>
+                                <p class="text-sm text-gray-500">Qty: ${item.quantity}</p>
+                            </div>
+                            <p class="font-semibold">${utils.formatPrice(item.price * item.quantity)}</p>
+                        </div>
+                    `).join('');
+                    
+                    document.getElementById('checkout-subtotal').textContent = utils.formatPrice(subtotal);
+                    document.getElementById('checkout-shipping').textContent = utils.formatPrice(shipping);
+                    document.getElementById('checkout-tax').textContent = utils.formatPrice(tax);
+                    document.getElementById('checkout-total').textContent = utils.formatPrice(total);
+                },
+
+                processPayment(event) {
+                    event.preventDefault();
+                    
+                    const form = document.getElementById('checkout-form');
+                    if (!form.checkValidity()) {
+                        form.reportValidity();
+                        return;
+                    }
+                    
+                    utils.showNotification('Processing payment...', 'info');
+                    
+                    // Simulate payment processing
+                    setTimeout(() => {
+                        cart.clear();
+                        this.close();
+                        utils.showNotification('Order placed successfully! Check your email for confirmation.', 'success');
+                        form.reset();
+                    }, 2000);
+                }
+            };
+
+            // Authentication
+            const auth = {
+                switchMode() {
+                    state.authMode = state.authMode === 'signin' ? 'signup' : 'signin';
+                    
+                    const title = document.getElementById('auth-title');
+                    const btnText = document.getElementById('auth-btn-text');
+                    const switchText = document.getElementById('auth-switch-text');
+                    const switchBtn = document.getElementById('auth-switch-btn');
+                    
+                    if (state.authMode === 'signup') {
+                        title.textContent = 'Sign Up';
+                        btnText.textContent = 'Sign Up';
+                        switchText.textContent = 'Already have an account?';
+                        switchBtn.textContent = 'Sign In';
+                    } else {
+                        title.textContent = 'Sign In';
+                        btnText.textContent = 'Sign In';
+                        switchText.textContent = "Don't have an account?";
+                        switchBtn.textContent = 'Sign Up';
+                    }
+                },
+
+                handleSubmit(event) {
+                    event.preventDefault();
+                    
+                    const email = document.getElementById('auth-email').value;
+                    const password = document.getElementById('auth-password').value;
+                    
+                    if (state.authMode === 'signup') {
+                        utils.showNotification('Account created! Please check your email to verify.', 'success');
+                    } else {
+                        state.currentUser = { email };
+                        utils.showNotification('Welcome back!', 'success');
+                    }
+                    
+                    ui.toggleAuth();
+                    document.getElementById('auth-form').reset();
+                }
+            };
+
+            // UI Controls
+            const ui = {
+                toggleCart() {
+                    document.getElementById('cart-sidebar').classList.toggle('translate-x-full');
+                },
+
+                toggleSearch() {
+                    const modal = document.getElementById('search-modal');
+                    modal.classList.toggle('hidden');
+                    
+                    if (!modal.classList.contains('hidden')) {
+                        setTimeout(() => document.getElementById('search-input').focus(), 100);
+                    }
+                },
+
+                toggleAuth() {
+                    document.getElementById('auth-modal').classList.toggle('hidden');
+                },
+
+                toggleMobileMenu() {
+                    document.getElementById('mobile-menu').classList.toggle('translate-x-full');
+                },
+
+                handleCurrencyChange(currency) {
+                    state.currentCurrency = currency;
+                    document.getElementById('announcement-currency').textContent = currency;
+                    productManager.display(state.filteredProducts || products);
+                    cart.update();
+                    if (!document.getElementById('checkout-modal').classList.contains('hidden')) {
+                        checkout.updateSummary();
+                    }
+                }
+            };
+
+            // Newsletter
+            function handleNewsletter(event) {
+                event.preventDefault();
+                const email = document.getElementById('newsletter-email').value;
+                utils.showNotification('Thanks for subscribing!', 'success');
+                event.target.reset();
             }
-        }
-        
-        function removeFromWishlist(productId) {
-            wishlist = wishlist.filter(id => id !== productId);
-            saveWishlistToStorage();
-        }
-        
-        function saveWishlistToStorage() {
-            localStorage.setItem('wishlist', JSON.stringify(wishlist));
-        }
-        
-        function loadWishlistFromStorage() {
-            const saved = localStorage.getItem('wishlist');
-            if (saved) {
-                wishlist = JSON.parse(saved);
-            }
-        }
-        
-        // Show Products Function
-        function showProducts() {
-            const productsSection = document.getElementById('products');
-            productsSection.scrollIntoView({ behavior: 'smooth' });
-        }
-        
-        // Initialize Everything
-        document.addEventListener('DOMContentLoaded', () => {
-            displayProducts();
-            loadCartFromStorage();
-            loadWishlistFromStorage();
-            initSearch();
-            initUserAuth();
-            initMobileMenu();
-            fetchExchangeRates();
-            
-            // Update exchange rates every 30 minutes
-            setInterval(fetchExchangeRates, 30 * 60 * 1000);
-            
-            // Add scroll animations
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('fade-in');
+
+            // Initialize
+            function init() {
+                // Load saved cart
+                const savedCart = utils.loadFromStorage('cart');
+                if (savedCart) {
+                    state.cart = savedCart;
+                    cart.update();
+                }
+
+                // Display products
+                productManager.display();
+
+                // Currency selector
+                document.getElementById('currency-selector').addEventListener('change', (e) => {
+                    ui.handleCurrencyChange(e.target.value);
+                });
+
+                // Close modals on backdrop click
+                ['search-modal', 'auth-modal'].forEach(id => {
+                    document.getElementById(id).addEventListener('click', (e) => {
+                        if (e.target.id === id) {
+                            e.target.classList.add('hidden');
+                        }
+                    });
+                });
+
+                // Escape key closes modals
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        document.getElementById('cart-sidebar').classList.add('translate-x-full');
+                        document.getElementById('mobile-menu').classList.add('translate-x-full');
+                        document.getElementById('search-modal').classList.add('hidden');
+                        document.getElementById('auth-modal').classList.add('hidden');
+                        document.getElementById('checkout-modal').classList.add('hidden');
                     }
                 });
-            }, { threshold: 0.1 });
-            
-            document.querySelectorAll('.product-card').forEach(card => {
-                observer.observe(card);
-            });
-        });
-        
-        // Performance optimization
-        let scrollTimeout;
-        window.addEventListener('scroll', () => {
-            if (scrollTimeout) {
-                clearTimeout(scrollTimeout);
+
+                // Scroll animations
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('fade-in');
+                        }
+                    });
+                }, { threshold: 0.1 });
+                
+                document.querySelectorAll('.product-card').forEach(card => {
+                    observer.observe(card);
+                });
             }
-            scrollTimeout = setTimeout(() => {
-                const scrolled = window.pageYOffset > 100;
-                document.querySelector('header').classList.toggle('shadow-lg', scrolled);
-            }, 10);
+
+            // Public API
+            return {
+                init,
+                addToCart: (id) => cart.add(id),
+                removeFromCart: (id) => cart.remove(id),
+                updateQuantity: (id, qty) => cart.updateQuantity(id, qty),
+                toggleCart: () => ui.toggleCart(),
+                toggleSearch: () => ui.toggleSearch(),
+                toggleAuth: () => ui.toggleAuth(),
+                toggleMobileMenu: () => ui.toggleMobileMenu(),
+                switchAuthMode: () => auth.switchMode(),
+                handleAuth: (e) => auth.handleSubmit(e),
+                handleSearch: (query) => productManager.search(query),
+                handleNewsletter,
+                filterByCategory: (cat) => productManager.filter(cat),
+                sortProducts: (sort) => productManager.sort(sort),
+                clearFilters: () => productManager.clearFilters(),
+                scrollToProducts: () => productManager.scrollToSection(),
+                proceedToCheckout: () => checkout.open(),
+                closeCheckout: () => checkout.close(),
+                processPayment: (e) => checkout.processPayment(e)
+            };
+        })();
+
+        // Initialize app when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            App.init();
         });
     </script>
-    <script src="config.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.34.0/dist/supabase.min.js"></script>
 </body>
 </html>

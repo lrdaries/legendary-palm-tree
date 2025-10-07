@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns#"></html></html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diva's Kloset - International Luxury Fashion Hub | Designer Clothing & Accessories</title>
+    <meta name="description" content="Shop the latest designer fashion at Diva's Closet. International luxury clothing, accessories, and exclusive collections. Free worldwide shipping on orders over $200.">
+    <meta name="keywords" content="luxury fashion, designer clothing, international fashion, women's fashion, designer accessories, Diva's Closet">
+    <meta property="og:title" content="Diva's Closet - International Luxury Fashion Hub">
+    <meta property="og:description" content="Discover exclusive designer collections and luxury fashion from around the world.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://divaskloset.com">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://divaskloset.com">
+    <!-- Primary Meta Tags -->
+    <title>Divas Kloset - Premium Fashion Brand | Shop Men's & Women's Clothing Online</title>
+    <meta name="title" content="Divas Kloset - Premium Fashion Brand | Shop Men's & Women's Clothing Online">
+    <meta name="description" content="Discover premium fashion at Divas Kloset. Shop high-quality men's and women's clothing, accessories, and footwear. Free shipping on orders over $100. Trendy styles for every occasion.">
+    <meta name="keywords" content="fashion, clothing, men's clothing, women's clothing, premium fashion, online shopping, style, trendy clothes, fashion brand, accessories, footwear, divas kloset">
+    <meta name="author" content="Divas Kloset">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="googlebot" content="index, follow">
+    <meta name="bingbot" content="index, follow">
+    <meta name="yandexbot" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://divaskloset.com/">
+    <meta property="og:title" content="Divas Kloset - Premium Fashion Brand | Shop Men's & Women's Clothing Online">
+    <meta property="og:description" content="Discover premium fashion at Divas Kloset. Shop high-quality men's and women's clothing, accessories, and footwear. Free shipping on orders over $100.">
+    <meta property="og:image" content="https://divaskloset.com/images/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Divas Kloset - Premium Fashion Brand">
+    <meta property="og:site_name" content="Divas Kloset">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://divaskloset.com/">
+    <meta property="twitter:title" content="Divas Kloset - Premium Fashion Brand | Shop Men's & Women's Clothing Online">
+    <meta property="twitter:description" content="Discover premium fashion at Divas Kloset. Shop high-quality men's and women's clothing, accessories, and footwear. Free shipping on orders over $100.">
+    <meta property="twitter:image" content="https://divaskloset.com/images/twitter-card.jpg">
+    <meta property="twitter:image:alt" content="Divas Kloset - Premium Fashion Brand">
+    <meta property="twitter:site" content="@divaskloset">
+    <meta property="twitter:creator" content="@divaskloset">
+    
+    <!-- Additional SEO Meta Tags -->
+    <meta name="theme-color" content="#667eea">
+    <meta name="msapplication-TileColor" content="#667eea">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Divas Kloset">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .playfair {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .product-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .shimmer {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-in-right {
+            animation: slideInRight 0.3s ease-out;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Announcement Bar -->
+    <div class="bg-black text-white text-center py-2 text-sm">
+        <p>Free International Shipping on Orders Over $200 | <span id="announcement-currency">USD</span></p>
+    </div>
+
+    <!-- Header -->
+    <header class="glass-effect sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <div class="flex items-center space-x-2">
+                    <h1 class="playfair text-3xl font-bold text-gray-900">Diva's Kloset</h1>
+                </div>
+                
+                <!-- Navigation -->
+                <div class="hidden lg:flex items-center space-x-8">
+                    <button onclick="showProducts()" class="text-gray-700 hover:text-black transition">New Arrivals</button>
+                    <a href="#collections" class="text-gray-700 hover:text-black transition">Collections</a>
+                    <a href="#sale" class="text-gray-700 hover:text-black transition">Sale</a>
+                </div>
+                
+                <!-- Right Actions -->
+                <div class="flex items-center space-x-4">
+                    <!-- Currency Selector -->
+                    <select id="currency-selector" class="bg-transparent border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:border-black">
+                        <option value="USD">$ USD</option>
+                        <option value="EUR">€ EUR</option>
+                        <option value="GBP">£ GBP</option>
+                        <option value="NGN">₦ NGN</option>
+                        <option value="JPY">¥ JPY</option>
+                        <option value="AUD">A$ AUD</option>
+                        <option value="CAD">C$ CAD</option>
+                        <option value="CNY">¥ CNY</option>
+                        <option value="INR">₹ INR</option>
+                    </select>
+                    
+                    <!-- Search -->
+                    <button class="text-gray-700 hover:text-black transition">
+                        <i class="fas fa-search text-xl"></i>
+                    </button>
+                    
+                    <!-- User -->
+                    <button id="user-btn" class="text-gray-700 hover:text-black transition">
+                        <i class="fas fa-user text-xl"></i>
+                    </button>
+                    
+                    <!-- Cart -->
+                    <button id="cart-btn" class="relative text-gray-700 hover:text-black transition">
+                        <i class="fas fa-shopping-bag text-xl"></i>
+                        <span id="cart-count" class="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                    </button>
+                    
+                    <!-- Mobile Menu -->
+                    <button id="mobile-menu-btn" class="lg:hidden">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+    
+    <main class="container mx-auto px-4 py-8">
+        <h1 class="playfair text-4xl font-bold text-gray-900 mb-8">Size Guide</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Women's Sizes</h2>
+                <table class="w-full">
+                    <thead>
+                        <tr>
+                            <th class="text-left text-gray-500">Size</th>
+                            <th class="text-left text-gray-500">Chest</th>
+                            <th class="text-left text-gray-500">Waist</th>
+                            <th class="text-left text-gray-500">Hip</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-gray-900">XS</td>
+                            <td class="text-gray-900">32-34"</td>
+                            <td class="text-gray-900">24-26"</td>
+                            <td class="text-gray-900">36-38"</td>
+                        </tr>
+                        <tr>
+                            <td class="text-gray-900">S</td>
+                            <td class="text-gray-900">34-36"</td>
+                            <td class="text-gray-900">26-28"</td>
+                            <td class="text-gray-900">38-40"</td>
+                        </tr>
+                        <tr>
+                            <td class="text-gray-900">M</td>
+                            <td class="text-gray-900">36-38"</td>
+                            <td class="text-gray-900">28-30"</td>
+                            <td class="text-gray-900">40-42"</td>
+                        </tr>
+                        <tr>
+                            <td class="text-gray-900">L</td>
+                            <td class="text-gray-900">38-40"</td>
+                            <td class="text-gray-900">30-32"</td>
+                            <td class="text-gray-900">42-44"</td>
+                        </tr>
+                        <tr>
+                            <td class="text-gray-900">XL</td>
+                            <td class="text-gray-900">40-42"</td>
+                            <td class="text-gray-900">32-34"</td>
+                            <td class="text-gray-900">44-46"</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Men's Sizes</h2>
+                <table class="w-full">
+                    <thead>
+                        <tr>
+                            <th class="text-left text-gray-500">Size</th>
+                            <th class="text-left text-gray-500">Chest</th>
+                            <th class="text-left text-gray-500">Waist</th>
+                            <th class="text-left text-gray-500">Hip</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-gray-900">XS</td>
+                            <td class="text-gray-900">32-34"</td>
+                            <td class="text-gray-900">24-26"</td>
+                            <td class="text-gray-900">36-38"</td>
+                        </tr>
+                        <tr>
+                            <td class="text-gray-900">S</td>
+                            <td class="text-gray-900">34-36"</td>
+                            <td class="text-gray-900">26-28"</td>
+                            <td class="text-gray-900">38-40"</td>
+                        </tr>
+                        <tr>
+                            <td class="text-gray-900">M</td>  
+                            <td class="text-gray-900">36-38"</td>
+                            <td class="text-gray-900">28-30"</td>
+                            <td class="text-gray-900">40-42"</td>
+                        </tr>
+                        <tr>
+                            <td class="text-gray-900">L</td>
+                            <td class="text-gray-900">38-40"</td>
+                            <td class="text-gray-900">30-32"</td>
+                            <td class="text-gray-900">42-44"</td>
+                        </tr>
+                        <tr>
+                            <td class="text-gray-900">XL</td>
+                            <td class="text-gray-900">40-42"</td>
+                            <td class="text-gray-900">32-34"</td>
+                            <td class="text-gray-900">44-46"</td>
+                        </tr>
+                        <tr>
+                            <td class="text-gray-900">2XL</td>
+                            <td class="text-gray-900">42-44"</td>
+                            <td class="text-gray-900">34-36"</td>
+                            <td class="text-gray-900">46-48"</td>
+                        </tr>
+                        </tr>
+                        <tr>
+                            <td class="text-gray-900">3XL</td>
+                            <td class="text-gray-900">44-46"</td>
+                            <td class="text-gray-900">36-38"</td>
+                            <td class="text-gray-900">48-50"</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Kids' Sizes</h2>
+                <table class="w-full">
+                    <thead>
+                        <tr>
+                            <th class="text-left text-gray-500">Size</th>
+                            <th class="text-left text-gray-500">Height</th>
+                            <th class="text-left text-gray-500">Weight</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-gray-900">XS</td>
+                            <td class="text-gray-900">32-34"</td>
+                            <td class="text-gray-900">24-26"</td>
+                            <td class="text-gray-900">36-38"</td>
+                        </tr>
+                    </tbody>
+                </table>
+                </table>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Baby's Sizes</h2>
+                <table class="w-full">
+                    <thead>
+                        <tr>
+                            <th class="text-left text-gray-500">Size</th>
+                            <th class="text-left text-gray-500">Height</th>
+                            <th class="text-left text-gray-500">Weight</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-gray-900">XS</td>
+                            <td class="text-gray-900">32-34"</td>
+                            <td class="text-gray-900">24-26"</td>
+                            <td class="text-gray-900">36-38"</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Womens's Shoes Sizes</h2>
+                <table class="w-full">
+                    <thead>
+                        <tr>
+                            <th class="text-left text-gray-500">Size</th>
+                            <th class="text-left text-gray-500">Length</th>
+                            <th class="text-left text-gray-500">Width</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-gray-900">XS</td>
+                            <td class="text-gray-900">32-34"</td>
+                            <td class="text-gray-900">24-26"</td>
+                            <td class="text-gray-900">36-38"</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Mens's Shoes Sizes</h2>
+                <table class="w-full">
+                    <thead>
+                        <tr>
+                            <th class="text-left text-gray-500">Size</th>
+                            <th class="text-left text-gray-500">Length</th>
+                            <th class="text-left text-gray-500">Width</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-gray-900">XS</td>
+                            <td class="text-gray-900">32-34"</td>
+                            <td class="text-gray-900">24-26"</td>
+                            <td class="text-gray-900">36-38"</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Kids' Shoes Sizes</h2>
+                <table class="w-full">
+                    <thead>
+                        <tr>
+                            <th class="text-left text-gray-500">Size</th>
+                            <th class="text-left text-gray-500">Length</th>
+                            <th class="text-left text-gray-500">Width</th>
+                        </tr>
+                    </thead>
+                    <tbody> 
+                        <tr>
+                            <td class="text-gray-900">XS</td>
+                            <td class="text-gray-900">32-34"</td>
+                            <td class="text-gray-900">24-26"</td>
+                            <td class="text-gray-900">36-38"</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        </div>
+    </main>
+
+    </main>
+    
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="playfair text-2xl font-bold mb-4">Diva's Closet</h4>
+                    <p class="text-gray-400">Your destination for international luxury fashion.</p>
+                    <div class="flex space-x-4 mt-4">
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram text-xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook text-xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter text-xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-pinterest text-xl"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h5 class="font-semibold mb-4">Customer Service</h5>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">Contact Us</a></li>
+                        <li><a href="pages/shipping.html" class="hover:text-white">Shipping Info</a></li>
+                        <li><a href="#" class="hover:text-white">Returns & Exchanges</a></li>
+                        <li><a href="pages/guide.html" class="hover:text-white">Size Guide</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-semibold mb-4">About</h5>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">Our Story</a></li>
+                        <li><a href="#" class="hover:text-white">Sustainability</a></li>
+                        <li><a href="#" class="hover:text-white">Press</a></li>
+                        <li><a href="pages/careers.html" class="hover:text-white">Careers</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-semibold mb-4">Payment & Security</h5>
+                    <div class="flex space-x-2 mb-4">
+                        <i class="fab fa-cc-visa text-2xl"></i>
+                        <i class="fab fa-cc-mastercard text-2xl"></i>
+                        <i class="fab fa-cc-amex text-2xl"></i>
+                        <i class="fab fa-cc-paypal text-2xl"></i>
+                    </div>
+                    <p class="text-gray-400 text-sm">Secure payments powered by Stripe</p>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 Diva's Closet. All rights reserved. | <a href="#" class="hover:text-white">Privacy Policy</a> | <a href="#" class="hover:text-white">Terms of Service</a></p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
