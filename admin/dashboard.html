@@ -1,1164 +1,840 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diva's Closet - Admin Dashboard</title>
-    <meta name="robots" content="noindex, nofollow">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #f8fafc;
-        }
-        
-        .sidebar-link {
-            transition: all 0.3s ease;
-        }
-        
-        .sidebar-link:hover {
-            background: linear-gradient(90deg, rgba(99, 102, 241, 0.1) 0%, transparent 100%);
-            border-left: 3px solid #6366f1;
-            padding-left: 21px;
-        }
-        
-        .sidebar-link.active {
-            background: linear-gradient(90deg, rgba(99, 102, 241, 0.1) 0%, transparent 100%);
-            border-left: 3px solid #6366f1;
-            padding-left: 21px;
-            color: #6366f1;
-        }
-        
-        .stat-card {
-            background: white;
-            border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-        
-        .glass-morphism {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .pulse-dot {
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        
-        .upload-zone {
-            border: 2px dashed #cbd5e1;
-            transition: all 0.3s ease;
-        }
-        
-        .upload-zone:hover {
-            border-color: #6366f1;
-            background: rgba(99, 102, 241, 0.05);
-        }
-        
-        .upload-zone.dragover {
-            border-color: #6366f1;
-            background: rgba(99, 102, 241, 0.1);
-        }
-        
-        .chart-container {
-            position: relative;
-            height: 300px;
-        }
-        
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 4px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #555;
-        }
-        
-        .notification-badge {
-            animation: bounce 1s infinite;
-        }
-        
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-4px); }
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Diva's Closet — Admin</title>
+  <meta name="robots" content="noindex,nofollow" />
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* Modern neutral palette tweaks */
+    :root{
+      --bg:#f3f6f9;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --accent:#2563eb; /* blue-600 */
+      --glass: rgba(255,255,255,0.6);
+    }
+    body { background: var(--bg); font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; color:#0f172a; }
+    .sidebar { background: linear-gradient(180deg, rgba(255,255,255,0.75), rgba(248,250,252,0.9)); backdrop-filter: blur(6px); box-shadow: 0 8px 30px rgba(15,23,42,0.06); }
+    .card { background: var(--card); border-radius: 12px; box-shadow: 0 6px 18px rgba(15,23,42,0.06); }
+    .fade-section { transition: opacity 260ms ease, transform 260ms ease; }
+    .fade-enter { opacity:0; transform: translateY(8px); }
+    .fade-enter-active { opacity:1; transform: translateY(0); }
+    .fade-exit { opacity:1; transform: translateY(0); }
+    .fade-exit-active { opacity:0; transform: translateY(8px); }
+    .upload-zone { border: 2px dashed #e6eefc; transition: all 200ms ease; background: linear-gradient(180deg, rgba(37,99,235,0.02), transparent); }
+    .upload-zone.dragover { border-color: var(--accent); box-shadow: 0 4px 16px rgba(37,99,235,0.06); }
+    .thumbnail { width:100%; height:100%; object-fit:cover; border-radius:8px; }
+    /* small responsive tweaks */
+    @media (max-width: 1024px) {
+      .sidebar { position: fixed; z-index: 30; transform: translateX(0); }
+      main { margin-left: 0; }
+    }
+  </style>
 </head>
 <body>
-    <!-- Main Container -->
-    <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar -->
-        <aside class="w-64 bg-white shadow-lg flex-shrink-0">
-            <div class="p-6 border-b">
-                <h1 class="text-2xl font-bold text-gray-900">Diva's Closet</h1>
-                <p class="text-sm text-gray-500 mt-1">Admin Dashboard</p>
-            </div>
-            
-            <nav class="p-4">
-                <ul class="space-y-2">
-                    <li>
-                        <a href="#dashboard" class="sidebar-link active flex items-center px-4 py-3 text-gray-700 rounded-lg">
-                            <i class="fas fa-chart-line w-5 mr-3"></i>
-                            <span>Dashboard</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#products" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg">
-                            <i class="fas fa-box w-5 mr-3"></i>
-                            <span>Products</span>
-                            <span class="ml-auto bg-indigo-500 text-white text-xs px-2 py-1 rounded-full">128</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#orders" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg">
-                            <i class="fas fa-shopping-cart w-5 mr-3"></i>
-                            <span>Orders</span>
-                            <span class="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full notification-badge">5</span>
-                        </a>
-                    </li>
-                    <!-- <li>
-                        <a href="#customers" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg">
-                            <i class="fas fa-users w-5 mr-3"></i>
-                            <span>Customers</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#inventory" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg">
-                            <i class="fas fa-warehouse w-5 mr-3"></i>
-                            <span>Inventory</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#analytics" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg">
-                            <i class="fas fa-chart-bar w-5 mr-3"></i>
-                            <span>Analytics</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#marketing" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg">
-                            <i class="fas fa-bullhorn w-5 mr-3"></i>
-                            <span>Marketing</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#reviews" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg">
-                            <i class="fas fa-star w-5 mr-3"></i>
-                            <span>Reviews</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#settings" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg">
-                            <i class="fas fa-cog w-5 mr-3"></i>
-                            <span>Settings</span>
-                        </a>
-                    </li> -->
-                </ul>
-            </nav>
-            
-            <!-- <div class="absolute bottom-0 w-64 p-4 border-t">
-                <div class="flex items-center">
-                    <img src="https://ui-avatars.com/api/?name=Admin&background=6366f1&color=fff" class="w-10 h-10 rounded-full mr-3">
-                    <div>
-                        <p class="text-sm font-semibold">Admin User</p>
-                        <p class="text-xs text-gray-500">admin@divascloset.com</p>
-                    </div>
-                </div>
-            </div> -->
-        </aside>
-        
-        <!-- Main Content -->
-        <main class="flex-1 overflow-y-auto">
-            <!-- Top Bar -->
-            <header class="bg-white shadow-sm border-b">
-                <div class="flex items-center justify-between p-4">
-                    <div class="flex items-center space-x-4">
-                        <button id="menu-toggle" class="lg:hidden">
-                            <i class="fas fa-bars text-xl"></i>
-                        </button>
-                        <div class="relative">
-                            <input type="text" placeholder="Search everything..." class="pl-10 pr-4 py-2 border rounded-lg w-64 focus:outline-none focus:border-indigo-500">
-                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-center space-x-4">
-                        <button class="relative text-gray-600 hover:text-gray-900">
-                            <i class="fas fa-bell text-xl"></i>
-                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center pulse-dot">3</span>
-                        </button>
-                        <button class="text-gray-600 hover:text-gray-900">
-                            <i class="fas fa-envelope text-xl"></i>
-                        </button>
-                        <button class="text-gray-600 hover:text-gray-900">
-                            <i class="fas fa-expand text-xl"></i>
-                        </button>
-                        <button id="logout-btn" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
-                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
-                        </button>
-                    </div>
-                </div>
-            </header>
-            
-            <!-- Dashboard Content -->
-            <div id="dashboard-section" class="p-6">
-                <!-- Stats Overview -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                    <div class="stat-card">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="bg-indigo-100 p-3 rounded-lg">
-                                <i class="fas fa-dollar-sign text-indigo-600 text-xl"></i>
-                            </div>
-                            <span class="text-green-500 text-sm font-semibold">+12.5%</span>
-                        </div>
-                        <h3 class="text-2xl font-bold text-gray-900">$48,650</h3>
-                        <p class="text-gray-500 text-sm mt-1">Total Revenue</p>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="bg-green-100 p-3 rounded-lg">
-                                <i class="fas fa-shopping-bag text-green-600 text-xl"></i>
-                            </div>
-                            <span class="text-green-500 text-sm font-semibold">+8.2%</span>
-                        </div>
-                        <h3 class="text-2xl font-bold text-gray-900">1,258</h3>
-                        <p class="text-gray-500 text-sm mt-1">Total Orders</p>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="bg-blue-100 p-3 rounded-lg">
-                                <i class="fas fa-users text-blue-600 text-xl"></i>
-                            </div>
-                            <span class="text-green-500 text-sm font-semibold">+18.7%</span>
-                        </div>
-                        <h3 class="text-2xl font-bold text-gray-900">8,420</h3>
-                        <p class="text-gray-500 text-sm mt-1">Total Customers</p>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="bg-purple-100 p-3 rounded-lg">
-                                <i class="fas fa-chart-line text-purple-600 text-xl"></i>
-                            </div>
-                            <span class="text-red-500 text-sm font-semibold">-3.4%</span>
-                        </div>
-                        <h3 class="text-2xl font-bold text-gray-900">2.8%</h3>
-                        <p class="text-gray-500 text-sm mt-1">Conversion Rate</p>
-                    </div>
-                </div>
-                
-                <!-- Charts Row -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                    <div class="bg-white rounded-lg shadow-sm p-6">
-                        <h3 class="text-lg font-semibold mb-4">Sales Overview</h3>
-                        <div class="chart-container">
-                            <canvas id="salesChart"></canvas>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white rounded-lg shadow-sm p-6">
-                        <h3 class="text-lg font-semibold mb-4">Category Performance</h3>
-                        <div class="chart-container">
-                            <canvas id="categoryChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Recent Orders -->
-                <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-semibold">Recent Orders</h3>
-                        <button class="text-indigo-600 hover:text-indigo-700 text-sm font-semibold">View All</button>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead>
-                                <tr class="text-left text-gray-500 text-sm border-b">
-                                    <th class="pb-3">Order ID</th>
-                                    <th class="pb-3">Customer</th>
-                                    <th class="pb-3">Product</th>
-                                    <th class="pb-3">Amount</th>
-                                    <th class="pb-3">Status</th>
-                                    <th class="pb-3">Date</th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-gray-700">
-                                <tr class="border-b hover:bg-gray-50">
-                                    <td class="py-3">#ORD-2025-001</td>
-                                    <td class="py-3">Sarah Johnson</td>
-                                    <td class="py-3">Silk Evening Dress</td>
-                                    <td class="py-3 font-semibold">$899</td>
-                                    <td class="py-3">
-                                        <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">Delivered</span>
-                                    </td>
-                                    <td class="py-3">Jan 28, 2025</td>
-                                </tr>
-                                <tr class="border-b hover:bg-gray-50">
-                                    <td class="py-3">#ORD-2025-002</td>
-                                    <td class="py-3">Michael Chen</td>
-                                    <td class="py-3">Designer Handbag</td>
-                                    <td class="py-3 font-semibold">$2,499</td>
-                                    <td class="py-3">
-                                        <span class="bg-yellow-100 text-yellow-700 text-xs px-2 py-1 rounded-full">Processing</span>
-                                    </td>
-                                    <td class="py-3">Jan 27, 2025</td>
-                                </tr>
-                                <tr class="border-b hover:bg-gray-50">
-                                    <td class="py-3">#ORD-2025-003</td>
-                                    <td class="py-3">Emma Wilson</td>
-                                    <td class="py-3">Leather Boots</td>
-                                    <td class="py-3 font-semibold">$599</td>
-                                    <td class="py-3">
-                                        <span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full">Shipped</span>
-                                    </td>
-                                    <td class="py-3">Jan 27, 2025</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Products Section (Hidden by default) -->
-            <div id="products-section" class="p-6 hidden">
-                <!-- Product Management Header -->
-                <div class="flex justify-between items-center mb-6">
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-900">Product Management</h2>
-                        <p class="text-gray-500 mt-1">Manage your product catalog</p>
-                    </div>
-                    <div class="flex space-x-3">
-                        <button class="bg-white border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50 transition">
-                            <i class="fas fa-download mr-2"></i>Export
-                        </button>
-                        <button class="bg-white border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50 transition">
-                            <i class="fas fa-upload mr-2"></i>Import
-                        </button>
-                        <button onclick="openAddProductModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
-                            <i class="fas fa-plus mr-2"></i>Add Product
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Filters -->
-                <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <input type="text" placeholder="Search products..." class="border rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
-                        <select class="border rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
-                            <option>All Categories</option>
-                            <option>Dresses</option>
-                            <option>Shoes</option>
-                            <option>Bags</option>
-                            <option>Jewelry</option>
-                        </select>
-                        <select class="border rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
-                            <option>All Status</option>
-                            <option>Active</option>
-                            <option>Draft</option>
-                            <option>Out of Stock</option>
-                        </select>
-                        <button class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
-                            Apply Filters
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Products Table -->
-                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-                    <table class="w-full">
-                        <thead class="bg-gray-50">
-                            <tr class="text-left text-gray-500 text-sm">
-                                <th class="px-6 py-4">
-                                    <input type="checkbox" class="rounded">
-                                </th>
-                                <th class="px-6 py-4">Product</th>
-                                <th class="px-6 py-4">SKU</th>
-                                <th class="px-6 py-4">Category</th>
-                                <th class="px-6 py-4">Price</th>
-                                <th class="px-6 py-4">Stock</th>
-                                <th class="px-6 py-4">Status</th>
-                                <th class="px-6 py-4">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="products-table-body" class="text-gray-700">
-                            <!-- Products will be dynamically loaded here -->
-                        </tbody>
-                    </table>
-                </div>
-                
-                <!-- Pagination -->
-                <div class="flex justify-between items-center mt-6">
-                    <p class="text-gray-500">Showing 1-10 of 128 products</p>
-                    <div class="flex space-x-2">
-                        <button class="px-3 py-1 border rounded hover:bg-gray-50">Previous</button>
-                        <button class="px-3 py-1 bg-indigo-600 text-white rounded">1</button>
-                        <button class="px-3 py-1 border rounded hover:bg-gray-50">2</button>
-                        <button class="px-3 py-1 border rounded hover:bg-gray-50">3</button>
-                        <button class="px-3 py-1 border rounded hover:bg-gray-50">Next</button>
-                    </div>
-                </div>
-            </div>
-        </main>
+  <div class="min-h-screen flex">
+    <!-- Sidebar -->
+    <aside class="sidebar w-72 p-6 hidden lg:block">
+      <div class="mb-6">
+        <h1 class="text-2xl font-semibold">Diva's Closet</h1>
+        <p class="text-sm text-slate-500 mt-1">Admin Dashboard</p>
+      </div>
+
+      <nav class="space-y-2">
+        <a href="#dashboard" data-target="dashboard" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg text-slate-700 bg-white card shadow-sm">
+          <i class="fas fa-chart-pie text-lg text-slate-600"></i>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="#products" data-target="products" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg text-slate-700 hover:bg-white/80">
+          <i class="fas fa-box text-lg text-slate-600"></i>
+          <span>Products</span>
+          <span id="product-count" class="ml-auto bg-slate-200 text-slate-700 text-xs px-2 py-1 rounded-full">0</span>
+        </a>
+      </nav>
+
+      <div class="mt-8">
+        <button id="logout-btn" class="w-full bg-red-50 text-red-600 px-3 py-2 rounded-lg"><i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
+      </div>
+    </aside>
+
+    <!-- Mobile top bar -->
+    <div class="lg:hidden fixed top-4 z-40">
+      <button id="mobile-menu-toggle" class="bg-white p-2 rounded-lg shadow"><i class="fas fa-bars"></i></button>
     </div>
-    
-    <!-- Add/Edit Product Modal -->
-    <div id="product-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
-        <div class="bg-white w-full max-w-4xl mx-auto mt-10 rounded-lg shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div class="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
-                <h3 class="text-xl font-bold">Add New Product</h3>
-                <button onclick="closeProductModal()" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-            
-            <form id="product-form" class="p-6">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- Left Column -->
-                    <div class="space-y-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Product Name *</label>
-                            <input type="text" id="product-name" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500" required>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Description *</label>
-                            <textarea id="product-description" rows="4" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500" required></textarea>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Category *</label>
-                                <select id="product-category" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500" required>
-                                    <option value="">Select Category</option>
-                                    <option value="Dresses">Dresses</option>
-                                    <option value="Shoes">Shoes</option>
-                                    <option value="Bags">Bags</option>
-                                    <option value="Jewelry">Jewelry</option>
-                                    <option value="Outerwear">Outerwear</option>
-                                    <option value="Accessories">Accessories</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Brand</label>
-                                <input type="text" id="product-brand" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
-                            </div>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">SKU *</label>
-                                <input type="text" id="product-sku" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500" required>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Barcode</label>
-                                <input type="text" id="product-barcode" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Tags</label>
-                            <input type="text" id="product-tags" placeholder="Enter tags separated by commas" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
-                            <p class="text-xs text-gray-500 mt-1">Separate tags with commas (e.g., summer, casual, trending)</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Right Column -->
-                    <div class="space-y-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Product Images *</label>
-                            <div id="image-upload-zone" class="upload-zone rounded-lg p-8 text-center cursor-pointer">
-                                <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3"></i>
-                                <p class="text-gray-600">Drop images here or click to upload</p>
-                                <p class="text-xs text-gray-500 mt-2">PNG, JPG, WEBP up to 5MB</p>
-                                <input type="file" id="product-images" accept="image/*" multiple class="hidden">
-                            </div>
-                            <div id="image-preview" class="grid grid-cols-3 gap-2 mt-3"></div>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Price (USD) *</label>
-                                <input type="number" id="product-price" step="0.01" min="0" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500" required>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Compare Price</label>
-                                <input type="number" id="product-compare-price" step="0.01" min="0" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
-                            </div>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Stock Quantity *</label>
-                                <input type="number" id="product-stock" min="0" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500" required>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Low Stock Alert</label>
-                                <input type="number" id="product-low-stock" min="0" placeholder="10" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Sizes Available</label>
-                            <div class="flex flex-wrap gap-2">
-                                <label class="flex items-center">
-                                    <input type="checkbox" value="XS" class="mr-2 size-checkbox">
-                                    <span>XS</span>
-                                </label>
-                                <label class="flex items-center">
-                                    <input type="checkbox" value="S" class="mr-2 size-checkbox">
-                                    <span>S</span>
-                                </label>
-                                <label class="flex items-center">
-                                    <input type="checkbox" value="M" class="mr-2 size-checkbox">
-                                    <span>M</span>
-                                </label>
-                                <label class="flex items-center">
-                                    <input type="checkbox" value="L" class="mr-2 size-checkbox">
-                                    <span>L</span>
-                                </label>
-                                <label class="flex items-center">
-                                    <input type="checkbox" value="XL" class="mr-2 size-checkbox">
-                                    <span>XL</span>
-                                </label>
-                                <label class="flex items-center">
-                                    <input type="checkbox" value="XXL" class="mr-2 size-checkbox">
-                                    <span>XXL</span>
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Colors Available</label>
-                            <input type="text" id="product-colors" placeholder="Black, White, Navy, etc." class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                            <select id="product-status" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
-                                <option value="active">Active</option>
-                                <option value="draft">Draft</option>
-                                <option value="archived">Archived</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- SEO Settings -->
-                <div class="mt-6 pt-6 border-t">
-                    <h4 class="font-semibold mb-4">SEO Settings</h4>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Meta Title</label>
-                            <input type="text" id="meta-title" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Meta Description</label>
-                            <textarea id="meta-description" rows="3" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500"></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">URL Slug</label>
-                            <input type="text" id="url-slug" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="flex justify-end space-x-3 mt-6 pt-6 border-t">
-                    <button type="button" onclick="closeProductModal()" class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
-                        Cancel
-                    </button>
-                    <button type="button" onclick="saveAsDraft()" class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
-                        Save as Draft
-                    </button>
-                    <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
-                        Publish Product
-                    </button>
-                </div>
-            </form>
+
+    <!-- Main content -->
+    <main class="flex-1 p-6 lg:ml-72">
+      <!-- Header -->
+      <header class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-4">
+          <h2 id="page-title" class="text-xl font-semibold">Dashboard</h2>
+          <input id="global-search" type="text" placeholder="Search..." class="px-3 py-2 rounded-lg border border-slate-200 w-72" />
         </div>
-    </div>
-    
-    <!-- Quick Action Menu -->
-    <div class="fixed bottom-6 right-6 z-40">
-        <div id="quick-actions" class="hidden mb-3 space-y-2">
-            <button class="bg-white shadow-lg rounded-full px-4 py-2 text-sm hover:shadow-xl transition fade-in">
-                <i class="fas fa-chart-line mr-2 text-indigo-600"></i>View Analytics
-            </button>
-            <button class="bg-white shadow-lg rounded-full px-4 py-2 text-sm hover:shadow-xl transition fade-in">
-                <i class="fas fa-tags mr-2 text-green-600"></i>Bulk Edit
-            </button>
-            <button class="bg-white shadow-lg rounded-full px-4 py-2 text-sm hover:shadow-xl transition fade-in">
-                <i class="fas fa-percentage mr-2 text-red-600"></i>Create Discount
-            </button>
+        <div class="flex items-center gap-3">
+          <button id="quick-action" class="px-3 py-2 bg-white rounded-lg shadow"><i class="fas fa-bell text-slate-600"></i></button>
+          <div class="flex items-center gap-2">
+            <!--<div class="w-9 h-9 bg-slate-100 rounded-full flex items-center justify-center text-slate-600">A</div>-->
+            <div class="text-sm text-slate-600">Admin</div>
+          </div>
         </div>
-        <button onclick="toggleQuickActions()" class="bg-indigo-600 text-white rounded-full w-14 h-14 shadow-lg hover:shadow-xl transition hover:bg-indigo-700">
-            <i class="fas fa-plus text-xl"></i>
-        </button>
-    </div>
-    
-    <!-- Notification Toast -->
-    <div id="notification-toast" class="fixed top-20 right-6 z-50 hidden">
-        <div class="bg-white rounded-lg shadow-lg p-4 min-w-[300px] flex items-start space-x-3 fade-in">
-            <div id="notification-icon" class="flex-shrink-0"></div>
-            <div class="flex-1">
-                <p id="notification-title" class="font-semibold text-gray-900"></p>
-                <p id="notification-message" class="text-sm text-gray-600"></p>
+      </header>
+
+      <!-- Sections container -->
+      <section id="sections-container " class="space-y-6 ">
+        <!-- DASHBOARD SECTION -->
+        <div id="dashboard-section" class="fade-section card p-6 mb-6">
+          <!-- modern stat cards -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="p-4 rounded-lg bg-white">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm text-slate-500">Total Revenue</p>
+                  <h3 class="text-2xl font-semibold">$—</h3>
+                </div>
+                <div class="p-3 rounded-lg bg-blue-50">
+                  <i class="fas fa-dollar-sign text-blue-600"></i>
+                </div>
+              </div>
             </div>
-            <button onclick="hideNotification()" class="text-gray-400 hover:text-gray-600">
-                <i class="fas fa-times"></i>
-            </button>
+
+            <div class="p-4 rounded-lg bg-white">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm text-slate-500">Orders</p>
+                  <h3 class="text-2xl font-semibold">—</h3>
+                </div>
+                <div class="p-3 rounded-lg bg-blue-50">
+                  <i class="fas fa-shopping-bag text-blue-600"></i>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-lg bg-white">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm text-slate-500">Customers</p>
+                  <h3 class="text-2xl font-semibold">—</h3>
+                </div>
+                <div class="p-3 rounded-lg bg-blue-50">
+                  <i class="fas fa-users text-blue-600"></i>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-lg bg-white">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm text-slate-500">Conversion</p>
+                  <h3 class="text-2xl font-semibold">—</h3>
+                </div>
+                <div class="p-3 rounded-lg bg-blue-50">
+                  <i class="fas fa-chart-line text-blue-600"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent orders placeholder -->
+          <div class="mt-6 p-4 bg-white rounded-lg">
+            <div class="flex items-center justify-between">
+              <h4 class="font-semibold">Recent Orders</h4>
+              <button class="text-sm text-slate-600">View all</button>
+            </div>
+            <div class="mt-4 text-slate-500 text-sm">Connect your orders API to populate this list.</div>
+          </div>
         </div>
-    </div>
-    
-    <script>
-        // Supabase Configuration
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
-        
-        // Initialize Supabase (commented out until credentials are provided)
-        // const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
-        // Sample products data
-        let products = [
-            {
-                id: 1,
-                name: 'Silk Evening Dress',
-                sku: 'DRS-001',
-                category: 'Dresses',
-                price: 899,
-                stock: 45,
-                status: 'active',
-                image: null,
-                colors: ['Midnight Blue', 'Black', 'Wine Red'],
-                sizes: ['XS', 'S', 'M', 'L', 'XL']
-            },
-            {
-                id: 2,
-                name: 'Cashmere Coat',
-                sku: 'OUT-001',
-                category: 'Outerwear',
-                price: 1299,
-                stock: 23,
-                status: 'active',
-                image: null,
-                colors: ['Camel', 'Black', 'Grey'],
-                sizes: ['S', 'M', 'L', 'XL']
-            },
-            {
-                id: 3,
-                name: 'Designer Handbag',
-                sku: 'BAG-001',
-                category: 'Bags',
-                price: 2499,
-                stock: 8,
-                status: 'low-stock',
-                image: null,
-                colors: ['Black', 'Brown', 'Tan'],
-                sizes: ['One Size']
-            },
-            {
-                id: 4,
-                name: 'Leather Boots',
-                sku: 'SHO-001',
-                category: 'Shoes',
-                price: 599,
-                stock: 0,
-                status: 'out-of-stock',
-                image: null,
-                colors: ['Black', 'Brown'],
-                sizes: ['36', '37', '38', '39', '40', '41']
-            },
-            {
-                id: 5,
-                name: 'Diamond Necklace',
-                sku: 'JWL-001',
-                category: 'Jewelry',
-                price: 3999,
-                stock: 5,
-                status: 'active',
-                image: null,
-                colors: ['Silver', 'Gold', 'Rose Gold'],
-                sizes: ['One Size']
-            }
-        ];
-        
-        // Dashboard Statistics
-        const stats = {
-            revenue: 48650,
-            orders: 1258,
-            customers: 8420,
-            conversionRate: 2.8,
-            topProducts: ['Silk Evening Dress', 'Designer Handbag', 'Cashmere Coat'],
-            recentActivity: []
-        };
-        
-        // Initialize Charts
-        function initializeCharts() {
-            // Sales Chart
-            const salesCtx = document.getElementById('salesChart');
-            if (salesCtx) {
-                new Chart(salesCtx.getContext('2d'), {
-                    type: 'line',
-                    data: {
-                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                        datasets: [{
-                            label: 'Revenue',
-                            data: [30000, 35000, 32000, 40000, 45000, 48650],
-                            borderColor: 'rgb(99, 102, 241)',
-                            backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                            tension: 0.4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    callback: function(value) {
-                                        return '$' + value.toLocaleString();
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-            
-            // Category Chart
-            const categoryCtx = document.getElementById('categoryChart');
-            if (categoryCtx) {
-                new Chart(categoryCtx.getContext('2d'), {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Dresses', 'Bags', 'Shoes', 'Jewelry', 'Outerwear'],
-                        datasets: [{
-                            data: [35, 25, 20, 15, 5],
-                            backgroundColor: [
-                                'rgb(99, 102, 241)',
-                                'rgb(34, 197, 94)',
-                                'rgb(251, 191, 36)',
-                                'rgb(239, 68, 68)',
-                                'rgb(168, 85, 247)'
-                            ]
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'bottom'
-                            }
-                        }
-                    }
-                });
-            }
-        }
-        
-        // Product Management Functions
-        function displayProducts() {
-            const tbody = document.getElementById('products-table-body');
-            if (!tbody) return;
-            
-            tbody.innerHTML = products.map(product => `
-                <tr class="border-b hover:bg-gray-50">
-                    <td class="px-6 py-4">
-                        <input type="checkbox" class="rounded">
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex items-center">
-                            <div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center mr-3">
-                                <i class="fas fa-image text-gray-400"></i>
-                            </div>
-                            <div>
-                                <p class="font-semibold">${product.name}</p>
-                                <p class="text-xs text-gray-500">${product.colors.join(', ')}</p>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 text-gray-600">${product.sku}</td>
-                    <td class="px-6 py-4">${product.category}</td>
-                    <td class="px-6 py-4 font-semibold">${product.price}</td>
-                    <td class="px-6 py-4">
-                        <span class="${product.stock < 10 ? 'text-red-600' : 'text-gray-700'}">${product.stock}</span>
-                    </td>
-                    <td class="px-6 py-4">
-                        ${getStatusBadge(product.status, product.stock)}
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex space-x-2">
-                            <button onclick="editProduct(${product.id})" class="text-indigo-600 hover:text-indigo-700">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button onclick="duplicateProduct(${product.id})" class="text-gray-600 hover:text-gray-700">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                            <button onclick="deleteProduct(${product.id})" class="text-red-600 hover:text-red-700">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
+
+        <!-- PRODUCTS SECTION -->
+        <div id="products-section" class="fade-section hidden">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="text-lg font-semibold">Product Management</h3>
+              <p class="text-sm text-slate-500">Manage your catalog — create, edit, delete products.</p>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <button id="export-btn" class="px-3 py-2 rounded-lg bg-white card shadow-sm"><i class="fas fa-download mr-2"></i>Export</button>
+              <button id="import-btn" class="px-3 py-2 rounded-lg bg-white card shadow-sm"><i class="fas fa-upload mr-2"></i>Import</button>
+              <button id="add-product-btn" class="px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"><i class="fas fa-plus mr-2"></i> Add Product</button>
+            </div>
+          </div>
+
+          <!-- Filters -->
+          <div class="mb-4 bg-white card p-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+              <input id="filter-search" placeholder="Search products..." class="px-3 py-2 rounded-lg border" />
+              <input id="filter-category" placeholder="Category" class="px-3 py-2 rounded-lg border" />
+              <select id="filter-status" class="px-3 py-2 rounded-lg border">
+                <option value="">All status</option>
+                <option value="active">Active</option>
+                <option value="draft">Draft</option>
+                <option value="archived">Archived</option>
+              </select>
+              <button id="apply-filters" class="px-3 py-2 rounded-lg bg-blue-600 text-white">Apply</button>
+            </div>
+          </div>
+
+          <!-- Products table -->
+          <div class="bg-white card overflow-hidden">
+            <table class="w-full">
+              <thead class="bg-slate-50">
+                <tr class="text-left text-slate-600 text-sm">
+                  <th class="px-6 py-3"><input type="checkbox" id="select-all" /></th>
+                  <th class="px-6 py-3">Product</th>
+                  <th class="px-6 py-3">SKU</th>
+                  <th class="px-6 py-3">Category</th>
+                  <th class="px-6 py-3">Price</th>
+                  <th class="px-6 py-3">Stock</th>
+                  <th class="px-6 py-3">Status</th>
+                  <th class="px-6 py-3">Actions</th>
                 </tr>
-            `).join('');
+              </thead>
+              <tbody id="products-table-body" class="text-slate-700">
+                <!-- rows injected dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Add/Edit Modal (hidden by default) -->
+  <div id="product-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 p-4">
+    <div class="w-full max-w-4xl bg-white rounded-lg overflow-auto max-h-[90vh]">
+      <div class="sticky top-0 bg-white p-4 border-b flex items-center justify-between">
+        <h3 id="modal-title" class="font-semibold">Add Product</h3>
+        <div class="flex items-center gap-2">
+          <button id="close-modal" class="text-slate-600"><i class="fas fa-times"></i></button>
+        </div>
+      </div>
+
+      <form id="product-form" class="p-6 space-y-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <!-- left -->
+          <div class="space-y-3">
+            <div>
+              <label class="text-sm text-slate-600">Product Name *</label>
+              <input id="product-name" required class="w-full px-3 py-2 border rounded-lg" />
+            </div>
+
+            <div>
+              <label class="text-sm text-slate-600">Description *</label>
+              <textarea id="product-description" rows="4" required class="w-full px-3 py-2 border rounded-lg"></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-sm text-slate-600">Category *</label>
+                <input id="product-category" required class="w-full px-3 py-2 border rounded-lg" />
+              </div>
+              <div>
+                <label class="text-sm text-slate-600">Brand</label>
+                <input id="product-brand" class="w-full px-3 py-2 border rounded-lg" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-sm text-slate-600">SKU *</label>
+                <input id="product-sku" required class="w-full px-3 py-2 border rounded-lg" />
+              </div>
+              <div>
+                <label class="text-sm text-slate-600">Barcode</label>
+                <input id="product-barcode" class="w-full px-3 py-2 border rounded-lg" />
+              </div>
+            </div>
+
+            <div>
+              <label class="text-sm text-slate-600">Tags</label>
+              <input id="product-tags" placeholder="comma, separated" class="w-full px-3 py-2 border rounded-lg" />
+            </div>
+          </div>
+
+          <!-- right -->
+          <div class="space-y-3">
+            <div>
+              <label class="text-sm text-slate-600">Images *</label>
+              <div id="image-upload-zone" class="upload-zone p-4 rounded-lg text-center cursor-pointer">
+                <div class="py-4">
+                  <i class="fas fa-cloud-upload-alt text-3xl text-slate-400"></i>
+                </div>
+                <p class="text-sm text-slate-500">Click or drop images here (PNG/JPG/WebP). Max 5MB each.</p>
+                <input id="product-images" type="file" accept="image/*" multiple class="hidden" />
+              </div>
+
+              <div class="grid grid-cols-3 gap-2 mt-3" id="image-preview"></div>
+              <div class="grid grid-cols-3 gap-2 mt-3" id="existing-images"></div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-sm text-slate-600">Price (USD) *</label>
+                <input id="product-price" required type="number" step="0.01" class="w-full px-3 py-2 border rounded-lg" />
+              </div>
+              <div>
+                <label class="text-sm text-slate-600">Compare Price</label>
+                <input id="product-compare-price" type="number" step="0.01" class="w-full px-3 py-2 border rounded-lg" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-sm text-slate-600">Stock Quantity *</label>
+                <input id="product-stock" type="number" min="0" class="w-full px-3 py-2 border rounded-lg" />
+              </div>
+              <div>
+                <label class="text-sm text-slate-600">Low Stock Alert</label>
+                <input id="product-low-stock" type="number" min="0" class="w-full px-3 py-2 border rounded-lg" />
+              </div>
+            </div>
+
+            <div>
+              <label class="text-sm text-slate-600">Sizes Available</label>
+              <div id="sizes-container" class="flex flex-wrap gap-2 mt-2">
+                <!-- generated via JS -->
+              </div>
+            </div>
+
+            <div>
+              <label class="text-sm text-slate-600">Colors</label>
+              <input id="product-colors" placeholder="Black, White" class="w-full px-3 py-2 border rounded-lg" />
+            </div>
+
+            <div>
+              <label class="text-sm text-slate-600">Status</label>
+              <select id="product-status" class="w-full px-3 py-2 border rounded-lg">
+                <option value="active">Active</option>
+                <option value="draft">Draft</option>
+                <option value="archived">Archived</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- SEO -->
+        <div class="pt-4 border-t">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <input id="meta-title" placeholder="Meta title" class="px-3 py-2 border rounded-lg" />
+            <input id="meta-description" placeholder="Meta description" class="px-3 py-2 border rounded-lg" />
+            <input id="url-slug" placeholder="url-slug (optional)" class="px-3 py-2 border rounded-lg" />
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-4 border-t">
+          <button type="button" id="cancel-btn" class="px-4 py-2 rounded-lg border">Cancel</button>
+          <button type="button" id="save-draft" class="px-4 py-2 rounded-lg bg-slate-600 text-white">Save Draft</button>
+          <button type="submit" id="publish-btn" class="px-4 py-2 rounded-lg bg-blue-600 text-white">Publish Product</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- notification -->
+  <div id="notification-toast" class="fixed top-6 right-6 z-50 hidden">
+    <div class="bg-white p-4 rounded-lg shadow flex items-start gap-3 min-w-[260px]">
+      <div id="notification-icon"></div>
+      <div>
+        <div id="notification-title" class="font-semibold"></div>
+        <div id="notification-message" class="text-sm text-slate-600"></div>
+      </div>
+      <button id="notification-close" class="text-slate-400 ml-auto"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
+
+  <script>
+    /*
+      Modernized dashboard.html (single file)
+      - Dashboard & Products sections (toggle)
+      - Products CRUD via Fetch API (supports multipart FormData -> images[])
+      - Multiple image preview + edit/delete + existing images handling
+      - Fade transitions between sections
+      - Inline comments throughout for clarity
+      - API override: window.__API_BASE_URL__ (set before this script runs)
+   
+
+    // ---------- Configuration ----------
+    const DEFAULT_API_BASE = '/api/products';
+    const API_BASE_URL = window.__API_BASE_URL__ || DEFAULT_API_BASE;
+    // Note: If your backend expects POST + _method=PUT for file uploads, adjust save logic accordingly.
+    */
+    // ---------- App state ----------
+    let products = [];           // current loaded products
+    let isEditing = false;
+    let editingProductId = null;
+
+    // ---------- Simple notification helper ----------
+    function showNotification(type, title, message) {
+      const toast = document.getElementById('notification-toast');
+      const icon = document.getElementById('notification-icon');
+      document.getElementById('notification-title').textContent = title;
+      document.getElementById('notification-message').textContent = message;
+      const icons = {
+        success: '<i class="fas fa-check-circle text-green-500"></i>',
+        error: '<i class="fas fa-exclamation-circle text-red-500"></i>',
+        info: '<i class="fas fa-info-circle text-blue-500"></i>'
+      };
+      icon.innerHTML = icons[type] || icons.info;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 4200);
+    }
+    document.getElementById('notification-close').addEventListener('click', () => {
+      document.getElementById('notification-toast').classList.add('hidden');
+    });
+
+    // ---------- Navigation (Dashboard <-> Products) ----------
+    function setActiveSection(target) {
+      // apply fade transitions (simple)
+      const sections = { dashboard: document.getElementById('dashboard-section'), products: document.getElementById('products-section') };
+      // hide all then show
+      Object.keys(sections).forEach(key => {
+        const el = sections[key];
+        if (!el) return;
+        if (key === target) {
+          el.classList.remove('hidden');
+          el.style.opacity = 0;
+          el.style.transform = 'translateY(8px)';
+          requestAnimationFrame(() => {
+            el.style.transition = 'opacity 180ms ease, transform 180ms ease';
+            el.style.opacity = 1;
+            el.style.transform = 'translateY(0)';
+          });
+        } else {
+          el.style.transition = 'opacity 140ms ease, transform 140ms ease';
+          el.style.opacity = 0;
+          el.style.transform = 'translateY(8px)';
+          setTimeout(() => el.classList.add('hidden'), 160);
         }
-        
-        function getStatusBadge(status, stock) {
-            if (stock === 0) {
-                return '<span class="bg-red-100 text-red-700 text-xs px-2 py-1 rounded-full">Out of Stock</span>';
-            } else if (stock < 10) {
-                return '<span class="bg-yellow-100 text-yellow-700 text-xs px-2 py-1 rounded-full">Low Stock</span>';
-            } else if (status === 'active') {
-                return '<span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">Active</span>';
-            } else if (status === 'draft') {
-                return '<span class="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full">Draft</span>';
-            }
-            return '<span class="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full">' + status + '</span>';
+      });
+
+      // update title
+      document.getElementById('page-title').textContent = target === 'dashboard' ? 'Dashboard' : 'Products';
+      // highlight nav links (sidebar)
+      document.querySelectorAll('.nav-link').forEach(a => {
+        if (a.dataset.target === target) {
+          a.classList.add('bg-white');
+        } else a.classList.remove('bg-white');
+      });
+
+      // if products section, ensure table shows latest
+      if (target === 'products') fetchProducts().catch(()=>{});
+    }
+
+    // wire nav (sidebar + mobile)
+    document.querySelectorAll('.nav-link').forEach(a => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        setActiveSection(a.dataset.target);
+      });
+    });
+
+    // mobile menu toggle: simply toggle sidebar visibility
+    document.getElementById('mobile-menu-toggle').addEventListener('click', () => {
+      const sidebar = document.querySelector('.sidebar');
+      sidebar.classList.toggle('hidden');
+    });
+
+    // ---------- Fetch products (GET) ----------
+    async function fetchProducts() {
+      const tbody = document.getElementById('products-table-body');
+      tbody.innerHTML = '<tr><td colspan="8" class="px-6 py-6 text-center text-slate-500">Loading products...</td></tr>';
+      try {
+        const res = await fetch(API_BASE_URL, { method: 'GET' });
+        if (!res.ok) throw new Error('Network response was not ok ' + res.status);
+        products = await res.json();
+        document.getElementById('product-count').textContent = Array.isArray(products) ? products.length : 0;
+        renderProductsTable(products);
+      } catch (err) {
+        console.error(err);
+        tbody.innerHTML = '<tr><td colspan="8" class="px-6 py-6 text-center text-red-500">Failed to load products. Check API and CORS.</td></tr>';
+        showNotification('error','Load failed','Could not fetch products.');
+      }
+    }
+
+    // ---------- Render products table ----------
+    function renderProductsTable(items) {
+      const tbody = document.getElementById('products-table-body');
+      if (!Array.isArray(items) || items.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="px-6 py-6 text-center text-slate-500">No products available.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = items.map(p => {
+        const imgUrl = (p.images && p.images.length) ? escapeHtml(p.images[0]) : '';
+        const price = (p.price != null) ? `$${Number(p.price).toFixed(2)}` : '-';
+        const stock = (p.stock != null) ? p.stock : '-';
+        const statusBadge = getStatusBadge(p.status, p.stock);
+        return `
+          <tr class="border-b hover:bg-slate-50 align-top">
+            <td class="px-6 py-4"><input type="checkbox" data-id="${p.id}"></td>
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-3">
+                <div class="w-14 h-14 bg-slate-100 rounded overflow-hidden">
+                  ${ imgUrl ? `<img src="${imgUrl}" class="thumbnail" alt="">` : `<div class="w-full h-full flex items-center justify-center text-slate-400"><i class="fas fa-image"></i></div>` }
+                </div>
+                <div>
+                  <div class="font-medium">${escapeHtml(p.name || '')}</div>
+                  <div class="text-xs text-slate-500">${(p.colors || []).join(', ')}</div>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4 text-slate-600">${escapeHtml(p.sku || '')}</td>
+            <td class="px-6 py-4">${escapeHtml(p.category || '')}</td>
+            <td class="px-6 py-4 font-semibold">${price}</td>
+            <td class="px-6 py-4">${stock}</td>
+            <td class="px-6 py-4">${statusBadge}</td>
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-3">
+                <button onclick="onEditProduct(${p.id})" class="text-blue-600 hover:text-blue-700"><i class="fas fa-edit"></i></button>
+                <button onclick="onDuplicateProduct(${p.id})" class="text-slate-600 hover:text-slate-700"><i class="fas fa-copy"></i></button>
+                <button onclick="onDeleteProduct(${p.id})" class="text-red-600 hover:text-red-700"><i class="fas fa-trash"></i></button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // ---------- Helpers ----------
+    function getStatusBadge(status, stock) {
+      if (stock === 0) return '<span class="bg-red-100 text-red-700 text-xs px-2 py-1 rounded-full">Out of stock</span>';
+      if (stock != null && stock < 10) return '<span class="bg-yellow-100 text-yellow-700 text-xs px-2 py-1 rounded-full">Low stock</span>';
+      if (status === 'active') return '<span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">Active</span>';
+      if (status === 'draft') return '<span class="bg-slate-100 text-slate-700 text-xs px-2 py-1 rounded-full">Draft</span>';
+      return `<span class="bg-slate-100 text-slate-700 text-xs px-2 py-1 rounded-full">${escapeHtml(status || '')}</span>`;
+    }
+    function escapeHtml(str) {
+      if (typeof str !== 'string') return str;
+      return str.replace(/[&<>\"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c]));
+    }
+
+    // ---------- Save (POST/PUT) with FormData to support multiple images ----------
+    async function saveProductToBackend(values, files = []) {
+      try {
+        const isUpdate = isEditing && editingProductId;
+        const url = isUpdate ? `${API_BASE_URL}/${editingProductId}` : API_BASE_URL;
+        const method = isUpdate ? 'PUT' : 'POST';
+
+        // Build FormData
+        const fd = new FormData();
+        // Append scalar fields
+        for (const k in values) {
+          if (values[k] !== undefined && values[k] !== null) fd.append(k, values[k]);
         }
-        
-        function openAddProductModal() {
-            document.getElementById('product-modal').classList.remove('hidden');
-            document.getElementById('product-form').reset();
-        }
-        
-        function closeProductModal() {
-            document.getElementById('product-modal').classList.add('hidden');
-        }
-        
-        function editProduct(id) {
-            const product = products.find(p => p.id === id);
-            if (!product) return;
-            
-            document.getElementById('product-name').value = product.name;
-            document.getElementById('product-sku').value = product.sku;
-            document.getElementById('product-category').value = product.category;
-            document.getElementById('product-price').value = product.price;
-            document.getElementById('product-stock').value = product.stock;
-            document.getElementById('product-status').value = product.status;
-            document.getElementById('product-colors').value = product.colors.join(', ');
-            
-            // Set sizes
-            document.querySelectorAll('.size-checkbox').forEach(checkbox => {
-                checkbox.checked = product.sizes.includes(checkbox.value);
-            });
-            
-            document.getElementById('product-modal').classList.remove('hidden');
-        }
-        
-        function duplicateProduct(id) {
-            const product = products.find(p => p.id === id);
-            if (!product) return;
-            
-            const newProduct = {
-                ...product,
-                id: products.length + 1,
-                name: product.name + ' (Copy)',
-                sku: product.sku + '-COPY'
-            };
-            
-            products.push(newProduct);
-            displayProducts();
-            showNotification('success', 'Product Duplicated', 'Product has been duplicated successfully');
-        }
-        
-        function deleteProduct(id) {
-            if (confirm('Are you sure you want to delete this product?')) {
-                products = products.filter(p => p.id !== id);
-                displayProducts();
-                showNotification('success', 'Product Deleted', 'Product has been removed from catalog');
-            }
-        }
-        
-        function saveAsDraft() {
-            const formData = collectFormData();
-            formData.status = 'draft';
-            saveProduct(formData);
-        }
-        
-        function collectFormData() {
-            const sizes = [];
-            document.querySelectorAll('.size-checkbox:checked').forEach(checkbox => {
-                sizes.push(checkbox.value);
-            });
-            
-            return {
-                name: document.getElementById('product-name').value,
-                sku: document.getElementById('product-sku').value,
-                category: document.getElementById('product-category').value,
-                price: parseFloat(document.getElementById('product-price').value),
-                stock: parseInt(document.getElementById('product-stock').value),
-                status: document.getElementById('product-status').value,
-                colors: document.getElementById('product-colors').value.split(',').map(c => c.trim()),
-                sizes: sizes,
-                description: document.getElementById('product-description').value,
-                brand: document.getElementById('product-brand').value,
-                tags: document.getElementById('product-tags').value.split(',').map(t => t.trim()),
-                metaTitle: document.getElementById('meta-title').value,
-                metaDescription: document.getElementById('meta-description').value,
-                urlSlug: document.getElementById('url-slug').value
-            };
-        }
-        
-        function saveProduct(productData) {
-            // In production, this would save to Supabase
-            productData.id = products.length + 1;
-            products.push(productData);
-            
-            displayProducts();
-            closeProductModal();
-            showNotification('success', 'Product Saved', `${productData.name} has been added to your catalog`);
-            
-            // Simulate syncing with user site
-            syncWithUserSite(productData);
-        }
-        
-        function syncWithUserSite(productData) {
-            // This would typically make an API call to update the user-facing site
-            console.log('Syncing product with user site:', productData);
-            
-            // Store in localStorage for demo purposes (in production, use Supabase)
-            const userProducts = JSON.parse(localStorage.getItem('userProducts') || '[]');
-            userProducts.push(productData);
-            localStorage.setItem('userProducts', JSON.stringify(userProducts));
-        }
-        
-        // Image Upload Handler
-        function initializeImageUpload() {
-            const uploadZone = document.getElementById('image-upload-zone');
-            const fileInput = document.getElementById('product-images');
-            
-            if (!uploadZone || !fileInput) return;
-            
-            uploadZone.addEventListener('click', () => fileInput.click());
-            
-            uploadZone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadZone.classList.add('dragover');
-            });
-            
-            uploadZone.addEventListener('dragleave', () => {
-                uploadZone.classList.remove('dragover');
-            });
-            
-            uploadZone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadZone.classList.remove('dragover');
-                handleFiles(e.dataTransfer.files);
-            });
-            
-            fileInput.addEventListener('change', (e) => {
-                handleFiles(e.target.files);
-            });
-        }
-        
-        function handleFiles(files) {
-            const preview = document.getElementById('image-preview');
-            preview.innerHTML = '';
-            
-            Array.from(files).forEach(file => {
-                if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const div = document.createElement('div');
-                        div.className = 'relative group';
-                        div.innerHTML = `
-                            <img src="${e.target.result}" class="w-full h-24 object-cover rounded">
-                            <button class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 opacity-0 group-hover:opacity-100 transition">
-                                <i class="fas fa-times text-xs"></i>
-                            </button>
-                        `;
-                        preview.appendChild(div);
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-        }
-        
-        // Navigation
-        function initializeNavigation() {
-            const links = document.querySelectorAll('.sidebar-link');
-            const sections = {
-                'dashboard': document.getElementById('dashboard-section'),
-                'products': document.getElementById('products-section')
-            };
-            
-            links.forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    
-                    // Update active state
-                    links.forEach(l => l.classList.remove('active'));
-                    link.classList.add('active');
-                    
-                    // Show/hide sections
-                    const href = link.getAttribute('href').substring(1);
-                    Object.keys(sections).forEach(key => {
-                        if (sections[key]) {
-                            sections[key].classList.toggle('hidden', key !== href);
-                        }
-                    });
-                });
-            });
-        }
-        
-        // Quick Actions
-        function toggleQuickActions() {
-            const quickActions = document.getElementById('quick-actions');
-            quickActions.classList.toggle('hidden');
-        }
-        
-        // Notifications
-        function showNotification(type, title, message) {
-            const toast = document.getElementById('notification-toast');
-            const icon = document.getElementById('notification-icon');
-            const titleEl = document.getElementById('notification-title');
-            const messageEl = document.getElementById('notification-message');
-            
-            const icons = {
-                success: '<i class="fas fa-check-circle text-green-500 text-xl"></i>',
-                error: '<i class="fas fa-exclamation-circle text-red-500 text-xl"></i>',
-                warning: '<i class="fas fa-exclamation-triangle text-yellow-500 text-xl"></i>',
-                info: '<i class="fas fa-info-circle text-blue-500 text-xl"></i>'
-            };
-            
-            icon.innerHTML = icons[type] || icons.info;
-            titleEl.textContent = title;
-            messageEl.textContent = message;
-            
-            toast.classList.remove('hidden');
-            
-            setTimeout(() => {
-                toast.classList.add('hidden');
-            }, 5000);
-        }
-        
-        function hideNotification() {
-            document.getElementById('notification-toast').classList.add('hidden');
-        }
-        
-        // Form Submission
-        document.getElementById('product-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const formData = collectFormData();
-            saveProduct(formData);
+        // Append files as images[]
+        files.forEach(file => fd.append('images[]', file));
+
+        // If your backend DOES NOT accept PUT with multipart, you may need to:
+        // - use POST and include a _method=PUT field, or
+        // - configure server to accept PUT multipart.
+        const res = await fetch(url, { method, body: fd });
+        if (!res.ok) throw new Error('Save failed: ' + res.status);
+        await res.json();
+        showNotification('success', 'Saved', `Product ${isUpdate ? 'updated' : 'created'} successfully`);
+        closeProductModal();
+        await fetchProducts();
+      } catch (err) {
+        console.error(err);
+        showNotification('error','Save failed','Could not save product. Check backend and CORS.');
+      }
+    }
+
+    // ---------- Delete (DELETE) ----------
+    async function deleteProductFromBackend(id) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Delete failed');
+        showNotification('success','Deleted','Product removed');
+        await fetchProducts();
+      } catch (err) {
+        console.error(err);
+        showNotification('error','Delete failed','Could not delete product.');
+      }
+    }
+
+    // ---------- UI actions (edit / duplicate / delete) ----------
+    function onEditProduct(id) {
+      const p = products.find(x => x.id === id);
+      if (!p) return showNotification('error','Not found','Product not in memory');
+      isEditing = true; editingProductId = id;
+      document.getElementById('modal-title').textContent = 'Edit product';
+
+      // Fill form fields
+      document.getElementById('product-name').value = p.name || '';
+      document.getElementById('product-description').value = p.description || '';
+      document.getElementById('product-category').value = p.category || '';
+      document.getElementById('product-brand').value = p.brand || '';
+      document.getElementById('product-sku').value = p.sku || '';
+      document.getElementById('product-barcode').value = p.barcode || '';
+      document.getElementById('product-tags').value = (p.tags || []).join(', ');
+      document.getElementById('product-price').value = p.price != null ? p.price : '';
+      document.getElementById('product-compare-price').value = p.comparePrice != null ? p.comparePrice : '';
+      document.getElementById('product-stock').value = p.stock != null ? p.stock : '';
+      document.getElementById('product-low-stock').value = p.lowStock || '';
+      document.getElementById('product-colors').value = (p.colors || []).join(', ');
+      document.getElementById('product-status').value = p.status || 'active';
+      document.getElementById('meta-title').value = p.metaTitle || '';
+      document.getElementById('meta-description').value = p.metaDescription || '';
+      document.getElementById('url-slug').value = p.urlSlug || '';
+
+      // Show existing images (backend should return array of URLs in p.images)
+      const existingEl = document.getElementById('existing-images');
+      existingEl.innerHTML = '';
+      (p.images || []).forEach((url, idx) => {
+        const div = document.createElement('div');
+        div.className = 'relative group';
+        div.style.height = '96px';
+        div.innerHTML = `
+          <img src="${escapeHtml(url)}" class="thumbnail" alt="">
+          <button data-idx="${idx}" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 opacity-0 group-hover:opacity-100 remove-existing-image"><i class="fas fa-times text-xs"></i></button>
+        `;
+        existingEl.appendChild(div);
+      });
+
+      // store existing images in dataset for backend to parse if needed
+      document.getElementById('product-form').dataset.existingImages = JSON.stringify(p.images || []);
+
+      openProductModal();
+    }
+
+    function onDuplicateProduct(id) {
+      const p = products.find(x => x.id === id);
+      if (!p) return;
+      isEditing = false; editingProductId = null;
+      document.getElementById('modal-title').textContent = 'Duplicate product';
+      // fill form with copy data
+      document.getElementById('product-name').value = (p.name || '') + ' (Copy)';
+      document.getElementById('product-description').value = p.description || '';
+      document.getElementById('product-category').value = p.category || '';
+      document.getElementById('product-brand').value = p.brand || '';
+      document.getElementById('product-sku').value = (p.sku || '') + '-COPY';
+      document.getElementById('product-barcode').value = p.barcode || '';
+      document.getElementById('product-tags').value = (p.tags || []).join(', ');
+      document.getElementById('product-price').value = p.price != null ? p.price : '';
+      document.getElementById('product-compare-price').value = p.comparePrice != null ? p.comparePrice : '';
+      document.getElementById('product-stock').value = p.stock != null ? p.stock : '';
+      document.getElementById('product-low-stock').value = p.lowStock || '';
+      document.getElementById('product-colors').value = (p.colors || []).join(', ');
+      document.getElementById('product-status').value = p.status || 'active';
+
+      // clear previews and existing (so user must add images if desired)
+      document.getElementById('image-preview').innerHTML = '';
+      document.getElementById('existing-images').innerHTML = '';
+      delete document.getElementById('product-form').dataset.existingImages;
+
+      openProductModal();
+    }
+
+    async function onDeleteProduct(id) {
+      if (!confirm('Delete this product?')) return;
+      await deleteProductFromBackend(id);
+    }
+
+    // ---------- Modal controls ----------
+    function openProductModal() {
+      document.getElementById('product-modal').classList.remove('hidden');
+      // small focus
+      setTimeout(()=>document.getElementById('product-name').focus(), 120);
+    }
+    function closeProductModal() {
+      document.getElementById('product-modal').classList.add('hidden');
+      // reset state
+      isEditing = false; editingProductId = null;
+      document.getElementById('product-form').reset();
+      document.getElementById('image-preview').innerHTML = '';
+      document.getElementById('existing-images').innerHTML = '';
+      delete document.getElementById('product-form').dataset.existingImages;
+    }
+    document.getElementById('close-modal').addEventListener('click', closeProductModal);
+    document.getElementById('cancel-btn').addEventListener('click', closeProductModal);
+
+    // ---------- Image upload & preview handling ----------
+    function initImageUpload() {
+      const zone = document.getElementById('image-upload-zone');
+      const fileInput = document.getElementById('product-images');
+      const preview = document.getElementById('image-preview');
+
+      zone.addEventListener('click', () => fileInput.click());
+
+      zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('dragover'); });
+      zone.addEventListener('dragleave', () => { zone.classList.remove('dragover'); });
+      zone.addEventListener('drop', (e) => {
+        e.preventDefault(); zone.classList.remove('dragover'); handleFiles(e.dataTransfer.files);
+      });
+
+      fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+      function handleFiles(filesList) {
+        const files = Array.from(filesList);
+        // Basic file validations (size/type) could be added here
+        files.forEach(file => {
+          if (!file.type.startsWith('image/')) return;
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            const container = document.createElement('div');
+            container.className = 'relative group';
+            container.style.height = '96px';
+            container.innerHTML = `
+              <img src="${ev.target.result}" class="thumbnail" alt="">
+              <button class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 opacity-0 group-hover:opacity-100 remove-preview"><i class="fas fa-times text-xs"></i></button>
+            `;
+            // remove preview on click
+            container.querySelector('.remove-preview').addEventListener('click', () => container.remove());
+            preview.appendChild(container);
+          };
+          reader.readAsDataURL(file);
         });
-        
-        // Real-time Updates Simulation
-        function simulateRealTimeUpdates() {
-            setInterval(() => {
-                // Simulate new order
-                const orderCount = document.querySelector('.notification-badge');
-                if (orderCount) {
-                    const current = parseInt(orderCount.textContent);
-                    if (Math.random() > 0.7) {
-                        orderCount.textContent = current + 1;
-                        showNotification('info', 'New Order', 'You have a new order to process');
-                    }
-                }
-            }, 30000); // Every 30 seconds
+      }
+    }
+
+    // Handle remove of existing image thumbnails (delegated)
+    document.addEventListener('click', (e) => {
+      const rem = e.target.closest('.remove-existing-image');
+      if (rem) {
+        rem.closest('.group').remove();
+        const form = document.getElementById('product-form');
+        const arr = JSON.parse(form.dataset.existingImages || '[]');
+        const idx = Number(rem.dataset.idx);
+        arr.splice(idx, 1);
+        form.dataset.existingImages = JSON.stringify(arr);
+      }
+    });
+
+    // ---------- Collect form values ----------
+    function collectFormValues() {
+      const sizes = Array.from(document.querySelectorAll('.size-checkbox:checked')).map(c => c.value);
+      return {
+        name: document.getElementById('product-name').value,
+        description: document.getElementById('product-description').value,
+        category: document.getElementById('product-category').value,
+        brand: document.getElementById('product-brand').value,
+        sku: document.getElementById('product-sku').value,
+        barcode: document.getElementById('product-barcode').value,
+        tags: document.getElementById('product-tags').value,
+        price: document.getElementById('product-price').value,
+        comparePrice: document.getElementById('product-compare-price').value,
+        stock: document.getElementById('product-stock').value,
+        lowStock: document.getElementById('product-low-stock').value,
+        sizes: sizes.join(','),
+        colors: document.getElementById('product-colors').value,
+        status: document.getElementById('product-status').value,
+        metaTitle: document.getElementById('meta-title').value,
+        metaDescription: document.getElementById('meta-description').value,
+        urlSlug: document.getElementById('url-slug').value,
+        existingImages: document.getElementById('product-form').dataset.existingImages || '[]'
+      };
+    }
+
+    // ---------- Form submit handlers ----------
+    document.getElementById('product-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const values = collectFormValues();
+      // Gather files from file input (only those still in the input element)
+      const fileInput = document.getElementById('product-images');
+      const files = Array.from(fileInput.files || []);
+      await saveProductToBackend(values, files);
+    });
+
+    // Save draft button: sends with status=draft
+    document.getElementById('save-draft').addEventListener('click', async () => {
+      const values = collectFormValues();
+      values.status = 'draft';
+      const files = Array.from(document.getElementById('product-images').files || []);
+      await saveProductToBackend(values, files);
+    });
+
+    // ---------- Import / Export helpers (client-side) ----------
+    document.getElementById('export-btn').addEventListener('click', () => {
+      const dataStr = JSON.stringify(products || [], null, 2);
+      const dl = document.createElement('a');
+      dl.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+      dl.download = 'products_export.json';
+      dl.click();
+    });
+
+    document.getElementById('import-btn').addEventListener('click', () => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json,application/json';
+      input.onchange = async (ev) => {
+        const f = ev.target.files[0];
+        if (!f) return;
+        const txt = await f.text();
+        try {
+          const imported = JSON.parse(txt);
+          // Local merge; optionally POST to backend to persist
+          products = [...products, ...imported];
+          renderProductsTable(products);
+          showNotification('success','Imported','Imported locally. To persist, POST these to your API.');
+        } catch (err) {
+          showNotification('error','Import failed','Invalid JSON file.');
         }
-        
-        // Export/Import Functions
-        function exportProducts() {
-            const dataStr = JSON.stringify(products, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-            
-            const exportFileDefaultName = 'products_export.json';
-            
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
-        }
-        
-        function importProducts(file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const imported = JSON.parse(e.target.result);
-                    products = [...products, ...imported];
-                    displayProducts();
-                    showNotification('success', 'Import Successful', `${imported.length} products imported`);
-                } catch (error) {
-                    showNotification('error', 'Import Failed', 'Invalid file format');
-                }
-            };
-            reader.readAsText(file);
-        }
-        
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeCharts();
-            displayProducts();
-            initializeNavigation();
-            initializeImageUpload();
-            simulateRealTimeUpdates();
-            
-            // Auto-save draft
-            setInterval(() => {
-                const form = document.getElementById('product-form');
-                if (form && document.getElementById('product-name').value) {
-                    localStorage.setItem('draft_product', JSON.stringify(collectFormData()));
-                }
-            }, 30000); // Every 30 seconds
-            
-            // Logout
-            document.getElementById('logout-btn').addEventListener('click', () => {
-                if (confirm('Are you sure you want to logout?')) {
-                    window.location.href = '/login.html';
-                }
-            });
-        });
-    </script>
+      };
+      input.click();
+    });
+
+    // ---------- small utilities ----------
+    function initSizesCheckboxes() {
+      const sizes = ['XS','S','M','L','XL','XXL'];
+      const container = document.getElementById('sizes-container');
+      container.innerHTML = sizes.map(s => `<label class="flex items-center gap-2 px-2 py-1 border rounded"><input type="checkbox" class="size-checkbox" value="${s}"><span class="text-sm">${s}</span></label>`).join('');
+    }
+
+    // ---------- small search/filter ----------
+    document.getElementById('apply-filters').addEventListener('click', () => {
+      const q = document.getElementById('filter-search').value.toLowerCase();
+      const cat = document.getElementById('filter-category').value.toLowerCase();
+      const status = document.getElementById('filter-status').value;
+      let filtered = products.slice();
+      if (q) filtered = filtered.filter(p => (p.name||'').toLowerCase().includes(q) || (p.sku||'').toLowerCase().includes(q));
+      if (cat) filtered = filtered.filter(p => (p.category||'').toLowerCase().includes(cat));
+      if (status) filtered = filtered.filter(p => p.status === status);
+      renderProductsTable(filtered);
+    });
+
+    // global search triggers product filter
+    document.getElementById('global-search').addEventListener('input', (e) => {
+      document.getElementById('filter-search').value = e.target.value;
+      document.getElementById('apply-filters').click();
+    });
+
+    // ---------- expose handlers to window (buttons in table call these) ----------
+    window.onEditProduct = onEditProduct;
+    window.onDuplicateProduct = onDuplicateProduct;
+    window.onDeleteProduct = onDeleteProduct;
+
+    // ---------- Initialization ----------
+    (function init() {
+      // wire top buttons
+      document.getElementById('add-product-btn').addEventListener('click', () => {
+        isEditing = false; editingProductId = null;
+        document.getElementById('modal-title').textContent = 'Add product';
+        openProductModal();
+      });
+
+      document.getElementById('logout-btn').addEventListener('click', () => {
+        if (confirm('Logout?')) window.location.href = '/login.html';
+      });
+
+      initSizesCheckboxes();
+      initImageUpload();
+
+      // default view: dashboard
+      setActiveSection('dashboard');
+
+      // initial fetch of products (so product count is accurate)
+      // Note: we call fetchProducts here but it will also run when user switches to products.
+      fetchProducts().catch(()=>{});
+    })();
+
+  </script>
 </body>
 </html>

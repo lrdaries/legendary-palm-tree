@@ -26,6 +26,8 @@
     
     <link rel="canonical" href="https://divaskloset.com">
     <meta name="theme-color" content="#E47026">
+
+    <script src="https://js.paystack.co/v1/inline.js"></script>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -203,9 +205,9 @@
                     <button onclick="window.location.href = 'collections.html'" class="bg-black text-white px-8 py-4 rounded hover:bg-gray-500 transition transform hover:scale-105">
                         Shop Collection
                     </button>
-                    <button class="border-2 border-black text-gray-700 px-8 py-4 rounded hover:bg-black hover:text-white transition">
+                    <!--<button class="border-2 border-black text-gray-700 px-8 py-4 rounded hover:bg-black hover:text-white transition">
                         Watch Runway
-                    </button>
+                    </button>-->
                 </div>
             </div>
         </div>
@@ -215,41 +217,66 @@
 
     <!-- Featured Categories -->
     <section class="py-16 bg-white">
-        <div class="container mx-auto px-4">
-            <h3 class="playfair text-4xl font-bold text-center mb-12">Shop by Category</h3>
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                <button onclick="App.filterByCategory('Clothing')" class="relative group cursor-pointer overflow-hidden rounded-lg">
-                    <div class="aspect-square bg-[url('https://images.pexels.com/photos/102129/pexels-photo-102129.jpeg')] bg-cover bg-center flex items-center justify-center hover:from-pink-200 hover:to-purple-200 transition">
-                        <div class="text-align text-white">
-                            <h4 class="text-4xl font-semibold">Clothing</h4>
-                        </div>
-                    </div>
-                </button>
+  <div class="container mx-auto px-4">
+    <!-- Section Title -->
+    <h3 class="playfair text-4xl font-bold text-center mb-12">Shop by Category</h3>
 
-                <button onclick="App.filterByCategory('Shoes')" class="relative group cursor-pointer overflow-hidden rounded-lg">
-                    <div class="aspect-square bg-[url('https://images.pexels.com/photos/345415/pexels-photo-345415.jpeg')] bg-cover bg-center flex items-center justify-center hover:from-blue-200 hover:to-cyan-200 transition">
-                        <div class="text-left text-white">
-                            <h4 class="text-xl font-semibold">Shoes</h4>
-                        </div>
-                    </div>
-                </button>
-                <button onclick="App.filterByCategory('Bags')" class="relative group cursor-pointer overflow-hidden rounded-lg">
-                    <div class="aspect-square bg-[url('https://images.pexels.com/photos/1038000/pexels-photo-1038000.jpeg')] bg-cover bg-center flex items-center justify-center hover:from-yellow-200 hover:to-orange-200 transition">
-                        <div class="text-center text-gray-700">
-                            <h4 class="text-xl font-semibold">Bags</h4>
-                        </div>
-                    </div>
-                </button>
-                <button onclick="App.filterByCategory('Jewelry')" class="relative group cursor-pointer overflow-hidden rounded-lg">
-                    <div class="aspect-square bg-[url('https://images.pexels.com/photos/998521/pexels-photo-998521.jpeg')] bg-cover bg-center flex items-center justify-center hover:from-green-200 hover:to-emerald-200 transition">
-                        <div class="text-center text-black">
-                            <h4 class="text-xl font-semibold">Jewelry</h4>
-                        </div>
-                    </div>
-                </button>
-            </div>
+    <!-- Category Grid -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Category Card -->
+      <button onclick="App.filterByCategory('Clothing')" 
+        class="relative group cursor-pointer overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-all duration-500">
+        <div class="aspect-square bg-[url('https://images.pexels.com/photos/102129/pexels-photo-102129.jpeg')] bg-cover bg-center relative">
+          <!-- Hover Overlay -->
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <!-- Text -->
+          <div class="absolute inset-0 flex items-center justify-center">
+            <h4 class="text-2xl font-semibold text-white tracking-wide group-hover:scale-105 transform transition-transform duration-500">
+              Clothing
+            </h4>
+          </div>
         </div>
-    </section>
+      </button>
+
+      <button onclick="App.filterByCategory('Shoes')" 
+        class="relative group cursor-pointer overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-all duration-500">
+        <div class="aspect-square bg-[url('https://images.pexels.com/photos/345415/pexels-photo-345415.jpeg')] bg-cover bg-center relative">
+          <div class="absolute inset-0 bg-gradient-to-t from-rose-600/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <h4 class="text-2xl font-semibold text-white tracking-wide group-hover:scale-105 transform transition-transform duration-500">
+              Shoes
+            </h4>
+          </div>
+        </div>
+      </button>
+
+      <button onclick="App.filterByCategory('Bags')" 
+        class="relative group cursor-pointer overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-all duration-500">
+        <div class="aspect-square bg-[url('https://images.pexels.com/photos/1038000/pexels-photo-1038000.jpeg')] bg-cover bg-center relative">
+          <div class="absolute inset-0 bg-gradient-to-t from-amber-600/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <h4 class="text-2xl font-semibold text-white tracking-wide group-hover:scale-105 transform transition-transform duration-500">
+              Bags
+            </h4>
+          </div>
+        </div>
+      </button>
+
+      <button onclick="App.filterByCategory('Jewelry')" 
+        class="relative group cursor-pointer overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-all duration-500">
+        <div class="aspect-square bg-[url('https://images.pexels.com/photos/998521/pexels-photo-998521.jpeg')] bg-cover bg-center relative">
+          <div class="absolute inset-0 bg-gradient-to-t from-emerald-600/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <h4 class="text-2xl font-semibold text-white tracking-wide group-hover:scale-105 transform transition-transform duration-500">
+              Jewelry
+            </h4>
+          </div>
+        </div>
+      </button>
+    </div>
+  </div>
+</section>
+
 
     <!-- Products Section -->
     <section id="products" class="py-16 bg-gray-50">
@@ -329,7 +356,7 @@
                         <i class="fab fa-cc-amex text-2xl"></i>
                         <i class="fab fa-cc-paypal text-2xl"></i>
                     </div>
-                    <p class="text-gray-400 text-sm">Secure payments powered by Stripe</p>
+                    <p class="text-gray-400 text-sm">Secure payments powered by Paystack</p>
                 </div>
             </div>
             <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
@@ -492,7 +519,7 @@
                             </button>
                             <div class="flex items-center justify-center mt-4 text-sm text-gray-500">
                                 <i class="fas fa-lock mr-2"></i>
-                                Secure Checkout Powered by Stripe
+                                Secure Checkout Powered by Paystack
                             </div>
                         </div>
                     </div>
