@@ -26,8 +26,6 @@
     
     <link rel="canonical" href="https://divaskloset.com">
     <meta name="theme-color" content="#E47026">
-
-    <script src="https://js.paystack.co/v1/inline.js"></script>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -147,7 +145,7 @@
                 <!-- Navigation -->
                 <div class="hidden lg:flex items-center space-x-8">
                     <button onclick="App.scrollToProducts()" class="text-gray-700 hover:text-black transition">New Arrivals</button>
-                    <a href="/cllient/collections.html" class="text-gray-700 hover:text-black transition">Collections</a>
+                    <a href="collections.html" class="text-gray-700 hover:text-black transition">Collections</a>
                     <!--<a href="#sale" class="text-gray-700 hover:text-black transition">Sale</a>-->
                 </div>
                 
@@ -176,11 +174,11 @@
                         <i class="fas fa-user text-xl"></i>
                     </button>
                     
-                    <!-- Cart -->
+                    <!-- Cart 
                     <button id="cart-btn" onclick="App.toggleCart()" class="relative text-gray-700 hover:text-black transition" aria-label="Shopping Cart">
                         <i class="fas fa-shopping-bag text-xl"></i>
                         <span id="cart-count" class="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
-                    </button>
+                    </button> -->
                     
                     <!-- Mobile Menu -->
                     <button id="mobile-menu-btn" onclick="App.toggleMobileMenu()" class="lg:hidden" aria-label="Menu">
@@ -203,7 +201,7 @@
                 </p>
                 <div class="flex space-x-4 fade-in">
                     <button onclick="window.location.href = 'collections.html'" class="bg-black text-white px-8 py-4 rounded hover:bg-gray-500 transition transform hover:scale-105">
-                        Shop Collection
+                        Browse Products
                     </button>
                     <!--<button class="border-2 border-black text-gray-700 px-8 py-4 rounded hover:bg-black hover:text-white transition">
                         Watch Runway
@@ -219,7 +217,7 @@
     <section class="py-16 bg-white">
   <div class="container mx-auto px-4">
     <!-- Section Title -->
-    <h3 class="playfair text-4xl font-bold text-center mb-12">Shop by Category</h3>
+    <h3 class="playfair text-4xl font-bold text-center mb-12">Browse by Category</h3>
 
     <!-- Category Grid -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
@@ -334,9 +332,9 @@
                     <h5 class="font-semibold mb-4">Customer Service</h5>
                     <ul class="space-y-2 text-gray-400">
                         <li><a href="#" class="hover:text-white">Contact Us</a></li>
-                        <li><a href="/cllient/pages/shipping.html" class="hover:text-white">Shipping Info</a></li>
+                        <li><a href="/client/pages/shipping.html" class="hover:text-white">Shipping Info</a></li>
                         <li><a href="#" class="hover:text-white">Returns & Exchanges</a></li>
-                        <li><a href="/cllient/pages/guide.html" class="hover:text-white">Size Guide</a></li>
+                        <li><a href="/client/pages/guide.html" class="hover:text-white">Size Guide</a></li>
                     </ul>
                 </div>
                 <div>
@@ -345,10 +343,10 @@
                         <li><a href="#" class="hover:text-white">Our Story</a></li>
                         <li><a href="#" class="hover:text-white">Sustainability</a></li>
                         <li><a href="#" class="hover:text-white">Press</a></li>
-                        <li><a href="/cllient/pages/careers.html" class="hover:text-white">Careers</a></li>
+                        <li><a href="/client/pages/careers.html" class="hover:text-white">Careers</a></li>
                     </ul>
                 </div>
-                <div>
+                <!--<div>
                     <h5 class="font-semibold mb-4">Payment & Security</h5>
                     <div class="flex space-x-2 mb-4">
                         <i class="fab fa-cc-visa text-2xl"></i>
@@ -357,15 +355,14 @@
                         <i class="fab fa-cc-paypal text-2xl"></i>
                     </div>
                     <p class="text-gray-400 text-sm">Secure payments powered by Paystack</p>
-                </div>
+                </div>-->
             </div>
             <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-                <p>&copy; 2025 Diva's Kloset. All rights reserved. | <a href="#" class="hover:text-white">Privacy Policy</a> | <a href="#" class="hover:text-white">Terms of Service</a></p>
-            </div>
+                <p>&copy; 2025 Diva's Kloset. All rights reserved.
         </div>
     </footer>
 
-    <!-- Cart Sidebar -->
+    <!-- Cart Sidebar 
     <div id="cart-sidebar" class="fixed right-0 top-0 h-full w-full md:w-96 bg-white shadow-2xl transform translate-x-full transition-transform z-50">
         <div class="p-6 border-b">
             <div class="flex justify-between items-center">
@@ -390,7 +387,7 @@
                 Continue Shopping
             </button>
         </div>
-    </div>
+    </div> -->
 
     <!-- Search Modal -->
     <div id="search-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden modal-overlay">
@@ -439,7 +436,7 @@
         </div>
     </div>
 
-    <!-- Checkout Modal -->
+    <!-- Checkout Modal 
     <div id="checkout-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden modal-overlay overflow-y-auto">
         <div class="min-h-screen flex items-center justify-center px-4 py-8">
             <div class="bg-white w-full max-w-4xl rounded-lg shadow-2xl">
@@ -489,12 +486,12 @@
                                     <p class="text-sm text-gray-400">Card details will be securely processed</p>
                                 </div>
                             </form>
-                        </div>
+                        </div>-->
                         
-                        <div>
+                        <!-- <div>
                             <h4 class="text-lg font-semibold mb-4">Order Summary</h4>
                             <div id="checkout-items" class="space-y-4 mb-6">
-                                <!-- Items will be displayed here -->
+                                
                             </div>
                             <div class="border-t pt-4 space-y-2">
                                 <div class="flex justify-between">
@@ -521,7 +518,7 @@
                                 <i class="fas fa-lock mr-2"></i>
                                 Secure Checkout Powered by Paystack
                             </div>
-                        </div>
+                        </div>-->
                     </div>
                 </div>
             </div>
@@ -539,8 +536,8 @@
             </div>
             <nav class="space-y-4">
                 <button onclick="App.scrollToProducts(); App.toggleMobileMenu();" class="block w-full text-left text-lg font-medium hover:text-gray-600 py-2">New Arrivals</button>
-                <a href="#collections" class="block text-lg font-medium hover:text-gray-600 py-2">Collections</a>
-                <a href="#sale" class="block text-lg font-medium text-red-600 py-2">Sale</a>
+                <a href="collections.html" class="block text-lg font-medium hover:text-gray-600 py-2">Collections</a>
+               <!-- <a href="#sale" class="block text-lg font-medium text-red-600 py-2">Sale</a>-->
             </nav>
         </div>
     </div>
@@ -550,7 +547,7 @@
         const App = (() => {
             // State
             let state = {
-                cart: [],
+                // cart: [], // Commented out - site is catalogue only
                 currentCurrency: 'USD',
                 authMode: 'signin',
                 currentUser: null,
@@ -637,7 +634,8 @@
                 }
             };
 
-            // Cart Management
+            // Cart Management - COMMENTED OUT (Site is catalogue only, not a store)
+            /*
             const cart = {
                 add(productId) {
                     const product = products.find(p => p.id === productId);
@@ -749,6 +747,7 @@
                     return state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
                 }
             };
+            */
 
             // Product Management
             const productManager = {
@@ -767,9 +766,9 @@
                                     <i class="fas fa-image text-4xl text-gray-400"></i>
                                 </div>
                                 <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition"></div>
-                                <button onclick="App.addToCart(${product.id})" class="absolute bottom-4 left-4 right-4 bg-white text-black py-2 rounded opacity-0 group-hover:opacity-100 transition transform translate-y-2 group-hover:translate-y-0 hover:bg-gray-100" aria-label="Add ${product.name} to cart">
+                                <!-- <button onclick="App.addToCart(${product.id})" class="absolute bottom-4 left-4 right-4 bg-white text-black py-2 rounded opacity-0 group-hover:opacity-100 transition transform translate-y-2 group-hover:translate-y-0 hover:bg-gray-100" aria-label="Add ${product.name} to cart">
                                     Quick Add
-                                </button>
+                                </button> -->
                                 ${product.stock < 5 ? `<div class="absolute top-4 right-4 bg-red-500 text-white text-xs px-2 py-1 rounded">Only ${product.stock} left</div>` : ''}
                             </div>
                             <div class="p-4">
@@ -836,7 +835,11 @@
                     document.getElementById('search-results').innerHTML = `
                         <div class="mt-4 space-y-2">
                             ${results.map(product => `
-                                <div class="p-3 hover:bg-gray-50 rounded cursor-pointer" onclick="App.addToCart(${product.id}); App.toggleSearch();">
+                                <!-- <div class="p-3 hover:bg-gray-50 rounded cursor-pointer" onclick="App.addToCart(${product.id}); App.toggleSearch();">
+                                    <div class="font-semibold">${utils.sanitizeHTML(product.name)}</div>
+                                    <div class="text-sm text-gray-500">${utils.formatPrice(product.price)}</div>
+                                </div> -->
+                                <div class="p-3 hover:bg-gray-50 rounded cursor-pointer" onclick="App.toggleSearch();">
                                     <div class="font-semibold">${utils.sanitizeHTML(product.name)}</div>
                                     <div class="text-sm text-gray-500">${utils.formatPrice(product.price)}</div>
                                 </div>
@@ -856,7 +859,8 @@
                 }
             };
 
-            // Checkout Management
+            // Checkout Management - COMMENTED OUT (Site is catalogue only, not a store)
+            /*
             const checkout = {
                 open() {
                     if (state.cart.length === 0) {
@@ -916,6 +920,7 @@
                     }, 2000);
                 }
             };
+            */
 
             // Authentication
             const auth = {
@@ -960,9 +965,9 @@
 
             // UI Controls
             const ui = {
-                toggleCart() {
-                    document.getElementById('cart-sidebar').classList.toggle('translate-x-full');
-                },
+                // toggleCart() {
+                //     document.getElementById('cart-sidebar').classList.toggle('translate-x-full');
+                // },
 
                 toggleSearch() {
                     const modal = document.getElementById('search-modal');
@@ -985,10 +990,10 @@
                     state.currentCurrency = currency;
                     document.getElementById('announcement-currency').textContent = currency;
                     productManager.display(state.filteredProducts || products);
-                    cart.update();
-                    if (!document.getElementById('checkout-modal').classList.contains('hidden')) {
-                        checkout.updateSummary();
-                    }
+                    // cart.update(); // Commented out - site is catalogue only
+                    // if (!document.getElementById('checkout-modal').classList.contains('hidden')) {
+                    //     checkout.updateSummary();
+                    // }
                 }
             };
 
@@ -1002,12 +1007,12 @@
 
             // Initialize
             function init() {
-                // Load saved cart
-                const savedCart = utils.loadFromStorage('cart');
-                if (savedCart) {
-                    state.cart = savedCart;
-                    cart.update();
-                }
+                // Load saved cart - COMMENTED OUT (Site is catalogue only)
+                // const savedCart = utils.loadFromStorage('cart');
+                // if (savedCart) {
+                //     state.cart = savedCart;
+                //     cart.update();
+                // }
 
                 // Display products
                 productManager.display();
@@ -1029,11 +1034,11 @@
                 // Escape key closes modals
                 document.addEventListener('keydown', (e) => {
                     if (e.key === 'Escape') {
-                        document.getElementById('cart-sidebar').classList.add('translate-x-full');
+                        // document.getElementById('cart-sidebar').classList.add('translate-x-full'); // Commented out
                         document.getElementById('mobile-menu').classList.add('translate-x-full');
                         document.getElementById('search-modal').classList.add('hidden');
                         document.getElementById('auth-modal').classList.add('hidden');
-                        document.getElementById('checkout-modal').classList.add('hidden');
+                        // document.getElementById('checkout-modal').classList.add('hidden'); // Commented out
                     }
                 });
 
@@ -1054,10 +1059,10 @@
             // Public API
             return {
                 init,
-                addToCart: (id) => cart.add(id),
-                removeFromCart: (id) => cart.remove(id),
-                updateQuantity: (id, qty) => cart.updateQuantity(id, qty),
-                toggleCart: () => ui.toggleCart(),
+                // addToCart: (id) => cart.add(id), // Commented out - site is catalogue only
+                // removeFromCart: (id) => cart.remove(id), // Commented out
+                // updateQuantity: (id, qty) => cart.updateQuantity(id, qty), // Commented out
+                // toggleCart: () => ui.toggleCart(), // Commented out
                 toggleSearch: () => ui.toggleSearch(),
                 toggleAuth: () => ui.toggleAuth(),
                 toggleMobileMenu: () => ui.toggleMobileMenu(),
@@ -1069,9 +1074,9 @@
                 sortProducts: (sort) => productManager.sort(sort),
                 clearFilters: () => productManager.clearFilters(),
                 scrollToProducts: () => productManager.scrollToSection(),
-                proceedToCheckout: () => checkout.open(),
-                closeCheckout: () => checkout.close(),
-                processPayment: (e) => checkout.processPayment(e)
+                // proceedToCheckout: () => checkout.open(), // Commented out
+                // closeCheckout: () => checkout.close(), // Commented out
+                // processPayment: (e) => checkout.processPayment(e) // Commented out
             };
         })();
 

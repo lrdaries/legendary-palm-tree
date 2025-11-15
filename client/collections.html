@@ -166,9 +166,7 @@
                 <!-- Navigation -->
                 <div class="hidden lg:flex items-center space-x-8">
                     <a href="index.html" class="text-gray-700 hover:text-black transition">Home</a>
-                    <a href="products.html" class="text-black font-semibold">Shop</a>
-                    <a href="#collections" class="text-gray-700 hover:text-black transition">Collections</a>
-                    <a href="#sale" class="text-gray-700 hover:text-black transition">Sale</a>
+                    <a href="collections.html" class="text-gray-700 hover:text-black transition">Collections</a>
                 </div>
                 
                 <!-- Right Actions -->
@@ -196,11 +194,11 @@
                         <i class="fas fa-user text-xl"></i>
                     </button>
                     
-                    <!-- Cart -->
-                    <button onclick="ProductPage.toggleCart()" class="relative text-gray-700 hover:text-black transition" aria-label="Shopping Cart">
+                    <!-- Cart - COMMENTED OUT (Site is catalogue only, not a store) -->
+                    <!-- <button onclick="ProductPage.toggleCart()" class="relative text-gray-700 hover:text-black transition" aria-label="Shopping Cart">
                         <i class="fas fa-shopping-bag text-xl"></i>
                         <span id="cart-count" class="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
-                    </button>
+                    </button> -->
                     
                     <!-- Mobile Menu -->
                     <button onclick="ProductPage.toggleMobileMenu()" class="lg:hidden" aria-label="Menu">
@@ -217,7 +215,7 @@
             <nav class="flex items-center space-x-2 text-sm">
                 <a href="index.html" class="text-gray-500 hover:text-black">Home</a>
                 <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
-                <span class="text-black font-semibold">Products</span>
+                <a href="collections.html">Collection</a>
             </nav>
         </div>
     </div>
@@ -419,7 +417,7 @@
         </div>
     </div>
 
-    <!-- Cart Sidebar -->
+    <!-- Cart Sidebar 
     <div id="cart-sidebar" class="fixed right-0 top-0 h-full w-full md:w-96 bg-white shadow-2xl transform translate-x-full transition-transform z-50">
         <div class="p-6 border-b">
             <div class="flex justify-between items-center">
@@ -444,7 +442,7 @@
                 Continue Shopping
             </button>
         </div>
-    </div>
+    </div>-->
 
     <!-- Quick View Modal -->
     <div id="quick-view-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden modal-overlay overflow-y-auto">
@@ -494,9 +492,7 @@
             </div>
             <nav class="space-y-4">
                 <a href="index.html" class="block text-lg font-medium hover:text-gray-600 py-2">Home</a>
-                <a href="products.html" class="block text-lg font-medium text-black py-2">Shop</a>
-                <a href="#collections" class="block text-lg font-medium hover:text-gray-600 py-2">Collections</a>
-                <a href="#sale" class="block text-lg font-medium text-red-600 py-2">Sale</a>
+                <a href="collections.html" class="block text-lg font-medium hover:text-gray-600 py-2">Collections</a>
             </nav>
         </div>
     </div>
@@ -508,7 +504,7 @@
             let state = {
                 products: [],
                 filteredProducts: [],
-                cart: [],
+                // cart: [], // Commented out - site is catalogue only
                 currentCurrency: 'USD',
                 currentView: 'grid',
                 currentPage: 1,
@@ -786,9 +782,9 @@
                                     <button onclick="ProductPage.quickView(${product.id})" class="w-full quick-view-btn bg-white text-black py-2 rounded hover:bg-gray-100 transition" aria-label="Quick view ${product.name}">
                                         Quick View
                                     </button>
-                                    <button onclick="ProductPage.addToCart(${product.id})" class="w-full quick-view-btn bg-black text-white py-2 rounded hover:bg-gray-800 transition" aria-label="Add ${product.name} to cart">
+                                    <!-- <button onclick="ProductPage.addToCart(${product.id})" class="w-full quick-view-btn bg-black text-white py-2 rounded hover:bg-gray-800 transition" aria-label="Add ${product.name} to cart">
                                         Add to Cart
-                                    </button>
+                                    </button> -->
                                 </div>
                             </div>
                             <div class="p-4">
@@ -835,9 +831,9 @@
                                         <button onclick="ProductPage.quickView(${product.id})" class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition">
                                             Quick View
                                         </button>
-                                        <button onclick="ProductPage.addToCart(${product.id})" class="px-6 py-2 bg-black text-white rounded hover:bg-gray-800 transition">
+                                        <!-- <button onclick="ProductPage.addToCart(${product.id})" class="px-6 py-2 bg-black text-white rounded hover:bg-gray-800 transition">
                                             Add to Cart
-                                        </button>
+                                        </button> -->
                                     </div>
                                 </div>
                             </div>
@@ -925,7 +921,8 @@
                 }
             };
 
-            // Cart Management
+            // Cart Management - COMMENTED OUT (Site is catalogue only, not a store)
+            /*
             const cart = {
                 add(productId) {
                     const product = state.products.find(p => p.id === productId);
@@ -1027,6 +1024,7 @@
                     cartSubtotal.textContent = utils.formatPrice(subtotal);
                 }
             };
+            */
 
             // Quick View
             const quickView = {
@@ -1072,9 +1070,9 @@
                                     </p>
                                 </div>
 
-                                <button onclick="ProductPage.addToCart(${product.id}); ProductPage.closeQuickView();" class="w-full bg-black text-white py-4 rounded-lg hover:bg-gray-800 transition text-lg font-semibold">
+                                <!-- <button onclick="ProductPage.addToCart(${product.id}); ProductPage.closeQuickView();" class="w-full bg-black text-white py-4 rounded-lg hover:bg-gray-800 transition text-lg font-semibold">
                                     Add to Cart
-                                </button>
+                                </button> -->
                             </div>
                         </div>
                     `;
@@ -1089,9 +1087,9 @@
 
             // UI Controls
             const ui = {
-                toggleCart() {
-                    document.getElementById('cart-sidebar').classList.toggle('translate-x-full');
-                },
+                // toggleCart() {
+                //     document.getElementById('cart-sidebar').classList.toggle('translate-x-full');
+                // },
 
                 toggleSearch() {
                     const modal = document.getElementById('search-modal');
@@ -1124,7 +1122,7 @@
                 handleCurrencyChange(currency) {
                     state.currentCurrency = currency;
                     productDisplay.render();
-                    cart.update();
+                    // cart.update(); // Commented out - site is catalogue only
                 }
             };
 
@@ -1136,12 +1134,12 @@
                 filterManager.updateCounts();
                 productDisplay.render();
 
-                // Load saved cart
-                const savedCart = utils.loadFromStorage('cart');
-                if (savedCart) {
-                    state.cart = savedCart;
-                    cart.update();
-                }
+                // Load saved cart - COMMENTED OUT (Site is catalogue only)
+                // const savedCart = utils.loadFromStorage('cart');
+                // if (savedCart) {
+                //     state.cart = savedCart;
+                //     cart.update();
+                // }
 
                 // Event listeners
                 document.getElementById('currency-selector').addEventListener('change', (e) => {
@@ -1303,7 +1301,7 @@
                 // Escape key closes modals
                 document.addEventListener('keydown', (e) => {
                     if (e.key === 'Escape') {
-                        document.getElementById('cart-sidebar').classList.add('translate-x-full');
+                        // document.getElementById('cart-sidebar').classList.add('translate-x-full'); // Commented out
                         document.getElementById('mobile-menu').classList.add('translate-x-full');
                         document.getElementById('search-modal').classList.add('hidden');
                         document.getElementById('quick-view-modal').classList.add('hidden');
@@ -1315,10 +1313,10 @@
             // Public API
             return {
                 init,
-                addToCart: (id) => cart.add(id),
-                removeFromCart: (id) => cart.remove(id),
-                updateCartQuantity: (id, qty) => cart.updateQuantity(id, qty),
-                toggleCart: () => ui.toggleCart(),
+                // addToCart: (id) => cart.add(id), // Commented out - site is catalogue only
+                // removeFromCart: (id) => cart.remove(id), // Commented out
+                // updateCartQuantity: (id, qty) => cart.updateQuantity(id, qty), // Commented out
+                // toggleCart: () => ui.toggleCart(), // Commented out
                 toggleSearch: () => ui.toggleSearch(),
                 toggleMobileMenu: () => ui.toggleMobileMenu(),
                 toggleFilters: () => ui.toggleFilters(),
@@ -1404,7 +1402,7 @@
                         <li><a href="#" class="hover:text-white transition">Careers</a></li>
                     </ul>
                 </div>
-                <div>
+                <!--<div>
                     <h5 class="font-semibold mb-4">Payment & Security</h5>
                     <div class="flex space-x-2 mb-4">
                         <i class="fab fa-cc-visa text-2xl"></i>
@@ -1413,7 +1411,7 @@
                         <i class="fab fa-cc-paypal text-2xl"></i>
                     </div>
                     <p class="text-gray-400 text-sm">Secure payments powered by Stripe</p>
-                </div>
+                </div>-->
             </div>
             <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
                 <p>&copy; 2025 Diva's Kloset. All rights reserved. | <a href="#" class="hover:text-white transition">Privacy Policy</a> | <a href="#" class="hover:text-white transition">Terms of Service</a></p>
