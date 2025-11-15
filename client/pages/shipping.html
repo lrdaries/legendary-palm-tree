@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shipping Information - Diva's Kloset</title>
+    <meta name="description" content="Learn about Diva's Kloset shipping policies, rates, and delivery times. Free international shipping on orders over $200.">
+    <meta name="robots" content="index, follow">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .playfair {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="glass-effect sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <div class="flex items-center space-x-2">
+                    <a href="../index.html" class="flex items-center space-x-2">
+                        <div class="w-12 h-12 bg-gradient-to-br from-orange-400 to-pink-400 rounded-full flex items-center justify-center">
+                            <span class="text-white font-bold text-xl">DK</span>
+                        </div>
+                        <h1 class="playfair text-2xl md:text-3xl font-bold text-gray-900">Diva's Kloset</h1>
+                    </a>
+                </div>
+                
+                <!-- Navigation -->
+                <div class="hidden lg:flex items-center space-x-8">
+                    <a href="../index.html" class="text-gray-700 hover:text-black transition">Home</a>
+                    <a href="../collections.html" class="text-gray-700 hover:text-black transition">Collections</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-16">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="playfair text-5xl font-bold text-gray-900 mb-4">Shipping Information</h1>
+            <p class="text-xl text-gray-600 mb-12">We ship worldwide! Learn about our shipping options, rates, and delivery times.</p>
+
+            <!-- Free Shipping Banner -->
+            <div class="bg-gradient-to-r from-orange-500 to-pink-500 text-white p-6 rounded-lg mb-12">
+                <div class="flex items-center">
+                    <i class="fas fa-shipping-fast text-3xl mr-4"></i>
+                    <div>
+                        <h2 class="text-2xl font-bold mb-1">Free International Shipping</h2>
+                        <p class="text-lg">On all orders over $200 USD</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shipping Options -->
+            <section class="mb-16">
+                <h2 class="playfair text-3xl font-bold text-gray-900 mb-6">Shipping Options</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border-l-4 border-orange-500">
+                        <h3 class="text-xl font-semibold mb-2">Standard Shipping</h3>
+                        <p class="text-gray-600 mb-4">7-14 business days</p>
+                        <p class="text-2xl font-bold text-orange-600">$15 USD</p>
+                        <p class="text-sm text-gray-500 mt-2">Free on orders over $200</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border-l-4 border-blue-500">
+                        <h3 class="text-xl font-semibold mb-2">Express Shipping</h3>
+                        <p class="text-gray-600 mb-4">3-7 business days</p>
+                        <p class="text-2xl font-bold text-blue-600">$35 USD</p>
+                        <p class="text-sm text-gray-500 mt-2">Available worldwide</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border-l-4 border-purple-500">
+                        <h3 class="text-xl font-semibold mb-2">Priority Shipping</h3>
+                        <p class="text-gray-600 mb-4">1-3 business days</p>
+                        <p class="text-2xl font-bold text-purple-600">$55 USD</p>
+                        <p class="text-sm text-gray-500 mt-2">Fastest delivery option</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border-l-4 border-green-500">
+                        <h3 class="text-xl font-semibold mb-2">Free Shipping</h3>
+                        <p class="text-gray-600 mb-4">7-14 business days</p>
+                        <p class="text-2xl font-bold text-green-600">FREE</p>
+                        <p class="text-sm text-gray-500 mt-2">On orders over $200</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Delivery Times by Region -->
+            <section class="mb-16">
+                <h2 class="playfair text-3xl font-bold text-gray-900 mb-6">Estimated Delivery Times</h2>
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-gray-700 font-semibold">Region</th>
+                                <th class="px-6 py-4 text-left text-gray-700 font-semibold">Standard</th>
+                                <th class="px-6 py-4 text-left text-gray-700 font-semibold">Express</th>
+                                <th class="px-6 py-4 text-left text-gray-700 font-semibold">Priority</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 font-medium">United States & Canada</td>
+                                <td class="px-6 py-4 text-gray-600">5-7 days</td>
+                                <td class="px-6 py-4 text-gray-600">2-3 days</td>
+                                <td class="px-6 py-4 text-gray-600">1-2 days</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 font-medium">Europe</td>
+                                <td class="px-6 py-4 text-gray-600">7-10 days</td>
+                                <td class="px-6 py-4 text-gray-600">3-5 days</td>
+                                <td class="px-6 py-4 text-gray-600">2-3 days</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 font-medium">Asia Pacific</td>
+                                <td class="px-6 py-4 text-gray-600">10-14 days</td>
+                                <td class="px-6 py-4 text-gray-600">5-7 days</td>
+                                <td class="px-6 py-4 text-gray-600">3-5 days</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 font-medium">Africa & Middle East</td>
+                                <td class="px-6 py-4 text-gray-600">12-18 days</td>
+                                <td class="px-6 py-4 text-gray-600">7-10 days</td>
+                                <td class="px-6 py-4 text-gray-600">5-7 days</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 font-medium">Latin America</td>
+                                <td class="px-6 py-4 text-gray-600">10-15 days</td>
+                                <td class="px-6 py-4 text-gray-600">5-8 days</td>
+                                <td class="px-6 py-4 text-gray-600">3-5 days</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Important Information -->
+            <section class="mb-16">
+                <h2 class="playfair text-3xl font-bold text-gray-900 mb-6">Important Information</h2>
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h3 class="text-xl font-semibold mb-3 flex items-center">
+                            <i class="fas fa-info-circle text-orange-500 mr-3"></i>
+                            Processing Time
+                        </h3>
+                        <p class="text-gray-600">All orders are processed within 1-2 business days. Orders placed on weekends or holidays will be processed on the next business day.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h3 class="text-xl font-semibold mb-3 flex items-center">
+                            <i class="fas fa-box text-orange-500 mr-3"></i>
+                            Order Tracking
+                        </h3>
+                        <p class="text-gray-600">Once your order ships, you'll receive a tracking number via email. You can track your package in real-time using our tracking system.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h3 class="text-xl font-semibold mb-3 flex items-center">
+                            <i class="fas fa-dollar-sign text-orange-500 mr-3"></i>
+                            Customs & Duties
+                        </h3>
+                        <p class="text-gray-600">International orders may be subject to customs fees and import duties. These charges are the responsibility of the customer and are not included in the shipping cost.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h3 class="text-xl font-semibold mb-3 flex items-center">
+                            <i class="fas fa-shield-alt text-orange-500 mr-3"></i>
+                            Package Insurance
+                        </h3>
+                        <p class="text-gray-600">All orders are fully insured during transit. If your package is lost or damaged, please contact us immediately and we'll resolve the issue.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FAQ -->
+            <section class="bg-white p-8 rounded-lg shadow-sm">
+                <h2 class="playfair text-3xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h2>
+                <div class="space-y-4">
+                    <div class="border-b border-gray-200 pb-4">
+                        <h3 class="font-semibold mb-2">How do I track my order?</h3>
+                        <p class="text-gray-600">You'll receive a tracking number via email once your order ships. Click the tracking link in the email or enter your tracking number on our website.</p>
+                    </div>
+                    <div class="border-b border-gray-200 pb-4">
+                        <h3 class="font-semibold mb-2">What if my package is delayed?</h3>
+                        <p class="text-gray-600">Delivery times are estimates and may vary due to customs processing, weather, or other factors. If your package is significantly delayed, please contact our customer service team.</p>
+                    </div>
+                    <div class="border-b border-gray-200 pb-4">
+                        <h3 class="font-semibold mb-2">Can I change my shipping address?</h3>
+                        <p class="text-gray-600">You can change your shipping address within 24 hours of placing your order by contacting customer service. After that, changes may not be possible if the order has already shipped.</p>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold mb-2">Do you ship to PO boxes?</h3>
+                        <p class="text-gray-600">Yes, we ship to PO boxes using standard shipping. Express and Priority shipping options require a physical address.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-black text-white py-12 mt-16">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="playfair text-2xl font-bold mb-4">Diva's Kloset</h4>
+                    <p class="text-gray-400">Your destination for international luxury fashion.</p>
+                </div>
+                <div>
+                    <h5 class="font-semibold mb-4">Customer Service</h5>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">Contact Us</a></li>
+                        <li><a href="shipping.html" class="hover:text-white">Shipping Info</a></li>
+                        <li><a href="#" class="hover:text-white">Returns & Exchanges</a></li>
+                        <li><a href="guide.html" class="hover:text-white">Size Guide</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-semibold mb-4">About</h5>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">Our Story</a></li>
+                        <li><a href="#" class="hover:text-white">Sustainability</a></li>
+                        <li><a href="#" class="hover:text-white">Press</a></li>
+                        <li><a href="careers.html" class="hover:text-white">Careers</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 Diva's Kloset. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
+

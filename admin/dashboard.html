@@ -87,7 +87,7 @@
       </header>
 
       <!-- Sections container -->
-      <section id="sections-container " class="space-y-6 ">
+      <section id="sections-container" class="space-y-6">
         <!-- DASHBOARD SECTION -->
         <div id="dashboard-section" class="fade-section card p-6 mb-6">
           <!-- modern stat cards -->
@@ -359,13 +359,13 @@
       - Fade transitions between sections
       - Inline comments throughout for clarity
       - API override: window.__API_BASE_URL__ (set before this script runs)
-   
+    */
 
     // ---------- Configuration ----------
     const DEFAULT_API_BASE = '/api/products';
     const API_BASE_URL = window.__API_BASE_URL__ || DEFAULT_API_BASE;
     // Note: If your backend expects POST + _method=PUT for file uploads, adjust save logic accordingly.
-    */
+    
     // ---------- App state ----------
     let products = [];           // current loaded products
     let isEditing = false;
@@ -821,7 +821,7 @@
       });
 
       document.getElementById('logout-btn').addEventListener('click', () => {
-        if (confirm('Logout?')) window.location.href = '/login.html';
+        if (confirm('Logout?')) window.location.href = 'login.html';
       });
 
       initSizesCheckboxes();

@@ -680,7 +680,7 @@
                     
                     // Redirect to dashboard
                     setTimeout(() => {
-                        window.location.href = 'admin/dashboard.html';
+                        window.location.href = 'dashboard.html';
                     }, 1500);
                 } else {
                     showAlert('Invalid email or password. Please try again.');
@@ -748,7 +748,7 @@
                 if (code === '123456') {
                     showAlert('Verification successful!', 'success');
                     setTimeout(() => {
-                        window.location.href = '/admin/dashboard';
+                        window.location.href = 'dashboard.html';
                     }, 1500);
                 } else {
                     showAlert('Invalid verification code');
@@ -808,7 +808,7 @@
                     sessionStorage.removeItem('adminSession');
                 } else {
                     // Redirect to dashboard if already logged in
-                    window.location.href = '/admin/dashboard.html';
+                    window.location.href = 'dashboard.html';
                 }
             }
         }
@@ -834,6 +834,6 @@
         if (window.history.replaceState) {
             window.history.replaceState(null, null, window.location.href);
         }
-    </script>-->
+    </script>
 </body>
 </html>
