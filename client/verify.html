@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authenticate Account | Diva's Kloset</title>
+    <meta name="description" content="Enter the authentication code we emailed you to finish creating your Diva's Kloset account.">
+    <link rel="canonical" href="https://divaskloset.com/verify">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@400;500;600&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .playfair {
+            font-family: 'Playfair Display', serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <a href="index.html" class="flex items-center space-x-2">
+                <div class="w-10 h-10 bg-gradient-to-br from-orange-400 to-pink-400 rounded-full flex items-center justify-center">
+                    <span class="text-white font-bold">DK</span>
+                </div>
+                <span class="playfair text-2xl font-bold text-gray-900">Diva's Kloset</span>
+            </a>
+            <a href="signup.html" class="text-sm font-semibold text-gray-700 hover:text-gray-900">
+                Update Details
+            </a>
+        </div>
+    </header>
+
+    <main class="flex-1 py-12 px-4">
+        <div class="container mx-auto max-w-3xl">
+            <div class="bg-white rounded-2xl shadow-xl p-8 space-y-8">
+                <div class="space-y-2 text-center">
+                    <p class="uppercase text-xs tracking-[0.4em] text-gray-500">Authentication</p>
+                    <h1 class="playfair text-4xl font-bold text-gray-900">Check Your Email</h1>
+                    <p class="text-gray-600">
+                        We sent a 6-digit access code to <span id="signup-email" class="font-semibold text-gray-900"></span>.
+                        Enter it below to activate your profile.
+                    </p>
+                </div>
+
+                <form id="verify-form" class="space-y-6">
+                    <div>
+                        <label for="auth-code" class="text-sm font-semibold text-gray-700">Authentication Code</label>
+                        <input type="text" id="auth-code" name="authCode" inputmode="numeric" pattern="\d{6}"
+                               placeholder="Enter 6-digit code"
+                               class="mt-2 w-full border border-gray-300 rounded-lg px-4 py-3 tracking-[0.4em] text-center text-2xl focus:outline-none focus:border-black"
+                               required>
+                        <p class="text-xs text-gray-500 mt-2">Code expires in 10 minutes.</p>
+                    </div>
+                    <div class="flex items-center justify-between text-sm">
+                        <button type="button" id="resend-code" class="text-gray-700 font-semibold hover:underline">Resend code</button>
+                        <span id="resend-status" class="text-gray-500"></span>
+                    </div>
+                    <div id="verify-status" class="text-sm text-gray-500"></div>
+                    <button type="submit" class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-900 transition">
+                        Verify & Continue
+                    </button>
+                </form>
+
+                <div class="border rounded-xl p-4 bg-gray-50">
+                    <p class="text-sm text-gray-600">
+                        Need help? Email <a href="mailto:concierge@divaskloset.com" class="font-semibold text-gray-900 hover:underline">concierge@divaskloset.com</a>
+                        and our concierge team will respond within 24 hours.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center text-xs text-gray-500 py-6">
+        &copy; 2025 Diva's Kloset. All rights reserved.
+    </footer>
+
+    <script>
+        const emailTarget = document.getElementById('signup-email');
+        const verifyStatus = document.getElementById('verify-status');
+        const resendBtn = document.getElementById('resend-code');
+        const resendStatus = document.getElementById('resend-status');
+        const params = new URLSearchParams(window.location.search);
+        const storedSignup = sessionStorage.getItem('pendingSignup');
+
+        let email = params.get('email');
+        if (!email && storedSignup) {
+            try {
+                email = JSON.parse(storedSignup).email;
+            } catch (err) {
+                email = null;
+            }
+        }
+
+        if (!email) {
+            emailTarget.textContent = 'your inbox';
+            verifyStatus.textContent = 'We could not find your registration details. Please restart the process.';
+            verifyStatus.classList.add('text-red-600');
+        } else {
+            emailTarget.textContent = email;
+        }
+
+        document.getElementById('verify-form').addEventListener('submit', (event) => {
+            event.preventDefault();
+            const code = document.getElementById('auth-code').value.trim();
+
+            if (!/^\d{6}$/.test(code)) {
+                verifyStatus.textContent = 'Enter the 6-digit code exactly as it appears in your email.';
+                verifyStatus.classList.add('text-red-600');
+                return;
+            }
+
+            verifyStatus.textContent = 'Verifying your code...';
+            verifyStatus.classList.remove('text-red-600');
+            verifyStatus.classList.add('text-emerald-600');
+
+            setTimeout(() => {
+                sessionStorage.removeItem('pendingSignup');
+                verifyStatus.textContent = 'Authenticated! Redirecting you to the store...';
+
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1200);
+            }, 800);
+        });
+
+        resendBtn.addEventListener('click', () => {
+            resendBtn.disabled = true;
+            resendBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            resendStatus.textContent = 'Sending a new code...';
+
+            setTimeout(() => {
+                resendStatus.textContent = 'A new code was sent to your email.';
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
+

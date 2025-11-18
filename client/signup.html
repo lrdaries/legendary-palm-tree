@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | Diva's Kloset</title>
+    <meta name="description" content="Create your Diva's Kloset account to save favorites and access exclusive drops.">
+    <link rel="canonical" href="https://divaskloset.com/signup">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@400;500;600&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .playfair {
+            font-family: 'Playfair Display', serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <a href="index.html" class="flex items-center space-x-2">
+                <div class="w-10 h-10 bg-gradient-to-br from-orange-400 to-pink-400 rounded-full flex items-center justify-center">
+                    <span class="text-white font-bold">DK</span>
+                </div>
+                <span class="playfair text-2xl font-bold text-gray-900">Diva's Kloset</span>
+            </a>
+            <a href="index.html" class="text-sm font-semibold text-gray-700 hover:text-gray-900">
+                Back to Store
+            </a>
+        </div>
+    </header>
+
+    <main class="flex-1 py-12 px-4">
+        <div class="container mx-auto max-w-5xl grid gap-12 md:grid-cols-2">
+            <section class="space-y-6">
+                <p class="uppercase text-xs tracking-[0.3em] text-gray-500">Create Account</p>
+                <h1 class="playfair text-4xl font-bold text-gray-900">Join the Diva's Kloset Society</h1>
+                <p class="text-gray-600 leading-relaxed">
+                    Save your contact details, receive curated drops, and enjoy a seamless checkout experience.
+                    Provide the details below and we'll send a one-time authentication code to confirm your email.
+                </p>
+                <div class="bg-white rounded-2xl p-6 shadow-sm space-y-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-semibold">1</div>
+                        <div>
+                            <p class="font-semibold text-gray-900">Share your contact details</p>
+                            <p class="text-sm text-gray-500">Tell us how to reach you.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-semibold">2</div>
+                        <div>
+                            <p class="font-semibold text-gray-900">Check your inbox</p>
+                            <p class="text-sm text-gray-500">We send a 6-digit authentication code.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-semibold">3</div>
+                        <div>
+                            <p class="font-semibold text-gray-900">Verify & shop</p>
+                            <p class="text-sm text-gray-500">Enter the code and unlock new arrivals.</p>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-500">
+                    Already registered? <a href="index.html" class="text-gray-900 font-semibold hover:underline">Sign in from the store page</a>.
+                </p>
+            </section>
+
+            <section class="bg-white rounded-2xl shadow-xl p-8">
+                <form id="signup-form" class="space-y-5">
+                    <div>
+                        <label for="fullName" class="text-sm font-semibold text-gray-700">Full Name</label>
+                        <input type="text" id="fullName" name="fullName" placeholder="Alex Mensah"
+                               class="mt-2 w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-black" required>
+                    </div>
+                    <div>
+                        <label for="email" class="text-sm font-semibold text-gray-700">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="alex@email.com"
+                               class="mt-2 w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-black" required>
+                    </div>
+                    <div>
+                        <label for="phone" class="text-sm font-semibold text-gray-700">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" placeholder="+1 202 555 0148"
+                               class="mt-2 w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-black" required>
+                    </div>
+                    <div>
+                        <label for="address" class="text-sm font-semibold text-gray-700">Address</label>
+                        <input type="text" id="address" name="address" placeholder="123 Fashion Avenue"
+                               class="mt-2 w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-black" required>
+                    </div>
+                    <div>
+                        <label for="city" class="text-sm font-semibold text-gray-700">City</label>
+                        <input type="text" id="city" name="city" placeholder="New York"
+                               class="mt-2 w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-black" required>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="state" class="text-sm font-semibold text-gray-700">State / Region</label>
+                            <input type="text" id="state" name="state" placeholder="NY"
+                                   class="mt-2 w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-black" required>
+                        </div>
+                        <div>
+                            <label for="country" class="text-sm font-semibold text-gray-700">Country</label>
+                            <select id="country" name="country"
+                                    class="mt-2 w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-black" required>
+                                <option value="">Select a country</option>
+                                <option value="United States">United States</option>
+                                <option value="United Kingdom">United Kingdom</option>
+                                <option value="Canada">Canada</option>
+                                <option value="Nigeria">Nigeria</option>
+                                <option value="South Africa">South Africa</option>
+                                <option value="Australia">Australia</option>
+                                <option value="France">France</option>
+                                <option value="Germany">Germany</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="contactPreference" class="text-sm font-semibold text-gray-700">Preferred Contact Method</label>
+                        <select id="contactPreference" name="contactPreference"
+                                class="mt-2 w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-black" required>
+                            <option value="">Choose an option</option>
+                            <option value="email">Email</option>
+                            <option value="phone">Phone</option>
+                            <option value="whatsapp">WhatsApp</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="notes" class="text-sm font-semibold text-gray-700">Style Notes (Optional)</label>
+                        <textarea id="notes" name="notes" rows="3" placeholder="Tell us what you love..."
+                                  class="mt-2 w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-black"></textarea>
+                    </div>
+                    <div class="flex items-start space-x-2">
+                        <input id="newsletter" name="newsletter" type="checkbox" class="mt-1">
+                        <label for="newsletter" class="text-sm text-gray-600">Email me about private launches and runway recaps.</label>
+                    </div>
+                    <div id="form-status" class="text-sm text-gray-500"></div>
+                    <button type="submit" class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-900 transition">
+                        Create Account & Get Code
+                    </button>
+                </form>
+            </section>
+        </div>
+    </main>
+
+    <footer class="text-center text-xs text-gray-500 py-6">
+        &copy; 2025 Diva's Kloset. All rights reserved.
+    </footer>
+
+    <script>
+        const form = document.getElementById('signup-form');
+        const status = document.getElementById('form-status');
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const formData = new FormData(form);
+            const payload = Object.fromEntries(formData.entries());
+            payload.timestamp = new Date().toISOString();
+
+            sessionStorage.setItem('pendingSignup', JSON.stringify(payload));
+
+            status.textContent = 'Creating your profile and sending your authentication code...';
+            status.classList.remove('text-red-600');
+            status.classList.add('text-emerald-600');
+
+            setTimeout(() => {
+                window.location.href = `verify.html?email=${encodeURIComponent(payload.email)}`;
+            }, 800);
+        });
+    </script>
+</body>
+</html>
+

@@ -425,8 +425,8 @@
                     </button>
                 </form>
                 <p class="text-center mt-4 text-gray-600">
-                    <span id="auth-switch-text">Don't have an account?</span>
-                    <button onclick="App.switchAuthMode()" class="text-black font-semibold hover:underline ml-1" id="auth-switch-btn">Sign Up</button>
+                    <span>New to Diva's Kloset?</span>
+                    <a href="signup.html" class="text-black font-semibold hover:underline ml-1">Create an account</a>
                 </p>
                 <button onclick="App.toggleAuth()" class="absolute top-4 right-4 text-gray-500 hover:text-black" aria-label="Close">
                     <i class="fas fa-times"></i>
@@ -548,7 +548,6 @@
             let state = {
                 // cart: [], // Commented out - site is catalogue only
                 currentCurrency: 'USD',
-                authMode: 'signin',
                 currentUser: null,
                 filteredProducts: null,
                 exchangeRates: {
@@ -923,39 +922,19 @@
 
             // Authentication
             const auth = {
-                switchMode() {
-                    state.authMode = state.authMode === 'signin' ? 'signup' : 'signin';
-                    
-                    const title = document.getElementById('auth-title');
-                    const btnText = document.getElementById('auth-btn-text');
-                    const switchText = document.getElementById('auth-switch-text');
-                    const switchBtn = document.getElementById('auth-switch-btn');
-                    
-                    if (state.authMode === 'signup') {
-                        title.textContent = 'Sign Up';
-                        btnText.textContent = 'Sign Up';
-                        switchText.textContent = 'Already have an account?';
-                        switchBtn.textContent = 'Sign In';
-                    } else {
-                        title.textContent = 'Sign In';
-                        btnText.textContent = 'Sign In';
-                        switchText.textContent = "Don't have an account?";
-                        switchBtn.textContent = 'Sign Up';
-                    }
-                },
-
                 handleSubmit(event) {
                     event.preventDefault();
                     
                     const email = document.getElementById('auth-email').value;
                     const password = document.getElementById('auth-password').value;
                     
-                    if (state.authMode === 'signup') {
-                        utils.showNotification('Account created! Please check your email to verify.', 'success');
-                    } else {
-                        state.currentUser = { email };
-                        utils.showNotification('Welcome back!', 'success');
+                    if (!email || !password) {
+                        utils.showNotification('Please provide your email and password.', 'error');
+                        return;
                     }
+
+                    state.currentUser = { email };
+                    utils.showNotification('Welcome back!', 'success');
                     
                     ui.toggleAuth();
                     document.getElementById('auth-form').reset();
@@ -1065,7 +1044,6 @@
                 toggleSearch: () => ui.toggleSearch(),
                 toggleAuth: () => ui.toggleAuth(),
                 toggleMobileMenu: () => ui.toggleMobileMenu(),
-                switchAuthMode: () => auth.switchMode(),
                 handleAuth: (e) => auth.handleSubmit(e),
                 handleSearch: (query) => productManager.search(query),
                 handleNewsletter,
