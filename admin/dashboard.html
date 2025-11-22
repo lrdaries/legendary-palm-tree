@@ -821,7 +821,13 @@
       });
 
       document.getElementById('logout-btn').addEventListener('click', () => {
-        if (confirm('Logout?')) window.location.href = 'login.html';
+        if (confirm('Logout?')) {
+          // Clear all session data
+          localStorage.removeItem('adminSession');
+          sessionStorage.removeItem('adminSession');
+          // Redirect to login page
+          window.location.href = 'index.html';
+        }
       });
 
       initSizesCheckboxes();

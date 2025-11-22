@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diva's Closet - Admin Login</title>
+    <title>Diva's Kloset - Admin Login</title>
     <meta name="robots" content="noindex, nofollow">
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -30,13 +30,19 @@
         }
         
         .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #F9F9F9;
         }
         
         .glass-morphism {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        @media (max-width: 640px) {
+            .gradient-bg {
+                background: #ffffff;
+            }
         }
         
         .floating-shapes {
@@ -103,8 +109,8 @@
         }
         
         .input-group input:focus {
-            border-color: #6366f1;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            border-color: #000000;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
         }
         
         .input-group .input-icon {
@@ -117,19 +123,20 @@
         }
         
         .input-group input:focus ~ .input-icon {
-            color: #6366f1;
+            color: #000000;
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #000000;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
         }
         
         .btn-primary:hover {
+            background: #333333;
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
         
         .btn-primary::before {
@@ -211,8 +218,8 @@
         }
         
         .checkbox-custom:checked {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-color: #6366f1;
+            background: #000000;
+            border-color: #000000;
         }
         
         .checkbox-custom:checked::after {
@@ -284,7 +291,7 @@
             width: 40px;
             height: 40px;
             border: 4px solid #e5e7eb;
-            border-top-color: #6366f1;
+            border-top-color: #000000;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -390,30 +397,21 @@
     </style>
 </head>
 <body class="gradient-bg min-h-screen flex items-center justify-center relative">
-    <!-- Animated Background -->
-    <div class="floating-shapes">
-        <div class="shape shape-1"></div>
-        <div class="shape shape-2"></div>
-        <div class="shape shape-3"></div>
-    </div>
-    
-    <!-- Particles Effect -->
-    <div class="particles" id="particles"></div>
     
     <!-- Main Container -->
     <div class="container mx-auto px-4 z-10">
         <div class="max-w-md mx-auto">
             <!-- Logo Section -->
             <div class="text-center mb-8 fade-in">
-                <div class="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg mb-4">
-                    <i class="fas fa-crown text-3xl text-indigo-600"></i>
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-orange-400 to-pink-400 rounded-full shadow-lg mb-4">
+                    <span class="text-white font-bold text-2xl">DK</span>
                 </div>
-                <h1 class="playfair text-4xl font-bold text-white mb-2">Diva's Closet</h1>
-                <p class="text-white/80">Admin Portal</p>
+                <h1 class="playfair text-4xl font-bold text-gray-900 mb-2">Diva's Kloset</h1>
+                <p class="text-gray-600">Admin Portal</p>
             </div>
             
             <!-- Login Card -->
-            <div class="glass-morphism rounded-2xl shadow-2xl p-8 slide-up">
+            <div class="bg-white rounded-lg shadow-lg p-8 slide-up border border-gray-200">
                 <!-- Loading Overlay -->
                 <div class="loading-overlay" id="loading">
                     <div class="spinner"></div>
@@ -464,7 +462,7 @@
                             <input type="checkbox" class="checkbox-custom mr-2" id="remember">
                             <span class="text-sm text-gray-600">Remember me</span>
                         </label>
-                        <a href="#" onclick="showForgotPassword()" class="text-sm text-indigo-600 hover:text-indigo-700 font-medium">
+                        <a href="#" onclick="showForgotPassword(); return false;" class="text-sm text-black hover:underline font-medium">
                             Forgot password?
                         </a>
                     </div>
@@ -474,21 +472,12 @@
                         Sign In
                     </button>
                     
-                    <!-- Divider -->
-                    <div class="divider">
-                        <span>Or continue with</span>
-                    </div>
-                    
-                    <!-- Social Login -->
-                    <div class="grid grid-cols-2 gap-4">
-                        <button type="button" onclick="socialLogin('google')" class="social-btn bg-white py-2 px-4 rounded-lg flex items-center justify-center hover:bg-gray-50">
-                            <i class="fab fa-google text-red-500 mr-2"></i>
-                            Google
-                        </button>
-                        <button type="button" onclick="socialLogin('microsoft')" class="social-btn bg-white py-2 px-4 rounded-lg flex items-center justify-center hover:bg-gray-50">
-                            <i class="fab fa-microsoft text-blue-600 mr-2"></i>
-                            Microsoft
-                        </button>
+                    <!-- Switch to Register -->
+                    <div class="text-center pt-4 border-t">
+                        <p class="text-gray-600 text-sm">
+                            Don't have an account?
+                            <a href="#" onclick="showRegisterForm(); return false;" class="text-black font-semibold hover:underline ml-1">Create an account</a>
+                        </p>
                     </div>
                     
                     <!-- Security Info -->
@@ -527,7 +516,7 @@
                         Send Reset Link
                     </button>
                     
-                    <button type="button" onclick="showLoginForm()" class="w-full py-3 text-indigo-600 font-semibold hover:text-indigo-700">
+                    <button type="button" onclick="showLoginForm()" class="w-full py-3 text-black font-semibold hover:underline">
                         <i class="fas fa-arrow-left mr-2"></i>Back to Login
                     </button>
                 </form>
@@ -553,22 +542,111 @@
                     </button>
                     
                     <div class="text-center">
-                        <button type="button" onclick="resendCode()" class="text-sm text-indigo-600 hover:text-indigo-700">
+                        <button type="button" onclick="resendCode()" class="text-sm text-black hover:underline">
                             Didn't receive code? Resend
                         </button>
+                    </div>
+                </form>
+                
+                <!-- Registration Form (Hidden by default) -->
+                <form id="register-form" class="space-y-6 hidden">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900 mb-2">Create Admin Account</h2>
+                        <p class="text-gray-600 text-sm">Register a new admin account to access the dashboard</p>
+                    </div>
+                    
+                    <!-- Full Name Input -->
+                    <div class="input-group">
+                        <input
+                            type="text"
+                            id="register-name"
+                            name="name"
+                            placeholder="Full Name"
+                            class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-black"
+                            required
+                        >
+                        <i class="fas fa-user input-icon"></i>
+                    </div>
+                    
+                    <!-- Email Input -->
+                    <div class="input-group">
+                        <input
+                            type="email"
+                            id="register-email"
+                            name="email"
+                            placeholder="Email Address"
+                            class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-black"
+                            required
+                        >
+                        <i class="fas fa-envelope input-icon"></i>
+                    </div>
+                    
+                    <!-- Password Input -->
+                    <div class="input-group">
+                        <input
+                            type="password"
+                            id="register-password"
+                            name="password"
+                            placeholder="Password (min 8 characters)"
+                            class="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-black"
+                            required
+                            minlength="8"
+                        >
+                        <i class="fas fa-lock input-icon"></i>
+                        <button type="button" onclick="toggleRegisterPassword()" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-eye" id="register-password-toggle"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Confirm Password Input -->
+                    <div class="input-group">
+                        <input
+                            type="password"
+                            id="register-confirm-password"
+                            name="confirm-password"
+                            placeholder="Confirm Password"
+                            class="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-black"
+                            required
+                            minlength="8"
+                        >
+                        <i class="fas fa-lock input-icon"></i>
+                        <button type="button" onclick="toggleConfirmPassword()" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-eye" id="confirm-password-toggle"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Terms and Conditions -->
+                    <div class="flex items-start">
+                        <input type="checkbox" class="checkbox-custom mr-2 mt-1" id="terms" required>
+                        <label for="terms" class="text-sm text-gray-600">
+                            I agree to the <a href="#" class="text-black hover:underline">Terms of Service</a> and <a href="#" class="text-black hover:underline">Privacy Policy</a>
+                        </label>
+                    </div>
+                    
+                    <!-- Register Button -->
+                    <button type="submit" class="btn-primary w-full py-3 text-white font-semibold rounded-lg shadow-lg">
+                        Create Account
+                    </button>
+                    
+                    <!-- Switch to Login -->
+                    <div class="text-center pt-4 border-t">
+                        <p class="text-gray-600 text-sm">
+                            Already have an account?
+                            <a href="#" onclick="showLoginForm(); return false;" class="text-black font-semibold hover:underline ml-1">Sign in</a>
+                        </p>
                     </div>
                 </form>
             </div>
             
             <!-- Footer -->
-            <div class="text-center mt-8 text-white/80 text-sm">
-                <p>&copy; 2025 Diva's Closet. All rights reserved.</p>
+            <div class="text-center mt-8 text-gray-600 text-sm">
+                <p>&copy; 2025 Diva's Kloset. All rights reserved.</p>
                 <div class="flex items-center justify-center space-x-4 mt-2">
-                    <a href="#" class="hover:text-white">Privacy Policy</a>
+                    <a href="#" class="hover:text-black">Privacy Policy</a>
                     <span>•</span>
-                    <a href="#" class="hover:text-white">Terms of Service</a>
+                    <a href="#" class="hover:text-black">Terms of Service</a>
                     <span>•</span>
-                    <a href="#" class="hover:text-white">Support</a>
+                    <a href="#" class="hover:text-black">Support</a>
                 </div>
             </div>
         </div>
@@ -590,6 +668,7 @@
         
         // Form Elements
         const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
         const forgotForm = document.getElementById('forgot-form');
         const twofaForm = document.getElementById('twofa-form');
         const loading = document.getElementById('loading');
@@ -611,9 +690,40 @@
             }
         }
         
+        function toggleRegisterPassword() {
+            const passwordInput = document.getElementById('register-password');
+            const toggleIcon = document.getElementById('register-password-toggle');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+        
+        function toggleConfirmPassword() {
+            const passwordInput = document.getElementById('register-confirm-password');
+            const toggleIcon = document.getElementById('confirm-password-toggle');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+        
         // Form Switching
         function showForgotPassword() {
             loginForm.classList.add('hidden');
+            registerForm.classList.add('hidden');
             forgotForm.classList.remove('hidden');
             clearAlerts();
         }
@@ -621,7 +731,16 @@
         function showLoginForm() {
             forgotForm.classList.add('hidden');
             twofaForm.classList.add('hidden');
+            registerForm.classList.add('hidden');
             loginForm.classList.remove('hidden');
+            clearAlerts();
+        }
+        
+        function showRegisterForm() {
+            loginForm.classList.add('hidden');
+            forgotForm.classList.add('hidden');
+            twofaForm.classList.add('hidden');
+            registerForm.classList.remove('hidden');
             clearAlerts();
         }
         
@@ -770,30 +889,51 @@
             showAlert('Verification code resent!', 'success');
         }
         
-        // Social Login
-        function socialLogin(provider) {
+        // Registration Handler
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearAlerts();
+            
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirm-password').value;
+            const terms = document.getElementById('terms').checked;
+            
+            // Validation
+            if (password !== confirmPassword) {
+                showAlert('Passwords do not match. Please try again.');
+                return;
+            }
+            
+            if (password.length < 8) {
+                showAlert('Password must be at least 8 characters long.');
+                return;
+            }
+            
+            if (!terms) {
+                showAlert('Please accept the Terms of Service and Privacy Policy.');
+                return;
+            }
+            
+            // Show loading
             loading.classList.add('active');
             
+            // Simulate API call
             setTimeout(() => {
                 loading.classList.remove('active');
-                showAlert(`${provider} login is not configured yet`, 'error');
-            }, 1000);
-        }
-        
-        // Create Particles
-        function createParticles() {
-            const particlesContainer = document.getElementById('particles');
-            const particleCount = 50;
-            
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 15 + 's';
-                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
-                particlesContainer.appendChild(particle);
-            }
-        }
+                
+                // In a real application, this would create the admin account
+                showAlert('Registration successful! Please sign in with your credentials.', 'success');
+                
+                // Clear form and switch to login
+                registerForm.reset();
+                setTimeout(() => {
+                    showLoginForm();
+                    document.getElementById('email').value = email;
+                }, 2000);
+            }, 1500);
+        });
         
         // Session Check
         function checkSession() {
@@ -816,7 +956,6 @@
         
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            createParticles();
             checkSession();
             
             // Add demo credentials hint
