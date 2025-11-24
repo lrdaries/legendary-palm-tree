@@ -41,6 +41,7 @@
         
         body {
             font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
         }
         
         .playfair {
@@ -98,6 +99,10 @@
             backdrop-filter: blur(4px);
         }
 
+        #auth-modal {
+            overflow-y: auto;
+        }
+
         .auth-modal-container {
             min-height: 100vh;
             padding-top: 2rem;
@@ -127,11 +132,19 @@
         @media (max-width: 639px) {
             .auth-modal-container {
                 align-items: flex-start;
+                padding: 0;
+                min-height: 100vh;
             }
 
             .auth-modal-panel {
                 border-radius: 0;
-                padding: 1.5rem;
+                padding: clamp(1.25rem, 4vw, 2rem);
+                max-width: 100%;
+                min-height: 100vh;
+                max-height: none;
+                display: flex;
+                flex-direction: column;
+                overflow-y: auto;
             }
         }
     </style>
