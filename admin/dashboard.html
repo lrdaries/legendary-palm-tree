@@ -338,6 +338,32 @@
     </div>
   </div>
 
+  <!-- Logout confirmation -->
+  <div id="logout-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-900/40 p-4">
+    <div class="w-full max-w-md rounded-2xl bg-white shadow-xl p-6 space-y-4">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
+          <i class="fas fa-sign-out-alt text-xl"></i>
+        </div>
+        <div>
+          <p class="text-sm uppercase tracking-wide text-slate-400">Ready to wrap up?</p>
+          <h4 class="text-lg font-semibold text-slate-900">Confirm logout</h4>
+        </div>
+      </div>
+      <p class="text-sm text-slate-600 leading-relaxed">
+        You’ll be signed out of the admin workspace. Make sure your latest changes are saved before continuing.
+      </p>
+      <div class="flex items-center gap-3">
+        <button id="logout-cancel" class="flex-1 border border-slate-200 text-slate-700 rounded-lg py-2.5 hover:bg-slate-50 transition">
+          Stay logged in
+        </button>
+        <button id="logout-confirm" class="flex-1 bg-red-500 text-white rounded-lg py-2.5 hover:bg-red-600 transition shadow-sm">
+          Logout
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- notification -->
   <div id="notification-toast" class="fixed top-6 right-6 z-50 hidden">
     <div class="bg-white p-4 rounded-lg shadow flex items-start gap-3 min-w-[260px]">
@@ -389,6 +415,28 @@
     document.getElementById('notification-close').addEventListener('click', () => {
       document.getElementById('notification-toast').classList.add('hidden');
     });
+
+    // ---------- Logout modal ----------
+    const logoutModal = document.getElementById('logout-modal');
+    const logoutConfirmBtn = document.getElementById('logout-confirm');
+    const logoutCancelBtn = document.getElementById('logout-cancel');
+
+    function toggleLogoutModal(show) {
+      if (!logoutModal) return;
+      logoutModal.classList.toggle('hidden', !show);
+    }
+
+    function handleLogout() {
+      localStorage.removeItem('adminSession');
+      sessionStorage.removeItem('adminSession');
+      window.location.href = 'index.html';
+    }
+
+    logoutCancelBtn.addEventListener('click', () => toggleLogoutModal(false));
+    logoutModal.addEventListener('click', (event) => {
+      if (event.target === logoutModal) toggleLogoutModal(false);
+    });
+    logoutConfirmBtn.addEventListener('click', () => handleLogout());
 
     // ---------- Navigation (Dashboard <-> Products) ----------
     function setActiveSection(target) {
@@ -821,13 +869,7 @@
       });
 
       document.getElementById('logout-btn').addEventListener('click', () => {
-        if (confirm('Logout?')) {
-          // Clear all session data
-          localStorage.removeItem('adminSession');
-          sessionStorage.removeItem('adminSession');
-          // Redirect to login page
-          window.location.href = 'index.html';
-        }
+        toggleLogoutModal(true);
       });
 
       initSizesCheckboxes();
