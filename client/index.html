@@ -355,9 +355,9 @@
         <div class="container mx-auto px-4 text-center">
             <h3 class="playfair text-4xl font-bold mb-4">Join the Diva's Club</h3>
             <p class="text-lg mb-8">Get exclusive access to new collections and member-only sales</p>
-            <form onsubmit="App.handleNewsletter(event)" class="max-w-md mx-auto flex gap-4">
-                <input type="email" id="newsletter-email" placeholder="Enter your email" class="flex-1 px-4 py-3 rounded text-black" required>
-                <button type="submit" class="bg-white text-black px-6 py-3 rounded font-semibold hover:bg-gray-100 transition">
+            <form onsubmit="App.handleNewsletter(event)" class="max-w-md mx-auto flex flex-col sm:flex-row gap-4">
+                <input type="email" id="newsletter-email" placeholder="Enter your email" class="w-full flex-1 px-4 py-3 rounded text-black" required>
+                <button type="submit" class="w-full sm:w-auto bg-white text-black px-6 py-3 rounded font-semibold hover:bg-gray-100 transition">
                     Subscribe
                 </button>
             </form>
