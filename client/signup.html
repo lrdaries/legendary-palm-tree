@@ -42,7 +42,7 @@
                 <h1 class="playfair text-4xl font-bold text-gray-900">Join the Diva's Kloset Society</h1>
                 <p class="text-gray-600 leading-relaxed">
                     Save your contact details, receive curated drops, and enjoy a seamless checkout experience.
-                    Provide the details below and we'll send a one-time authentication code to confirm your email.
+                    Provide the essentials below and your profile will be ready instantly.
                 </p>
                 <div class="bg-white rounded-2xl p-6 shadow-sm space-y-4">
                     <div class="flex items-center space-x-4">
@@ -55,15 +55,8 @@
                     <div class="flex items-center space-x-4">
                         <div class="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-semibold">2</div>
                         <div>
-                            <p class="font-semibold text-gray-900">Check your inbox</p>
-                            <p class="text-sm text-gray-500">We send a 6-digit authentication code.</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <div class="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-semibold">3</div>
-                        <div>
-                            <p class="font-semibold text-gray-900">Verify & shop</p>
-                            <p class="text-sm text-gray-500">Enter the code and unlock new arrivals.</p>
+                            <p class="font-semibold text-gray-900">Start shopping</p>
+                            <p class="text-sm text-gray-500">Enjoy VIP drops right away.</p>
                         </div>
                     </div>
                 </div>
@@ -85,18 +78,13 @@
                                class="mt-2 w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-black" required>
                     </div>
                     <div>
-                        <label for="phone" class="text-sm font-semibold text-gray-700">Phone Number</label>
-                        <input type="tel" id="phone" name="phone" placeholder="+1 202 555 0148"
-                               class="mt-2 w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-black" required>
-                    </div>
-                    <div>
                         <label for="address" class="text-sm font-semibold text-gray-700">Address</label>
                         <input type="text" id="address" name="address" placeholder="123 Fashion Avenue"
                                class="mt-2 w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-black" required>
                     </div>
                     <div>
-                        <label for="city" class="text-sm font-semibold text-gray-700">City</label>
-                        <input type="text" id="city" name="city" placeholder="New York"
+                        <label for="password" class="text-sm font-semibold text-gray-700">Password</label>
+                        <input type="password" id="password" name="password" placeholder="Create a secure password"
                                class="mt-2 w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-black" required>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -121,28 +109,9 @@
                             </select>
                         </div>
                     </div>
-                    <div>
-                        <label for="contactPreference" class="text-sm font-semibold text-gray-700">Preferred Contact Method</label>
-                        <select id="contactPreference" name="contactPreference"
-                                class="mt-2 w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-black" required>
-                            <option value="">Choose an option</option>
-                            <option value="email">Email</option>
-                            <option value="phone">Phone</option>
-                            <option value="whatsapp">WhatsApp</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="notes" class="text-sm font-semibold text-gray-700">Style Notes (Optional)</label>
-                        <textarea id="notes" name="notes" rows="3" placeholder="Tell us what you love..."
-                                  class="mt-2 w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-black"></textarea>
-                    </div>
-                    <div class="flex items-start space-x-2">
-                        <input id="newsletter" name="newsletter" type="checkbox" class="mt-1">
-                        <label for="newsletter" class="text-sm text-gray-600">Email me about private launches and runway recaps.</label>
-                    </div>
                     <div id="form-status" class="text-sm text-gray-500"></div>
                     <button type="submit" class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-900 transition">
-                        Create Account & Get Code
+                        Create Account
                     </button>
                 </form>
             </section>
@@ -167,16 +136,14 @@
 
             const formData = new FormData(form);
             const payload = Object.fromEntries(formData.entries());
-            payload.timestamp = new Date().toISOString();
+            console.log('Signup submitted', { ...payload, timestamp: new Date().toISOString() });
 
-            sessionStorage.setItem('pendingSignup', JSON.stringify(payload));
-
-            status.textContent = 'Creating your profile and sending your authentication code...';
+            status.textContent = 'Creating your profile...';
             status.classList.remove('text-red-600');
             status.classList.add('text-emerald-600');
 
             setTimeout(() => {
-                window.location.href = `verify.html?email=${encodeURIComponent(payload.email)}`;
+                status.textContent = 'All set! You can head back to the store.';
             }, 800);
         });
     </script>
