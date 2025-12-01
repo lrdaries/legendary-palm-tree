@@ -3,22 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' http://localhost:* http://127.0.0.1:* 
+    https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://*.gstatic.com https://*.google.com; style-src 'self' 'unsafe-inline' 
+    https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com; connect-src 'self' 
+    http://localhost:* http://127.0.0.1:* https://*.gstatic.com https://*.google.com ws: wss:; img-src 'self' data: https: http: blob:; frame-src 'self'; object-src 'none'; 
+    base-uri 'self'; form-action 'self'; upgrade-insecure-requests;">
     
-    <!-- Primary Meta Tags -->
     <title>Diva's Kloset - Premium Fashion Brand | Shop Men's & Women's Clothing Online</title>
     <meta name="description" content="Discover premium fashion at Diva's Kloset. Shop high-quality men's and women's clothing, accessories, and footwear. Free shipping on orders over $100.">
     <meta name="keywords" content="luxury fashion, designer clothing, international fashion, women's fashion, designer accessories">
     <meta name="author" content="Diva's Kloset">
     <meta name="robots" content="index, follow">
     
-    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://divaskloset.com/">
     <meta property="og:title" content="Diva's Kloset - Premium Fashion Brand">
     <meta property="og:description" content="Discover premium fashion at Diva's Kloset. Shop high-quality clothing and accessories.">
     <meta property="og:image" content="https://divaskloset.com/images/og-image.jpg">
     
-    <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://divaskloset.com/">
     <meta property="twitter:title" content="Diva's Kloset - Premium Fashion Brand">
@@ -29,6 +31,10 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap');
@@ -88,6 +94,7 @@
             width: 40px;
             height: 40px;
             animation: spin 1s linear infinite;
+            margin: 0 auto;
         }
 
         @keyframes spin {
@@ -160,9 +167,30 @@
             pointer-events: none;
             opacity: 0.6;
         }
+
+        .step-badge {
+            display: inline-block;
+            background: #E47026;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .auth-step {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .input-otp {
+            font-size: 1.5rem;
+            letter-spacing: 0.5rem;
+            text-align: center;
+            font-weight: 600;
+        }
     </style>
     <script>
-        // Tailwind Config
         tailwind.config = {
             theme: {
                 extend: {
@@ -182,10 +210,6 @@
             }
         };
     </script>
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
 </head>
 <body class="bg-gray-50">
     <!-- Announcement Bar -->
@@ -197,7 +221,6 @@
     <header class="glass-effect sticky top-0 z-50 shadow-sm">
         <nav class="container mx-auto px-4 py-4">
             <div class="flex justify-between items-center">
-                <!-- Logo -->
                 <div class="flex items-center space-x-2">
                     <div class="w-12 h-12 bg-gradient-to-br from-orange-400 to-pink-400 rounded-full flex items-center justify-center">
                         <span class="text-white font-bold text-xl">DK</span>
@@ -205,15 +228,12 @@
                     <h1 class="playfair text-3xl font-bold text-gray-900">Diva's Kloset</h1>
                 </div>
                 
-                <!-- Navigation -->
                 <div class="hidden lg:flex items-center space-x-8">
                     <button onclick="App.handleProtectedAction('scrollToProducts')" class="text-gray-700 hover:text-black transition">New Arrivals</button>
                     <button onclick="App.handleProtectedAction('goToCollections')" class="text-gray-700 hover:text-black transition">Collections</button>
                 </div>
                 
-                <!-- Right Actions -->
                 <div class="flex items-center space-x-4">
-                    <!-- Currency Selector -->
                     <select id="currency-selector" class="bg-transparent border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:border-black" aria-label="Select Currency">
                         <option value="USD">$ USD</option>
                         <option value="EUR">€ EUR</option>
@@ -226,18 +246,15 @@
                         <option value="INR">₹ INR</option>
                     </select>
                     
-                    <!-- Search -->
-                    <button onclick="App.handleProtectedAction('toggleSearch')" class="text-gray-700 hover:text-black transition" aria-label="Search">
+                    <button onclick="App.toggleSearch()" class="text-gray-700 hover:text-black transition" aria-label="Search">
                         <i class="fas fa-search text-xl"></i>
                     </button>
                     
-                    <!-- User -->
                     <button id="user-btn" onclick="App.toggleAuth()" class="text-gray-700 hover:text-black transition relative" aria-label="User Account">
                         <i class="fas fa-user text-xl"></i>
                         <span id="user-status" class="absolute -bottom-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
                     </button>
                     
-                    <!-- Mobile Menu -->
                     <button id="mobile-menu-btn" onclick="App.toggleMobileMenu()" class="lg:hidden" aria-label="Menu">
                         <i class="fas fa-bars text-xl"></i>
                     </button>
@@ -343,7 +360,6 @@
             </div>
             
             <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 min-h-[400px]">
-                <!-- Products will be dynamically loaded here -->
             </div>
         </div>
     </section>
@@ -424,27 +440,74 @@
     <div id="auth-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden modal-overlay">
         <div class="auth-modal-container flex items-start sm:items-center justify-center px-4 sm:px-6">
             <div class="auth-modal-panel bg-white w-full relative rounded-lg p-6 sm:p-8">
-                <!-- Sign In Tab -->
-                <div id="signin-tab" class="tab-content">
+                
+                <!-- STEP 1: Sign In with Email -->
+                <div id="step-1" class="auth-step">
                     <h3 class="text-2xl font-bold mb-6">Sign In</h3>
+                    
                     <form id="signin-form" onsubmit="App.handleSignIn(event)" class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium mb-2">Email</label>
                             <input type="email" id="signin-email" placeholder="your@email.com" class="w-full border rounded px-4 py-2 focus:outline-none focus:border-black" required>
                         </div>
                         <button type="submit" class="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition">
-                            <span id="signin-btn-text">Get OTP</span>
+                            <span id="signin-btn-text">Request OTP</span>
                         </button>
                     </form>
-                    <p class="text-center mt-4 text-gray-600">
-                        <span>New to Diva's Kloset?</span>
-                        <button onclick="App.switchAuthTab('signup')" class="text-black font-semibold hover:underline ml-1">Create an account</button>
-                    </p>
+
+                    <div class="mt-6 pt-6 border-t">
+                        <p class="text-gray-600 text-center">Don't have an account?</p>
+                        <button type="button" onclick="App.goToStep(5)" class="w-full mt-3 bg-gray-100 text-black py-2 rounded hover:bg-gray-200 transition font-semibold">
+                            Create Account
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Sign Up Tab -->
-                <div id="signup-tab" class="tab-content hidden">
+                <!-- STEP 3: OTP Verification -->
+                <div id="step-3" class="auth-step hidden">
+                    <div class="step-badge">Step 1 of 2: One-Time Password</div>
+                    <h3 class="text-2xl font-bold mb-2">Enter OTP Code</h3>
+                    <p class="text-gray-600 mb-6">We sent a 6-digit code to <span id="otp-email-display" class="font-semibold text-black"></span></p>
+                    
+                    <form id="otp-form" onsubmit="App.handleOtpVerification(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">OTP Code</label>
+                            <input type="text" id="otp-code" placeholder="000000" maxlength="6" class="w-full border rounded px-4 py-2 input-otp focus:outline-none focus:border-black" required>
+                        </div>
+                        <button type="submit" class="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition">
+                            <span id="otp-btn-text">Verify OTP</span>
+                        </button>
+                    </form>
+
+                    <p class="text-center mt-4 text-gray-600">
+                        <button type="button" onclick="App.resendOtp()" class="text-black font-semibold hover:underline">Resend OTP</button>
+                    </p>
+
+                    <button type="button" onclick="App.goToStep(1)" class="w-full mt-4 bg-gray-100 text-black py-2 rounded hover:bg-gray-200 transition">
+                        Back to Sign In
+                    </button>
+                </div>
+
+                <!-- STEP 4: Success -->
+                <div id="step-4" class="auth-step hidden">
+                    <div class="text-center">
+                        <div class="flex justify-center mb-6">
+                            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-check text-3xl text-green-600"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2 text-green-600">Welcome!</h3>
+                        <p id="success-message" class="text-gray-600 mb-6">You have successfully signed in to your account.</p>
+                        <button type="button" onclick="App.completeAuth()" class="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition">
+                            Continue to Home
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 5: Sign Up Form -->
+                <div id="step-5" class="auth-step hidden">
                     <h3 class="text-2xl font-bold mb-6">Create Account</h3>
+                    
                     <form id="signup-form" onsubmit="App.handleSignUp(event)" class="space-y-4">
                         <div class="grid grid-cols-2 gap-4">
                             <div>
@@ -468,28 +531,30 @@
                             <span id="signup-btn-text">Create Account</span>
                         </button>
                     </form>
-                    <p class="text-center mt-4 text-gray-600">
-                        <span>Already have an account?</span>
-                        <button onclick="App.switchAuthTab('signin')" class="text-black font-semibold hover:underline ml-1">Sign In</button>
-                    </p>
+
+                    <div class="mt-6 pt-6 border-t">
+                        <p class="text-gray-600 text-center">Already have an account?</p>
+                        <button type="button" onclick="App.goToStep(1)" class="w-full mt-3 bg-gray-100 text-black py-2 rounded hover:bg-gray-200 transition font-semibold">
+                            Sign In
+                        </button>
+                    </div>
                 </div>
 
-                <!-- OTP Verification Tab -->
-                <div id="otp-tab" class="tab-content hidden">
-                    <h3 class="text-2xl font-bold mb-2">Verify Your Email</h3>
-                    <p class="text-gray-600 mb-6">We've sent a code to <span id="otp-email" class="font-semibold"></span></p>
-                    <form id="otp-form" onsubmit="App.handleOtpVerification(event)" class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium mb-2">Enter OTP Code</label>
-                            <input type="text" id="otp-code" placeholder="000000" class="w-full border rounded px-4 py-2 text-center text-2xl tracking-widest focus:outline-none focus:border-black" required maxlength="6">
-                        </div>
-                        <button type="submit" class="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition">
-                            <span id="otp-btn-text">Verify OTP</span>
+                <!-- STEP 6: Check Email After Sign Up -->
+                <div id="step-6" class="auth-step hidden">
+                    <div class="step-badge">Step 1 of 2: Verify Email</div>
+                    <h3 class="text-2xl font-bold mb-2">Check Your Email</h3>
+                    <p class="text-gray-600 mb-6">We sent a verification link to <span id="verify-email-display" class="font-semibold text-black"></span></p>
+                    <p class="text-gray-600 mb-8">Please click the link in your email to verify your account. You can then sign in to your account.</p>
+                    
+                    <div class="space-y-4">
+                        <button type="button" onclick="App.goToStep(1)" class="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition">
+                            Go to Sign In
                         </button>
-                    </form>
-                    <p class="text-center mt-4 text-gray-600">
-                        <button onclick="App.switchAuthTab('signin')" class="text-black font-semibold hover:underline">Back to Sign In</button>
-                    </p>
+                        <button type="button" onclick="App.toggleAuth()" class="w-full bg-gray-200 text-black py-2 rounded hover:bg-gray-300 transition">
+                            Close
+                        </button>
+                    </div>
                 </div>
 
                 <button onclick="App.toggleAuth()" class="absolute top-4 right-4 text-gray-500 hover:text-black" aria-label="Close">
@@ -520,10 +585,9 @@
     </div>
 
     <script>
-        
         // CONFIGURATION
         const CONFIG = {
-            API_BASE_URL: 'http://localhost:8080/auth',
+            API_BASE_URL: 'http://localhost:8081/api/auth',
             STORAGE_KEYS: {
                 TOKEN: 'auth_token',
                 USER: 'user_data',
@@ -531,30 +595,22 @@
             }
         };
 
-       
         // APPLICATION STATE MANAGER
         const App = (() => {
-            // State
             let state = {
                 currentCurrency: 'USD',
                 currentUser: null,
                 authToken: null,
                 filteredProducts: null,
                 isAuthenticated: false,
+                currentStep: 1,
+                pendingEmail: null,
                 exchangeRates: {
-                    USD: 1,
-                    EUR: 0.85,
-                    GBP: 0.73,
-                    JPY: 110.0,
-                    NGN: 1550.0,
-                    AUD: 1.35,
-                    CAD: 1.25,
-                    CNY: 6.45,
-                    INR: 74.5
+                    USD: 1, EUR: 0.85, GBP: 0.73, JPY: 110.0, NGN: 1550.0,
+                    AUD: 1.35, CAD: 1.25, CNY: 6.45, INR: 74.5
                 }
             };
 
-            // Products Data
             const products = [
                 { id: 1, name: 'Silk Evening Dress', price: 899, category: 'Clothing', color: 'Midnight Blue', stock: 5 },
                 { id: 2, name: 'Cashmere Coat', price: 1299, category: 'Clothing', color: 'Camel', stock: 3 },
@@ -628,157 +684,189 @@
                     } catch (e) {
                         console.error('Storage error:', e);
                     }
+                },
+
+                getUrlParameter(name) {
+                    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+                    var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+                    var results = regex.exec(location.search);
+                    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+                },
+
+                // Parse response safely (handles both JSON and text)
+                async parseResponse(response) {
+                    const contentType = response.headers.get('content-type');
+                    
+                    if (contentType && contentType.includes('application/json')) {
+                        try {
+                            return await response.json();
+                        } catch (e) {
+                            const text = await response.text();
+                            return { message: text, success: response.ok };
+                        }
+                    } else {
+                        const text = await response.text();
+                        return { message: text, success: response.ok };
+                    }
                 }
             };
 
-        
             // AUTHENTICATION FUNCTIONS
             const auth = {
                 async handleSignIn(event) {
                     event.preventDefault();
-                    
                     const email = document.getElementById('signin-email').value;
-                    
                     const submitBtn = event.target.querySelector('button[type="submit"]');
                     const originalText = submitBtn.textContent;
                     submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<div class="spinner mx-auto"></div>';
+                    submitBtn.innerHTML = '<div class="spinner"></div>';
 
                     try {
                         const response = await fetch(`${CONFIG.API_BASE_URL}/request-otp`, {
                             method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
+                            headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ email })
                         });
 
-                        const data = await response.json();
+                        const data = await utils.parseResponse(response);
 
                         if (!response.ok) {
                             throw new Error(data.message || 'Failed to send OTP');
                         }
 
-                        // Store pending email and switch to OTP tab
+                        state.pendingEmail = email;
                         utils.saveToStorage(CONFIG.STORAGE_KEYS.PENDING_EMAIL, email);
-                        document.getElementById('otp-email').textContent = email;
-                        ui.switchAuthTab('otp');
+                        document.getElementById('otp-email-display').textContent = email;
+                        ui.goToStep(3);
                         utils.showNotification('OTP sent to your email!', 'info');
 
                     } catch (error) {
                         console.error('Sign in error:', error);
-                        utils.showNotification(error.message || 'Failed to send OTP', 'error');
+                        utils.showNotification(error.message, 'error');
                     } finally {
                         submitBtn.disabled = false;
-                        submitBtn.textContent = originalText;
+                        submitBtn.innerHTML = originalText;
                     }
                 },
 
                 async handleSignUp(event) {
                     event.preventDefault();
-                    
                     const firstName = document.getElementById('signup-firstname').value;
                     const lastName = document.getElementById('signup-lastname').value;
                     const email = document.getElementById('signup-email').value;
                     const password = document.getElementById('signup-password').value;
-
                     const submitBtn = event.target.querySelector('button[type="submit"]');
                     const originalText = submitBtn.textContent;
                     submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<div class="spinner mx-auto"></div>';
+                    submitBtn.innerHTML = '<div class="spinner"></div>';
 
                     try {
                         const response = await fetch(`${CONFIG.API_BASE_URL}/register`, {
                             method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                firstName,
-                                lastName,
-                                email,
-                                password
-                            })
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ firstName, lastName, email, password })
                         });
 
-                        const data = await response.json();
+                        const data = await utils.parseResponse(response);
 
                         if (!response.ok) {
                             throw new Error(data.message || 'Registration failed');
                         }
 
-                        utils.showNotification('Registration successful! Check your email to verify.', 'success');
+                        state.pendingEmail = email;
+                        utils.saveToStorage(CONFIG.STORAGE_KEYS.PENDING_EMAIL, email);
+                        document.getElementById('verify-email-display').textContent = email;
+                        ui.goToStep(6);
+                        utils.showNotification('Check your email for verification link!', 'info');
                         event.target.reset();
-                        
-                        // Switch back to sign in after 2 seconds
-                        setTimeout(() => {
-                            ui.switchAuthTab('signin');
-                        }, 2000);
 
                     } catch (error) {
                         console.error('Sign up error:', error);
-                        utils.showNotification(error.message || 'Registration failed', 'error');
+                        utils.showNotification(error.message, 'error');
                     } finally {
                         submitBtn.disabled = false;
-                        submitBtn.textContent = originalText;
+                        submitBtn.innerHTML = originalText;
                     }
                 },
 
                 async handleOtpVerification(event) {
                     event.preventDefault();
-                    
                     const otpCode = document.getElementById('otp-code').value;
-                    const email = utils.loadFromStorage(CONFIG.STORAGE_KEYS.PENDING_EMAIL);
+                    const email = state.pendingEmail || utils.loadFromStorage(CONFIG.STORAGE_KEYS.PENDING_EMAIL);
                     
                     if (!email) {
                         utils.showNotification('Session expired. Please sign in again.', 'error');
-                        ui.switchAuthTab('signin');
+                        ui.goToStep(1);
                         return;
                     }
 
                     const submitBtn = event.target.querySelector('button[type="submit"]');
                     const originalText = submitBtn.textContent;
                     submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<div class="spinner mx-auto"></div>';
+                    submitBtn.innerHTML = '<div class="spinner"></div>';
 
                     try {
                         const response = await fetch(`${CONFIG.API_BASE_URL}/verify-otp`, {
                             method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
+                            headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ email, otp: otpCode })
                         });
 
-                        const data = await response.json();
+                        const data = await utils.parseResponse(response);
 
                         if (!response.ok) {
                             throw new Error(data.message || 'OTP verification failed');
                         }
 
-                        // Store token and user data
-                        state.authToken = data.token;
+                        state.authToken = data.token || data.data?.token;
                         state.currentUser = {
-                            email: data.email,
-                            firstName: data.firstName
+                            email: data.email || data.data?.email || email,
+                            firstName: data.firstName || data.data?.firstName || 'User'
                         };
                         state.isAuthenticated = true;
 
-                        utils.saveToStorage(CONFIG.STORAGE_KEYS.TOKEN, data.token);
+                        utils.saveToStorage(CONFIG.STORAGE_KEYS.TOKEN, state.authToken);
                         utils.saveToStorage(CONFIG.STORAGE_KEYS.USER, state.currentUser);
                         utils.clearStorage(CONFIG.STORAGE_KEYS.PENDING_EMAIL);
 
-                        utils.showNotification(`Welcome ${data.firstName}!`, 'success');
+                        document.getElementById('success-message').textContent = `Welcome ${state.currentUser.firstName}! You have successfully signed in.`;
+                        ui.goToStep(4);
+                        utils.showNotification(`Welcome ${state.currentUser.firstName}! 🎉`, 'success');
                         ui.updateUserStatus();
-                        ui.toggleAuth();
-                        event.target.reset();
 
                     } catch (error) {
                         console.error('OTP verification error:', error);
                         utils.showNotification(error.message || 'OTP verification failed', 'error');
                     } finally {
                         submitBtn.disabled = false;
-                        submitBtn.textContent = originalText;
+                        submitBtn.innerHTML = originalText;
+                    }
+                },
+
+                async resendOtp() {
+                    const email = state.pendingEmail || utils.loadFromStorage(CONFIG.STORAGE_KEYS.PENDING_EMAIL);
+                    if (!email) {
+                        utils.showNotification('No pending email found', 'error');
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(`${CONFIG.API_BASE_URL}/request-otp`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email })
+                        });
+
+                        const data = await utils.parseResponse(response);
+
+                        if (!response.ok) {
+                            throw new Error(data.message || 'Failed to resend OTP');
+                        }
+                        
+                        utils.showNotification('OTP resent!', 'success');
+
+                    } catch (error) {
+                        utils.showNotification(error.message || 'Failed to resend OTP', 'error');
                     }
                 },
 
@@ -795,7 +883,6 @@
                 }
             };
 
-            
             // PRODUCT MANAGEMENT
             const productManager = {
                 display(productList = products) {
@@ -899,7 +986,6 @@
                 }
             };
 
-        
             // UI CONTROLS
             const ui = {
                 toggleSearch() {
@@ -914,15 +1000,17 @@
                 toggleAuth() {
                     document.getElementById('auth-modal').classList.toggle('hidden');
                     if (!document.getElementById('auth-modal').classList.contains('hidden')) {
-                        ui.switchAuthTab('signin');
+                        ui.goToStep(1);
                     }
                 },
 
-                switchAuthTab(tab) {
-                    // Hide all tabs
-                    document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
-                    // Show selected tab
-                    document.getElementById(`${tab}-tab`).classList.remove('hidden');
+                goToStep(step) {
+                    document.querySelectorAll('[id^="step-"]').forEach(el => {
+                        el.classList.add('hidden');
+                    });
+                    
+                    document.getElementById(`step-${step}`).classList.remove('hidden');
+                    state.currentStep = step;
                 },
 
                 toggleMobileMenu() {
@@ -955,7 +1043,6 @@
                 }
             };
 
-        
             // PROTECTED ACTIONS
             const protectedActions = {
                 scrollToProducts() {
@@ -963,7 +1050,7 @@
                 },
 
                 goToCollections() {
-                    window.location.href = 'collections.html';
+                    window.location.href = '/client/index.html';
                 },
 
                 toggleSearch() {
@@ -979,7 +1066,6 @@
                 }
             };
 
-        
             // NEWSLETTER  
             function handleNewsletter(event) {
                 event.preventDefault();
@@ -988,10 +1074,8 @@
                 event.target.reset();
             }
 
-        
             // INITIALIZATION
             function init() {
-                // Check if user is already logged in
                 const savedToken = utils.loadFromStorage(CONFIG.STORAGE_KEYS.TOKEN);
                 const savedUser = utils.loadFromStorage(CONFIG.STORAGE_KEYS.USER);
                 
@@ -1001,16 +1085,19 @@
                     state.isAuthenticated = true;
                 }
 
-                // Display products
                 productManager.display();
                 ui.updateUserStatus();
 
-                // Currency selector
+                const verificationToken = utils.getUrlParameter('token');
+                if (verificationToken) {
+                    console.log('📧 Email verification token found:', verificationToken);
+                    auth.handleEmailVerificationFromLink(verificationToken);
+                }
+
                 document.getElementById('currency-selector').addEventListener('change', (e) => {
                     ui.handleCurrencyChange(e.target.value);
                 });
 
-                // Close modals on backdrop click
                 ['search-modal', 'auth-modal'].forEach(id => {
                     document.getElementById(id).addEventListener('click', (e) => {
                         if (e.target.id === id) {
@@ -1019,7 +1106,6 @@
                     });
                 });
 
-                // Escape key closes modals
                 document.addEventListener('keydown', (e) => {
                     if (e.key === 'Escape') {
                         document.getElementById('mobile-menu').classList.add('translate-x-full');
@@ -1028,7 +1114,6 @@
                     }
                 });
 
-                // Scroll animations
                 const observer = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
@@ -1042,7 +1127,37 @@
                 });
             }
 
-            
+            auth.handleEmailVerificationFromLink = async function(token) {
+                try {
+                    console.log('Verifying email with token from link...');
+                    utils.showNotification('Verifying your email...', 'info');
+                    
+                    const response = await fetch(`${CONFIG.API_BASE_URL}/verify-email?token=${token}`, {
+                        method: 'GET',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include'
+                    });
+
+                    const data = await utils.parseResponse(response);
+                    
+                    if (!response.ok) {
+                        throw new Error(data.message || 'Email verification failed');
+                    }
+
+                    console.log('Email verified successfully from link!');
+                    utils.showNotification('Email verified successfully! Please sign in to continue.', 'success');
+                    
+                    setTimeout(() => {
+                        ui.toggleAuth();
+                        ui.goToStep(1);
+                    }, 1500);
+
+                } catch (error) {
+                    console.error('Email verification error:', error);
+                    utils.showNotification(error.message, 'error');
+                }
+            };
+
             // PUBLIC API
             return {
                 init,
@@ -1052,16 +1167,20 @@
                 handleSignIn: (e) => auth.handleSignIn(e),
                 handleSignUp: (e) => auth.handleSignUp(e),
                 handleOtpVerification: (e) => auth.handleOtpVerification(e),
+                resendOtp: () => auth.resendOtp(),
                 handleSearch: (query) => productManager.search(query),
                 handleNewsletter,
                 filterByCategory: (cat) => productManager.filter(cat),
                 sortProducts: (sort) => productManager.sort(sort),
                 clearFilters: () => productManager.clearFilters(),
                 scrollToProducts: () => productManager.scrollToSection(),
-                switchAuthTab: (tab) => ui.switchAuthTab(tab),
                 logout: () => auth.logout(),
+                goToStep: (step) => ui.goToStep(step),
+                completeAuth() {
+                    ui.toggleAuth();
+                    utils.showNotification('You are now logged in!', 'success');
+                },
                 
-                // Handle mobile user button
                 handleMobileUserAction() {
                     if (state.isAuthenticated) {
                         auth.logout();
@@ -1072,7 +1191,6 @@
                     }
                 },
                 
-                // Protected action handler
                 handleProtectedAction(action, param) {
                     if (!state.isAuthenticated) {
                         utils.showNotification('Please sign in to continue', 'info');
@@ -1089,7 +1207,6 @@
             };
         })();
 
-        // Initialize app when DOM is ready
         document.addEventListener('DOMContentLoaded', () => {
             App.init();
         });
