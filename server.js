@@ -1,513 +1,604 @@
-const http = require('http');
-const fs = require('fs');
+require('dotenv').config();
+const express = require('express');
+const helmet = require('helmet');
+const cors = require('cors');
+const compression = require('compression');
+const rateLimit = require('express-rate-limit');
+const xss = require('xss-clean');
+const mongoSanitize = require('express-mongo-sanitize');
+const Database = require('./database');
+const { generateJWT, hashPassword, verifyPassword } = require('./utils/auth');
+const { initializeResend, sendOTPEmail, sendLoginLinkEmail, sendWelcomeEmail, generateOTP } = require('./services/email');
 const path = require('path');
-const url = require('url');
-const crypto = require('crypto');
+const winston = require('winston');
+const crypto = require('crypto'); // Added for token generation
 
-const PORT = 5500;
-const HOST = '127.0.0.1';
+// Initialize email service (Resend) once on server startup
+initializeResend();
 
-// ============================================
-// IN-MEMORY DATA STORAGE
-// ============================================
-const users = new Map(); // email -> { firstName, lastName, email, password, verified, createdAt }
-const otps = new Map(); // email -> { code, expiresAt, attempts }
-const emailTokens = new Map(); // token -> { email, expiresAt }
+// Logger configuration
+const logger = winston.createLogger({
+    level: 'info',
+    format: winston.format.json(),
+    transports: [
+        new winston.transports.File({ filename: 'error.log', level: 'error' }),
+        new winston.transports.Console()
+    ]
+});
+
+// Import routes
+const adminAuthRouter = require('./routes/admin-auth');
+const adminRouter = require('./routes/admin');
+const productsRouter = require('./routes/products');
+
+// Import middleware
+const { verifyAdminToken } = require('./utils/admin-auth');
+
+// Initialize Express app
+const app = express();
+
+// Server configuration
+const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || '0.0.0.0';
+const isProduction = process.env.NODE_ENV === 'production';
+
+// Configuration
 const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(32).toString('hex');
-
-// OTP Configuration
 const OTP_EXPIRY_MINUTES = 10;
 const OTP_MAX_ATTEMPTS = 5;
 const EMAIL_TOKEN_EXPIRY_HOURS = 24;
 
+// Helper functions for email/OTP
+const generateToken = () => crypto.randomBytes(32).toString('hex');
+
+// Middleware - order matters!
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: [
+                "'self'",
+                "https://cdn.tailwindcss.com",
+                "'unsafe-inline'" // Needed for Tailwind
+            ],
+            styleSrc: [
+                "'self'",
+                "https://cdn.tailwindcss.com",
+                "https://cdnjs.cloudflare.com",
+                "https://fonts.googleapis.com",
+                "'unsafe-inline'" // Needed for Tailwind and Font Awesome
+            ],
+            imgSrc: [
+                "'self'",
+                "data:",
+                "blob:",
+                "https://images.pexels.com" // Specific domain for your images
+            ],
+            connectSrc: [
+                "'self'",
+                "http://localhost:*",
+                "http://127.0.0.1:*",
+                "https://open.er-api.com"
+            ],
+            fontSrc: [
+                "'self'",
+                "data:",
+                "https://cdnjs.cloudflare.com",
+                "https://fonts.gstatic.com"
+            ],
+            objectSrc: ["'none'"],
+            mediaSrc: ["'self'"],
+            frameSrc: ["'self'"],
+            upgradeInsecureRequests: process.env.NODE_ENV === 'production' ? [] : null
+        }
+    },
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
+
+// Trust first proxy if behind a reverse proxy (e.g., Nginx)
+app.set('trust proxy', 1);
+
+// Body parsing
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+
+// CORS configuration
+const corsOptions = {
+    origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : '*',
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+    maxAge: 600 // 10 minutes
+};
+app.use(cors(corsOptions));
+
+// Security middleware
+app.use(compression());
+app.use(xss());
+app.use(mongoSanitize());
+
+// Request logging middleware
+app.use((req, res, next) => {
+    const start = Date.now();
+    res.on('finish', () => {
+        const duration = Date.now() - start;
+        logger.info(`${req.method} ${req.originalUrl} - ${res.statusCode} - ${duration}ms`);
+    });
+    next();
+});
+app.use('/uploads', express.static('uploads'));
+
+// Rate limiting middleware
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per windowMs
+    message: 'Too many requests, please try again later.'
+});
+app.use(limiter);
+
+// CORS configuration
+app.use((req, res, next) => {
+    const allowedOrigins = process.env.ALLOWED_ORIGINS 
+        ? process.env.ALLOWED_ORIGINS.split(',') 
+        : ['http://localhost:3000', 'http://localhost:8000', 'http://127.0.0.1:3000'];
+    
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+        res.header('Access-Control-Allow-Origin', origin || '*');
+    }
+    
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(200);
+    }
+    next();
+});
+
+// Request logging
+app.use((req, res, next) => {
+    logger.info({
+        method: req.method,
+        path: req.path,
+        ip: req.ip,
+        userAgent: req.get('User-Agent')
+    });
+    next();
+});
+
+// Validate required environment variables
+const requiredEnvVars = ['JWT_SECRET'];
+if (process.env.NODE_ENV === 'production') {
+    requiredEnvVars.push('RESEND_API_KEY');
+}
+
+const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+if (missingVars.length > 0 && process.env.NODE_ENV === 'production') {
+    console.error('Missing required environment variables:', missingVars.join(', '));
+    process.exit(1);
+}
+
+// Log environment info
+console.log('Environment:', process.env.NODE_ENV || 'development');
+console.log('RESEND_API_KEY:', process.env.RESEND_API_KEY ? 'Set' : 'Not set');
+
+// Error handling
+process.on('uncaughtException', (error) => {
+    console.error('Uncaught Exception:', error);
+    if (process.env.NODE_ENV === 'production') {
+        process.exit(1);
+    }
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
 // ============================================
-// UTILITY FUNCTIONS
+// DATABASE INITIALIZATION
 // ============================================
 
-// Generate 6-digit OTP
-function generateOTP() {
-    return Math.floor(100000 + Math.random() * 900000).toString();
-}
+// Initialize database on startup
+Database.initializeDatabase().catch((error) => {
+    console.error('Failed to initialize database:', error);
+    if (process.env.NODE_ENV === 'production') {
+        process.exit(1);
+    }
+});
 
-// Generate secure token for email verification
-function generateToken() {
-    return crypto.randomBytes(32).toString('hex');
-}
+// ============================================
+// API ROUTES
+// ============================================
 
-// Simple JWT-like token generation (for demo - in production use proper JWT library)
-function generateJWT(payload) {
-    const header = { alg: 'HS256', typ: 'JWT' };
-    const encodedHeader = Buffer.from(JSON.stringify(header)).toString('base64url');
-    const encodedPayload = Buffer.from(JSON.stringify(payload)).toString('base64url');
-    const signature = crypto
-        .createHmac('sha256', JWT_SECRET)
-        .update(`${encodedHeader}.${encodedPayload}`)
-        .digest('base64url');
-    return `${encodedHeader}.${encodedPayload}.${signature}`;
-}
+// Admin authentication routes (public)
+app.use('/api/admin/auth', adminAuthRouter);
 
-// Verify JWT token
-function verifyJWT(token) {
+// Protected admin API routes
+app.use('/api/admin', verifyAdminToken, adminRouter);
+
+// Public products API routes
+app.use('/api/products', productsRouter);
+
+// ============================================
+// PUBLIC USER AUTHENTICATION ROUTES
+// ============================================
+
+// Request OTP for login
+app.post('/api/auth/request-otp', async (req, res) => {
     try {
-        const parts = token.split('.');
-        if (parts.length !== 3) return null;
+        const { email } = req.body;
+
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            return res.status(400).json({ success: false, message: 'Valid email is required' });
+        }
+
+        const otpCode = generateOTP(); // Fixed: Use imported function
+        const expiresAt = new Date(Date.now() + (OTP_EXPIRY_MINUTES * 60 * 1000));
+
+        await Database.createOTP(email, otpCode, expiresAt);
+
+        const emailSent = await sendOTPEmail(email, otpCode); // Fixed: Use imported function
         
-        const [encodedHeader, encodedPayload, signature] = parts;
-        const expectedSignature = crypto
-            .createHmac('sha256', JWT_SECRET)
-            .update(`${encodedHeader}.${encodedPayload}`)
-            .digest('base64url');
-        
-        if (signature !== expectedSignature) return null;
-        
-        const payload = JSON.parse(Buffer.from(encodedPayload, 'base64url').toString());
-        return payload;
-    } catch (e) {
-        return null;
+        if (!emailSent) {
+            throw new Error('Failed to send OTP email');
+        }
+
+        console.log(`📧 OTP sent to ${email} (expires in ${OTP_EXPIRY_MINUTES} minutes)`);
+
+        res.json({
+            success: true,
+            message: 'OTP sent to your email',
+            ...(process.env.NODE_ENV !== 'production' && { otp: otpCode })
+        });
+    } catch (error) {
+        console.error('Error requesting OTP:', error);
+        res.status(500).json({ success: false, message: error.message || 'Internal server error' });
     }
-}
+});
 
-// Hash password (simple bcrypt-like for demo - in production use bcrypt)
-function hashPassword(password) {
-    return crypto.createHash('sha256').update(password + JWT_SECRET).digest('hex');
-}
+// Verify OTP and login
+app.post('/api/auth/verify-otp', async (req, res) => {
+    try {
+        const { email, otp } = req.body;
 
-// Verify password
-function verifyPassword(password, hash) {
-    return hashPassword(password) === hash;
-}
+        if (!email || !otp) {
+            return res.status(400).json({ success: false, message: 'Email and OTP are required' });
+        }
 
-// Send JSON response
-function sendJSON(res, statusCode, data) {
-    res.writeHead(statusCode, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(data));
-}
+        const emailLower = email.toLowerCase();
+        const otpData = await Database.getOTP(emailLower);
 
-// Parse request body
-function parseBody(req) {
-    return new Promise((resolve, reject) => {
-        let body = '';
-        req.on('data', chunk => { body += chunk.toString(); });
-        req.on('end', () => {
-            try {
-                resolve(body ? JSON.parse(body) : {});
-            } catch (e) {
-                reject(new Error('Invalid JSON'));
+        if (!otpData) {
+            return res.status(400).json({ success: false, message: 'OTP not found or expired. Please request a new one.' });
+        }
+
+        const expiresAt = new Date(otpData.expires_at);
+        if (expiresAt < new Date()) {
+            await Database.deleteOTP(emailLower);
+            return res.status(400).json({ success: false, message: 'OTP has expired. Please request a new one.' });
+        }
+
+        if (otpData.attempts >= OTP_MAX_ATTEMPTS) {
+            await Database.deleteOTP(emailLower);
+            return res.status(400).json({ success: false, message: 'Too many failed attempts. Please request a new OTP.' });
+        }
+
+        if (otpData.code !== otp) {
+            await Database.updateOTPAttempts(emailLower, otpData.attempts + 1);
+            return res.status(400).json({ success: false, message: 'Invalid OTP code' });
+        }
+
+        await Database.deleteOTP(emailLower);
+
+        let user = await Database.getUserByEmail(emailLower);
+        if (!user) {
+            user = await Database.createUser({
+                email: emailLower,
+                first_name: 'User',
+                last_name: '',
+                verified: true
+            });
+        }
+
+        const token = generateJWT({
+            email: emailLower,
+            firstName: user.first_name,
+            role: user.role || 'user'
+        });
+
+        res.json({
+            success: true,
+            message: 'OTP verified successfully',
+            token,
+            data: {
+                email: user.email,
+                firstName: user.first_name,
+                lastName: user.last_name,
+                role: user.role || 'user'
             }
         });
-        req.on('error', reject);
-    });
-}
-
-// Clean expired OTPs and tokens (run periodically)
-function cleanupExpired() {
-    const now = Date.now();
-    
-    // Clean expired OTPs
-    for (const [email, otpData] of otps.entries()) {
-        if (otpData.expiresAt < now) {
-            otps.delete(email);
-        }
+    } catch (error) {
+        console.error('Error verifying OTP:', error);
+        res.status(500).json({ success: false, message: error.message || 'Internal server error' });
     }
-    
-    // Clean expired email tokens
-    for (const [token, tokenData] of emailTokens.entries()) {
-        if (tokenData.expiresAt < now) {
-            emailTokens.delete(token);
+});
+
+// Register new user
+app.post('/api/auth/register', async (req, res) => {
+    try {
+        const { firstName, lastName, email, password } = req.body;
+
+        if (!firstName || !lastName || !email || !password) {
+            return res.status(400).json({ success: false, message: 'All fields are required' });
         }
-    }
-}
 
-// Run cleanup every 5 minutes
-setInterval(cleanupExpired, 5 * 60 * 1000);
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            return res.status(400).json({ success: false, message: 'Invalid email format' });
+        }
 
-// ============================================
-// API ROUTE HANDLERS
-// ============================================
+        if (password.length < 6) {
+            return res.status(400).json({ success: false, message: 'Password must be at least 6 characters' });
+        }
 
-async function handleAPIRequest(req, res) {
-    const parsedUrl = url.parse(req.url, true);
-    const pathname = parsedUrl.pathname;
-    const method = req.method;
+        const emailLower = email.toLowerCase();
 
-    // Handle OPTIONS for CORS
-    if (method === 'OPTIONS') {
-        res.writeHead(200, {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+        const existingUser = await Database.getUserByEmail(emailLower);
+        if (existingUser) {
+            return res.status(400).json({ success: false, message: 'User with this email already exists' });
+        }
+
+        const passwordHash = await hashPassword(password);
+        const user = await Database.createUser({
+            email: emailLower,
+            first_name: firstName.trim(),
+            last_name: lastName.trim(),
+            password_hash: passwordHash,
+            verified: false
         });
-        res.end();
-        return true;
-    }
 
-    // API Routes
-    if (pathname === '/api/auth/request-otp' && method === 'POST') {
-        try {
-            const body = await parseBody(req);
-            const { email } = body;
+        const verificationToken = generateToken(); // Fixed: Use defined function
+        const expiresAt = new Date(Date.now() + (EMAIL_TOKEN_EXPIRY_HOURS * 60 * 60 * 1000));
+        await Database.createEmailToken(verificationToken, emailLower, expiresAt);
 
-            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                sendJSON(res, 400, { success: false, message: 'Valid email is required' });
-                return true;
-            }
-
-            // Generate OTP
-            const otpCode = generateOTP();
-            const expiresAt = Date.now() + (OTP_EXPIRY_MINUTES * 60 * 1000);
-
-            otps.set(email.toLowerCase(), {
-                code: otpCode,
-                expiresAt,
-                attempts: 0
-            });
-
-            // In production, send email here
-            console.log(`\n📧 OTP for ${email}: ${otpCode} (expires in ${OTP_EXPIRY_MINUTES} minutes)\n`);
-
-            sendJSON(res, 200, {
-                success: true,
-                message: 'OTP sent to your email',
-                // In development, include OTP in response (remove in production)
-                ...(process.env.NODE_ENV !== 'production' && { otp: otpCode })
-            });
-            return true;
-        } catch (error) {
-            sendJSON(res, 500, { success: false, message: error.message || 'Internal server error' });
-            return true;
-        }
-    }
-
-    if (pathname === '/api/auth/verify-otp' && method === 'POST') {
-        try {
-            const body = await parseBody(req);
-            const { email, otp } = body;
-
-            if (!email || !otp) {
-                sendJSON(res, 400, { success: false, message: 'Email and OTP are required' });
-                return true;
-            }
-
-            const emailLower = email.toLowerCase();
-            const otpData = otps.get(emailLower);
-
-            if (!otpData) {
-                sendJSON(res, 400, { success: false, message: 'OTP not found or expired. Please request a new one.' });
-                return true;
-            }
-
-            if (otpData.expiresAt < Date.now()) {
-                otps.delete(emailLower);
-                sendJSON(res, 400, { success: false, message: 'OTP has expired. Please request a new one.' });
-                return true;
-            }
-
-            if (otpData.attempts >= OTP_MAX_ATTEMPTS) {
-                otps.delete(emailLower);
-                sendJSON(res, 400, { success: false, message: 'Too many failed attempts. Please request a new OTP.' });
-                return true;
-            }
-
-            if (otpData.code !== otp) {
-                otpData.attempts++;
-                sendJSON(res, 400, { success: false, message: 'Invalid OTP code' });
-                return true;
-            }
-
-            // OTP verified successfully
-            otps.delete(emailLower);
-
-            // Check if user exists
-            let user = users.get(emailLower);
-            if (!user) {
-                // Create user if they don't exist (first-time login)
-                user = {
-                    firstName: 'User',
-                    lastName: '',
-                    email: emailLower,
-                    password: null, // No password for OTP-only users
-                    verified: true,
-                    createdAt: new Date().toISOString()
-                };
-                users.set(emailLower, user);
-            }
-
-            // Generate JWT token
-            const token = generateJWT({
-                email: emailLower,
-                firstName: user.firstName,
-                iat: Math.floor(Date.now() / 1000),
-                exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60) // 7 days
-            });
-
-            sendJSON(res, 200, {
-                success: true,
-                message: 'OTP verified successfully',
-                token,
-                data: {
-                    email: user.email,
-                    firstName: user.firstName,
-                    lastName: user.lastName
-                }
-            });
-            return true;
-        } catch (error) {
-            sendJSON(res, 500, { success: false, message: error.message || 'Internal server error' });
-            return true;
-        }
-    }
-
-    if (pathname === '/api/auth/register' && method === 'POST') {
-        try {
-            const body = await parseBody(req);
-            const { firstName, lastName, email, password } = body;
-
-            // Validation
-            if (!firstName || !lastName || !email || !password) {
-                sendJSON(res, 400, { success: false, message: 'All fields are required' });
-                return true;
-            }
-
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                sendJSON(res, 400, { success: false, message: 'Invalid email format' });
-                return true;
-            }
-
-            if (password.length < 6) {
-                sendJSON(res, 400, { success: false, message: 'Password must be at least 6 characters' });
-                return true;
-            }
-
-            const emailLower = email.toLowerCase();
-
-            // Check if user already exists
-            if (users.has(emailLower)) {
-                sendJSON(res, 400, { success: false, message: 'User with this email already exists' });
-                return true;
-            }
-
-            // Create user
-            const user = {
-                firstName: firstName.trim(),
-                lastName: lastName.trim(),
-                email: emailLower,
-                password: hashPassword(password),
-                verified: false,
-                createdAt: new Date().toISOString()
-            };
-            users.set(emailLower, user);
-
-            // Generate email verification token
-            const verificationToken = generateToken();
-            const expiresAt = Date.now() + (EMAIL_TOKEN_EXPIRY_HOURS * 60 * 60 * 1000);
-            emailTokens.set(verificationToken, {
-                email: emailLower,
-                expiresAt
-            });
-
-            // In production, send verification email here
-            const verificationUrl = `http://${HOST}:${PORT}/verify-email?token=${verificationToken}`;
-            console.log(`\n📧 Verification link for ${email}: ${verificationUrl}\n`);
-
-            sendJSON(res, 201, {
-                success: true,
-                message: 'Account created successfully. Please check your email to verify your account.',
-                // In development, include verification link (remove in production)
-                ...(process.env.NODE_ENV !== 'production' && { verificationUrl })
-            });
-            return true;
-        } catch (error) {
-            sendJSON(res, 500, { success: false, message: error.message || 'Internal server error' });
-            return true;
-        }
-    }
-
-    if (pathname === '/api/auth/verify-email' && method === 'GET') {
-        try {
-            const { token } = parsedUrl.query;
-
-            if (!token) {
-                sendJSON(res, 400, { success: false, message: 'Verification token is required' });
-                return true;
-            }
-
-            const tokenData = emailTokens.get(token);
-
-            if (!tokenData) {
-                sendJSON(res, 400, { success: false, message: 'Invalid or expired verification token' });
-                return true;
-            }
-
-            if (tokenData.expiresAt < Date.now()) {
-                emailTokens.delete(token);
-                sendJSON(res, 400, { success: false, message: 'Verification token has expired' });
-                return true;
-            }
-
-            // Verify user's email
-            const user = users.get(tokenData.email);
-            if (!user) {
-                sendJSON(res, 400, { success: false, message: 'User not found' });
-                return true;
-            }
-
-            user.verified = true;
-            emailTokens.delete(token);
-
-            sendJSON(res, 200, {
-                success: true,
-                message: 'Email verified successfully'
-            });
-            return true;
-        } catch (error) {
-            sendJSON(res, 500, { success: false, message: error.message || 'Internal server error' });
-            return true;
-        }
-    }
-
-    return false; // Not an API route
-}
-
-// ============================================
-// MAIN SERVER
-// ============================================
-
-const server = http.createServer(async (req, res) => {
-    const parsedUrl = url.parse(req.url, true);
-    let pathname = parsedUrl.pathname;
-    const query = parsedUrl.query;
-
-    console.log('Request: ' + req.method + ' ' + pathname + (Object.keys(query).length ? '?' + new URLSearchParams(query).toString() : ''));
-
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    
-    res.setHeader('Content-Security-Policy', "default-src 'self' http://localhost:* http://127.0.0.1:* https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://apis.google.com chrome-extension:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.googleapis.com; connect-src 'self' http://localhost:* http://127.0.0.1:* https: data:; img-src 'self' data: https: http: blob:; frame-src 'self'; object-src 'none';");
-
-    // Handle API routes first
-    const isAPIRequest = await handleAPIRequest(req, res);
-    if (isAPIRequest) {
-        return; // API request handled
-    }
-
-    // Handle static file serving
-    if (pathname === '/verify-email' && query.token) {
-        console.log('Routing /verify-email to /client/verify-email.html with token: ' + query.token);
-        pathname = '/client/verify-email.html';
-    }
-
-    if (pathname === '/' || pathname === '') {
-        pathname = '/client/index.html';
-    }
-
-    let filePath = path.join(__dirname, pathname);
-    const ext = path.extname(filePath);
-
-    if (!ext) {
-        filePath += '.html';
-    }
-
-    const realPath = path.resolve(filePath);
-    const projectRoot = path.resolve(__dirname);
-    
-    if (!realPath.startsWith(projectRoot)) {
-        res.writeHead(403, { 'Content-Type': 'text/html' });
-        res.end('<h1>403 - Forbidden</h1>', 'utf-8');
-        console.log('403 Forbidden: ' + realPath);
-        return;
-    }
-
-    fs.readFile(filePath, (err, content) => {
-        if (err) {
-            res.writeHead(404, { 'Content-Type': 'text/html' });
-            res.end(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>404 - Not Found</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #f5f5f5; }
-                        h1 { color: #333; }
-                        p { color: #666; }
-                        a { color: #667eea; text-decoration: none; }
-                    </style>
-                </head>
-                <body>
-                    <h1>404 - File Not Found</h1>
-                    <p>The requested file does not exist: ${pathname}</p>
-                    <p><a href="/client/">Go to Home</a></p>
-                </body>
-                </html>
-            `, 'utf-8');
-            console.log('404: ' + filePath);
+        const emailSent = await sendWelcomeEmail(email, verificationToken); // Fixed: Use imported function
+        
+        if (!emailSent) {
+            console.error('Failed to send verification email to:', email);
         } else {
-            const contentTypes = {
-                '.html': 'text/html; charset=utf-8',
-                '.js': 'text/javascript; charset=utf-8',
-                '.css': 'text/css; charset=utf-8',
-                '.json': 'application/json',
-                '.png': 'image/png',
-                '.jpg': 'image/jpeg',
-                '.jpeg': 'image/jpeg',
-                '.gif': 'image/gif',
-                '.svg': 'image/svg+xml',
-                '.ico': 'image/x-icon',
-                '.webp': 'image/webp',
-                '.woff': 'font/woff',
-                '.woff2': 'font/woff2',
-                '.ttf': 'font/ttf',
-                '.eot': 'application/vnd.ms-fontobject'
-            };
-
-            const contentType = contentTypes[ext] || 'text/plain';
-
-            res.writeHead(200, { 'Content-Type': contentType });
-            res.end(content, 'utf-8');
-            console.log('200: ' + filePath);
+            console.log(`📧 Verification email sent to ${email}`);
         }
+
+        const verificationUrl = `${process.env.BASE_URL || `http://${HOST}:${PORT}`}/verify-email?token=${verificationToken}`;
+
+        res.status(201).json({
+            success: true,
+            message: 'Account created successfully. Please check your email to verify your account.',
+            ...(process.env.NODE_ENV !== 'production' && { verificationUrl })
+        });
+    } catch (error) {
+        console.error('Error registering user:', error);
+        res.status(500).json({ success: false, message: error.message || 'Internal server error' });
+    }
+});
+
+// Verify email
+app.get('/api/auth/verify-email', async (req, res) => {
+    try {
+        const { token } = req.query;
+
+        if (!token) {
+            return res.status(400).json({ success: false, message: 'Verification token is required' });
+        }
+
+        const tokenData = await Database.getEmailToken(token);
+
+        if (!tokenData) {
+            return res.status(400).json({ success: false, message: 'Invalid or expired verification token' });
+        }
+
+        const expiresAt = new Date(tokenData.expires_at);
+        if (expiresAt < new Date()) {
+            await Database.deleteEmailToken(token);
+            return res.status(400).json({ success: false, message: 'Verification token has expired' });
+        }
+
+        const user = await Database.getUserByEmail(tokenData.email);
+        if (!user) {
+            return res.status(400).json({ success: false, message: 'User not found' });
+        }
+
+        await Database.updateUser(tokenData.email, { verified: true });
+        await Database.deleteEmailToken(token);
+
+        res.json({
+            success: true,
+            message: 'Email verified successfully'
+        });
+    } catch (error) {
+        console.error('Error verifying email:', error);
+        res.status(500).json({ success: false, message: error.message || 'Internal server error' });
+    }
+});
+
+// ============================================
+// STATIC FILE SERVING
+// ============================================
+
+// Serve static files from client directory
+app.use(express.static(path.join(__dirname, 'client'), {
+    setHeaders: (res, path) => {
+        // Set proper MIME types
+        if (path.endsWith('.js')) {
+            res.set('Content-Type', 'application/javascript');
+        }
+        // Add CSP headers for static files
+        res.set('Content-Security-Policy', "default-src 'self'; script-src 'self' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com 'unsafe-inline'; style-src 'self' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://fonts.googleapis.com 'unsafe-inline'; img-src 'self' data: blob: https://images.pexels.com; font-src 'self' data: https://cdnjs.cloudflare.com https://fonts.gstatic.com; connect-src 'self' https://open.er-api.com");
+    }
+}));
+
+// Serve pages directory for nested routes
+app.use('/pages', express.static(path.join(__dirname, 'client/pages')));
+
+// Serve admin static files
+app.use('/admin', express.static(path.join(__dirname, 'admin')));
+
+// Handle SPA routing - serve index.html for all other routes
+app.get('*', (req, res) => {
+    // Check if it's an admin route
+    if (req.path.startsWith('/admin')) {
+        res.sendFile(path.join(__dirname, 'admin', 'index.html'));
+    } else {
+        res.sendFile(path.join(__dirname, 'client', 'index.html'));
+    }
+});
+
+// ============================================
+// ERROR HANDLING
+// ============================================
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    logger.error('Error:', {
+        message: err.message,
+        stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
+        method: req.method,
+        url: req.originalUrl,
+        ip: req.ip
+    });
+
+    // Handle JWT errors
+    if (err.name === 'JsonWebTokenError') {
+        return res.status(401).json({ status: 'error', message: 'Invalid token' });
+    }
+
+    // Handle validation errors
+    if (err.name === 'ValidationError') {
+        return res.status(400).json({
+            status: 'error',
+            message: 'Validation error',
+            errors: Object.values(err.errors).map(e => e.message)
+        });
+    }
+
+    // Handle rate limit errors
+    if (err.status === 429) {
+        return res.status(429).json({
+            status: 'error',
+            message: 'Too many requests, please try again later.'
+        });
+    }
+
+    // Default error response
+    const statusCode = err.statusCode || 500;
+    const message = process.env.NODE_ENV === 'production' && statusCode === 500 
+        ? 'Internal server error' 
+        : err.message;
+
+    res.status(statusCode).json({
+        status: 'error',
+        message: message,
+        ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
     });
 });
 
-server.listen(PORT, HOST, () => {
-    console.log('\n' + '='.repeat(70));
-    console.log('Server is running!');
-    console.log('='.repeat(70));
-    console.log('\nURL: http://' + HOST + ':' + PORT);
-    console.log('Root: ' + __dirname + '\n');
-    console.log('Available Routes:');
-    console.log('   http://' + HOST + ':' + PORT + '                                         -> /client/index.html');
-    console.log('   http://' + HOST + ':' + PORT + '/client/                                 -> /client/index.html');
-    console.log('   http://' + HOST + ':' + PORT + '/verify-email?token=xxx                  -> /client/verify-email.html');
-    console.log('   http://' + HOST + ':' + PORT + '/client/verify-email?token=xxx           -> /client/verify-email.html');
-    console.log('\nAPI Endpoints:');
-    console.log('   POST   http://' + HOST + ':' + PORT + '/api/auth/request-otp            -> Request OTP for sign-in');
-    console.log('   POST   http://' + HOST + ':' + PORT + '/api/auth/verify-otp              -> Verify OTP and get JWT token');
-    console.log('   POST   http://' + HOST + ':' + PORT + '/api/auth/register              -> Register new user');
-    console.log('   GET    http://' + HOST + ':' + PORT + '/api/auth/verify-email?token=xxx  -> Verify email from link');
-    console.log('\n' + '='.repeat(70));
-    console.log('\nServer ready! Open http://' + HOST + ':' + PORT + '/client/ in your browser\n');
-    console.log('Note: In development mode, OTPs and verification links are logged to console.\n');
+// 404 handler
+app.use((req, res) => {
+    res.status(404).json({
+        status: 'error',
+        message: 'Route not found'
+    });
 });
 
-server.on('error', (err) => {
-    if (err.code === 'EADDRINUSE') {
-        console.error('\nError: Port ' + PORT + ' is already in use!');
-        console.error('\nTry one of these solutions:');
-        console.error('\n1. Kill the process using port ' + PORT + ':');
-        console.error('   netstat -ano | findstr :' + PORT);
-        console.error('   taskkill /PID <PID> /F');
-        console.error('\n2. Use a different port by editing server.js\n');
-    } else {
-        console.error('\nServer error: ' + err.message + '\n');
+// Security Headers
+app.disable('x-powered-by');
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: [
+                "'self'",
+                "https://cdn.tailwindcss.com",
+                "https://cdnjs.cloudflare.com",
+                process.env.NODE_ENV === 'production' ? "'none'" : "'unsafe-inline'"
+            ],
+            styleSrc: [
+                "'self'",
+                "https://cdn.tailwindcss.com",
+                "https://cdnjs.cloudflare.com",
+                "https://fonts.googleapis.com",
+                process.env.NODE_ENV === 'production' ? "'none'" : "'unsafe-inline'"
+            ],
+            imgSrc: [
+                "'self'",
+                "data:",
+                "blob:",
+                "https:"
+            ],
+            connectSrc: [
+                "'self'",
+                "http://localhost:3000",
+                "ws://localhost:3000" // For WebSocket if used
+            ],
+            fontSrc: [
+                "'self'",
+                "data:",
+                "https://fonts.gstatic.com",
+                "https://cdnjs.cloudflare.com"
+            ],
+            frameSrc: ["'self'"],
+            objectSrc: ["'none'"],
+            mediaSrc: ["'self'"],
+            formAction: ["'self'"],
+            frameAncestors: ["'self'"],
+            upgradeInsecureRequests: process.env.NODE_ENV === 'production' ? [] : null
+        }
     }
+}));
+app.use(helmet.hsts({
+  maxAge: 31536000,
+  includeSubDomains: true,
+  preload: true
+}));
+
+// ============================================
+// START SERVER
+// ============================================
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.status(200).json({
+        status: 'ok',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime()
+    });
+});
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+    logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
+    // Consider restarting the server or gracefully shutting down
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (error) => {
+    logger.error('Uncaught Exception:', error);
+    // Consider restarting the server
     process.exit(1);
 });
 
-process.on('SIGINT', () => {
-    console.log('\n\nServer shutting down...');
-    server.close(() => {
-        console.log('Server closed');
-        process.exit(0);
-    });
+// Start server
+const server = app.listen(PORT, HOST, () => {
+    logger.info(`Server running in ${process.env.NODE_ENV} mode on http://${HOST}:${PORT}`);
+    logger.info(`Health check available at http://${HOST}:${PORT}/health`);
 });
+
+// Graceful shutdown
+function shutdown() {
+    console.log('\nShutting down gracefully...');
+    process.exit(0);
+}
+
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);

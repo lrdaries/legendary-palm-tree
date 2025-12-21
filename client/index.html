@@ -3,12 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' http://localhost:* http://127.0.0.1:* 
-    https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://*.gstatic.com https://*.google.com; style-src 'self' 'unsafe-inline' 
-    https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com; connect-src 'self' 
-    http://localhost:* http://127.0.0.1:* https://*.gstatic.com https://*.google.com ws: wss:; img-src 'self' data: https: http: blob:; frame-src 'self'; object-src 'none'; 
-    base-uri 'self'; form-action 'self'; upgrade-insecure-requests;">
-    
+   
     <title>Diva's Kloset - Premium Fashion Brand | Shop Men's & Women's Clothing Online</title>
     <meta name="description" content="Discover premium fashion at Diva's Kloset. Shop high-quality men's and women's clothing, accessories, and footwear. Free shipping on orders over $100.">
     <meta name="keywords" content="luxury fashion, designer clothing, international fashion, women's fashion, designer accessories">
@@ -20,200 +15,40 @@
     <meta property="og:title" content="Diva's Kloset - Premium Fashion Brand">
     <meta property="og:description" content="Discover premium fashion at Diva's Kloset. Shop high-quality clothing and accessories.">
     <meta property="og:image" content="https://divaskloset.com/images/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Diva's Kloset - Premium Fashion Brand">
     
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://divaskloset.com/">
     <meta property="twitter:title" content="Diva's Kloset - Premium Fashion Brand">
     <meta property="twitter:description" content="Discover premium fashion at Diva's Kloset.">
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <link rel="canonical" href="https://divaskloset.com">
     <meta name="theme-color" content="#E47026">
+    <meta name="msapplication-TileColor" content="#E47026">
+    <meta name="msapplication-config" content="browserconfig.xml">
     
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
     
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap');
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-        }
-        
-        .playfair {
-            font-family: 'Playfair Display', serif;
-        }
-        
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .product-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .product-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .slide-in-right {
-            animation: slideInRight 0.3s ease-out;
-        }
-        
-        @keyframes slideInRight {
-            from { transform: translateX(100%); }
-            to { transform: translateX(0); }
-        }
-
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #E47026;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .modal-overlay {
-            backdrop-filter: blur(4px);
-        }
-
-        #auth-modal {
-            overflow-y: auto;
-        }
-
-        .auth-modal-container {
-            min-height: 100vh;
-            padding-top: 2rem;
-            padding-bottom: 2rem;
-        }
-
-        .auth-modal-panel {
-            width: 100%;
-            max-width: 28rem;
-            max-height: calc(100vh - 4rem);
-            overflow-y: auto;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
-        }
-
-        @media (min-width: 640px) {
-            .auth-modal-container {
-                padding-top: 0;
-                padding-bottom: 0;
-            }
-
-            .auth-modal-panel {
-                max-height: 90vh;
-                border-radius: 1rem;
-            }
-        }
-
-        @media (max-width: 639px) {
-            .auth-modal-container {
-                align-items: flex-start;
-                padding: 0;
-                min-height: 100vh;
-            }
-
-            .auth-modal-panel {
-                border-radius: 0;
-                padding: clamp(1.25rem, 4vw, 2rem);
-                max-width: 100%;
-                min-height: 100vh;
-                max-height: none;
-                display: flex;
-                flex-direction: column;
-                overflow-y: auto;
-            }
-        }
-
-        .blur-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(2px);
-            z-index: 40;
-        }
-
-        .auth-required {
-            pointer-events: none;
-            opacity: 0.6;
-        }
-
-        .step-badge {
-            display: inline-block;
-            background: #E47026;
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .auth-step {
-            animation: fadeIn 0.3s ease-in;
-        }
-
-        .input-otp {
-            font-size: 1.5rem;
-            letter-spacing: 0.5rem;
-            text-align: center;
-            font-weight: 600;
-        }
-    </style>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#E47026',
-                        secondary: '#FF6F61',
-                        accent: '#4A90E2',
-                        background: '#F9F9F9',
-                        textPrimary: '#333333',
-                        textSecondary: '#777777'
-                    },
-                    fontFamily: {
-                        playfair: ['"Playfair Display"', 'serif'],
-                        inter: ['"Inter"', 'sans-serif']
-                    }
-                }
-            }
-        };
-    </script>
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="manifest" href="site.webmanifest">
+    <meta name="msapplication-TileColor" content="#E47026">
+    <meta name="theme-color" content="#E47026">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/tailwind-config.js"></script>
 </head>
 <body class="bg-gray-50">
     <!-- Announcement Bar -->
@@ -222,7 +57,7 @@
     </div>
 
     <!-- Header -->
-    <header class="glass-effect sticky top-0 z-50 shadow-sm">
+    <header class="glass-effect sticky top-0 z-50 shadow-sm bg-white/95 backdrop-blur border-b border-white/20">
         <nav class="container mx-auto px-4 py-4">
             <div class="flex justify-between items-center">
                 <div class="flex items-center space-x-2">
@@ -233,8 +68,8 @@
                 </div>
                 
                 <div class="hidden lg:flex items-center space-x-8">
-                    <button onclick="App.handleProtectedAction('scrollToProducts')" class="text-gray-700 hover:text-black transition">New Arrivals</button>
-                    <button onclick="App.handleProtectedAction('goToCollections')" class="text-gray-700 hover:text-black transition">Collections</button>
+                    <button id="nav-new-arrivals" class="text-gray-700 hover:text-black transition">New Arrivals</button>
+                    <button id="nav-collections" class="text-gray-700 hover:text-black transition">Collections</button>
                 </div>
                 
                 <div class="flex items-center space-x-4">
@@ -250,16 +85,20 @@
                         <option value="INR">₹ INR</option>
                     </select>
                     
-                    <button onclick="App.toggleSearch()" class="text-gray-700 hover:text-black transition" aria-label="Search">
+                    <button id="search-btn" class="text-gray-700 hover:text-black transition" aria-label="Search">
                         <i class="fas fa-search text-xl"></i>
                     </button>
                     
-                    <button id="user-btn" onclick="App.toggleAuth()" class="text-gray-700 hover:text-black transition relative" aria-label="User Account">
+                    <button id="user-btn" class="text-gray-700 hover:text-black transition relative" aria-label="User Account">
                         <i class="fas fa-user text-xl"></i>
                         <span id="user-status" class="absolute -bottom-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
                     </button>
+
+                    <button id="header-logout-btn" class="hidden bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition text-sm font-semibold" type="button" aria-label="Logout">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </button>
                     
-                    <button id="mobile-menu-btn" onclick="App.toggleMobileMenu()" class="lg:hidden" aria-label="Menu">
+                    <button id="mobile-menu-btn" class="lg:hidden" aria-label="Menu">
                         <i class="fas fa-bars text-xl"></i>
                     </button>
                 </div>
@@ -278,7 +117,7 @@
                     Shop the latest designer fashion at Diva's Kloset. International luxury clothing, accessories, and exclusive collections.
                 </p>
                 <div class="flex space-x-4 fade-in">
-                    <button onclick="App.handleProtectedAction('goToCollections')" class="bg-black text-white px-8 py-4 rounded hover:bg-gray-500 transition transform hover:scale-105">
+                    <button id="hero-browse-products" class="bg-black text-white px-8 py-4 rounded hover:bg-gray-500 transition transform hover:scale-105">
                         Browse Products
                     </button>
                 </div>
@@ -294,8 +133,7 @@
             <h3 class="playfair text-4xl font-bold text-center mb-12">Browse by Category</h3>
 
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                <button onclick="App.handleProtectedAction('filterByCategory', 'Clothing')" 
-                    class="relative group cursor-pointer overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-all duration-500">
+                <button id="cat-clothing" class="relative group cursor-pointer overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-all duration-500">
                     <div class="aspect-square bg-[url('https://images.pexels.com/photos/102129/pexels-photo-102129.jpeg')] bg-cover bg-center relative">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                         <div class="absolute inset-0 flex items-center justify-center">
@@ -306,8 +144,7 @@
                     </div>
                 </button>
 
-                <button onclick="App.handleProtectedAction('filterByCategory', 'Shoes')" 
-                    class="relative group cursor-pointer overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-all duration-500">
+                <button id="cat-shoes" class="relative group cursor-pointer overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-all duration-500">
                     <div class="aspect-square bg-[url('https://images.pexels.com/photos/345415/pexels-photo-345415.jpeg')] bg-cover bg-center relative">
                         <div class="absolute inset-0 bg-gradient-to-t from-rose-600/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                         <div class="absolute inset-0 flex items-center justify-center">
@@ -318,8 +155,7 @@
                     </div>
                 </button>
 
-                <button onclick="App.handleProtectedAction('filterByCategory', 'Bags')" 
-                    class="relative group cursor-pointer overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-all duration-500">
+                <button id="cat-bags" class="relative group cursor-pointer overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-all duration-500">
                     <div class="aspect-square bg-[url('https://images.pexels.com/photos/1038000/pexels-photo-1038000.jpeg')] bg-cover bg-center relative">
                         <div class="absolute inset-0 bg-gradient-to-t from-amber-600/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                         <div class="absolute inset-0 flex items-center justify-center">
@@ -330,8 +166,7 @@
                     </div>
                 </button>
 
-                <button onclick="App.handleProtectedAction('filterByCategory', 'Jewelry')" 
-                    class="relative group cursor-pointer overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-all duration-500">
+                <button id="cat-jewelry" class="relative group cursor-pointer overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-all duration-500">
                     <div class="aspect-square bg-[url('https://images.pexels.com/photos/998521/pexels-photo-998521.jpeg')] bg-cover bg-center relative">
                         <div class="absolute inset-0 bg-gradient-to-t from-emerald-600/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                         <div class="absolute inset-0 flex items-center justify-center">
@@ -351,13 +186,13 @@
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-4">
                 <h3 class="playfair text-4xl font-bold">New Arrivals</h3>
                 <div class="flex flex-wrap gap-4">
-                    <select id="sort-select" onchange="App.handleProtectedAction('sortProducts', this.value)" class="bg-white border border-gray-300 rounded px-4 py-2" aria-label="Sort products">
+                    <select id="sort-select" class="bg-white border border-gray-300 rounded px-4 py-2" aria-label="Sort products">
                         <option value="featured">Sort by: Featured</option>
                         <option value="price-low">Price: Low to High</option>
                         <option value="price-high">Price: High to Low</option>
                         <option value="name">Name: A-Z</option>
                     </select>
-                    <button onclick="App.clearFilters()" class="bg-white border border-gray-300 rounded px-4 py-2 hover:bg-gray-50">
+                    <button id="clear-filters-btn" class="bg-white border border-gray-300 rounded px-4 py-2 hover:bg-gray-50">
                         <i class="fas fa-redo mr-2"></i>Reset
                     </button>
                 </div>
@@ -373,7 +208,7 @@
         <div class="container mx-auto px-4 text-center">
             <h3 class="playfair text-4xl font-bold mb-4">Join the Diva's Club</h3>
             <p class="text-lg mb-8">Get exclusive access to new collections and member-only sales</p>
-            <form onsubmit="App.handleNewsletter(event)" class="max-w-md mx-auto flex flex-col sm:flex-row gap-4">
+            <form id="newsletter-form" class="max-w-md mx-auto flex flex-col sm:flex-row gap-4">
                 <input type="email" id="newsletter-email" placeholder="Enter your email" class="w-full flex-1 px-4 py-3 rounded text-black" required>
                 <button type="submit" class="w-full sm:w-auto bg-white text-black px-6 py-3 rounded font-semibold hover:bg-gray-100 transition">
                     Subscribe
@@ -426,8 +261,8 @@
             <div class="bg-white rounded-lg p-6 w-full max-w-2xl">
                 <div class="flex items-center space-x-4">
                     <i class="fas fa-search text-gray-400"></i>
-                    <input type="text" id="search-input" placeholder="Search for products..." class="flex-1 text-lg outline-none" oninput="App.handleSearch(this.value)">
-                    <button onclick="App.toggleSearch()" class="text-gray-500 hover:text-black" aria-label="Close search">
+                    <input type="text" id="search-input" placeholder="Search for products..." class="flex-1 text-lg outline-none">
+                    <button id="close-search-btn" class="text-gray-500 hover:text-black" aria-label="Close search">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
@@ -441,15 +276,15 @@
     </div>
 
     <!-- Auth Modal -->
-    <div id="auth-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden modal-overlay">
+    <div id="auth-modal" class=" inset-0 bg-black bg-opacity-50 z-50 hidden modal-overlay">
         <div class="auth-modal-container flex items-start sm:items-center justify-center px-4 sm:px-6">
-            <div class="auth-modal-panel bg-white w-full relative rounded-lg p-6 sm:p-8">
+            <div class="auth-modal-panel bg-white w-full max-w-md sm:max-w-lg relative rounded-lg p-6 sm:p-8">
                 
                 <!-- STEP 1: Sign In with Email -->
                 <div id="step-1" class="auth-step">
                     <h3 class="text-2xl font-bold mb-6">Sign In</h3>
                     
-                    <form id="signin-form" onsubmit="App.handleSignIn(event)" class="space-y-4">
+                    <form id="signin-form" class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium mb-2">Email</label>
                             <input type="email" id="signin-email" placeholder="your@email.com" class="w-full border rounded px-4 py-2 focus:outline-none focus:border-black" required>
@@ -461,7 +296,7 @@
 
                     <div class="mt-6 pt-6 border-t">
                         <p class="text-gray-600 text-center">Don't have an account?</p>
-                        <button type="button" onclick="App.goToStep(5)" class="w-full mt-3 bg-gray-100 text-black py-2 rounded hover:bg-gray-200 transition font-semibold">
+                        <button id="create-account-btn" type="button" class="w-full mt-3 bg-gray-100 text-black py-2 rounded hover:bg-gray-200 transition font-semibold">
                             Create Account
                         </button>
                     </div>
@@ -473,7 +308,7 @@
                     <h3 class="text-2xl font-bold mb-2">Enter OTP Code</h3>
                     <p class="text-gray-600 mb-6">We sent a 6-digit code to <span id="otp-email-display" class="font-semibold text-black"></span></p>
                     
-                    <form id="otp-form" onsubmit="App.handleOtpVerification(event)" class="space-y-4">
+                    <form id="otp-form" class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium mb-2">OTP Code</label>
                             <input type="text" id="otp-code" placeholder="000000" maxlength="6" class="w-full border rounded px-4 py-2 input-otp focus:outline-none focus:border-black" required>
@@ -484,10 +319,10 @@
                     </form>
 
                     <p class="text-center mt-4 text-gray-600">
-                        <button type="button" onclick="App.resendOtp()" class="text-black font-semibold hover:underline">Resend OTP</button>
+                        <button id="resend-otp-btn" type="button" class="text-black font-semibold hover:underline">Resend OTP</button>
                     </p>
 
-                    <button type="button" onclick="App.goToStep(1)" class="w-full mt-4 bg-gray-100 text-black py-2 rounded hover:bg-gray-200 transition">
+                    <button id="back-to-signin-btn" type="button" class="w-full mt-4 bg-gray-100 text-black py-2 rounded hover:bg-gray-200 transition">
                         Back to Sign In
                     </button>
                 </div>
@@ -502,7 +337,7 @@
                         </div>
                         <h3 class="text-2xl font-bold mb-2 text-green-600">Welcome!</h3>
                         <p id="success-message" class="text-gray-600 mb-6">You have successfully signed in to your account.</p>
-                        <button type="button" onclick="App.completeAuth()" class="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition">
+                        <button id="continue-home-btn" type="button" class="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition">
                             Continue to Home
                         </button>
                     </div>
@@ -512,7 +347,7 @@
                 <div id="step-5" class="auth-step hidden">
                     <h3 class="text-2xl font-bold mb-6">Create Account</h3>
                     
-                    <form id="signup-form" onsubmit="App.handleSignUp(event)" class="space-y-4">
+                    <form id="signup-form" class="space-y-4">
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium mb-2">First Name</label>
@@ -538,7 +373,7 @@
 
                     <div class="mt-6 pt-6 border-t">
                         <p class="text-gray-600 text-center">Already have an account?</p>
-                        <button type="button" onclick="App.goToStep(1)" class="w-full mt-3 bg-gray-100 text-black py-2 rounded hover:bg-gray-200 transition font-semibold">
+                        <button id="signup-back-btn" type="button" class="w-full mt-3 bg-gray-100 text-black py-2 rounded hover:bg-gray-200 transition font-semibold">
                             Sign In
                         </button>
                     </div>
@@ -552,16 +387,47 @@
                     <p class="text-gray-600 mb-8">Please click the link in your email to verify your account. You can then sign in to your account.</p>
                     
                     <div class="space-y-4">
-                        <button type="button" onclick="App.goToStep(1)" class="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition">
+                        <button id="check-email-back-btn" type="button" class="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition">
                             Go to Sign In
                         </button>
-                        <button type="button" onclick="App.toggleAuth()" class="w-full bg-gray-200 text-black py-2 rounded hover:bg-gray-300 transition">
+                        <button id="close-auth-btn" type="button" class="w-full bg-gray-200 text-black py-2 rounded hover:bg-gray-300 transition">
                             Close
                         </button>
                     </div>
                 </div>
 
-                <button onclick="App.toggleAuth()" class="absolute top-4 right-4 text-gray-500 hover:text-black" aria-label="Close">
+                <!-- STEP 7: User Profile & Logout -->
+                <div id="step-7" class="auth-step hidden">
+                    <div class="text-center">
+                        <div class="flex justify-center mb-6">
+                            <div class="w-16 h-16 bg-gradient-to-br from-orange-400 to-pink-400 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-3xl text-white"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2">Your Account</h3>
+                        <div class="bg-gray-50 rounded-lg p-4 mb-6 text-left space-y-3">
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase tracking-wide">Name</p>
+                                <p id="profile-name" class="text-lg font-semibold text-gray-900">User Name</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase tracking-wide">Email</p>
+                                <p id="profile-email" class="text-sm text-gray-700">user@email.com</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <button id="logout-btn" type="button" class="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 transition font-semibold">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </button>
+                        <button id="profile-close-btn" type="button" class="w-full bg-gray-200 text-black py-2 rounded hover:bg-gray-300 transition">
+                            Close
+                        </button>
+                    </div>
+                </div>
+
+                <button id="modal-close-btn" class="absolute top-4 right-4 text-gray-500 hover:text-black" aria-label="Close">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -573,647 +439,22 @@
         <div class="p-6">
             <div class="flex justify-between items-center mb-8">
                 <h3 class="text-2xl font-bold">Menu</h3>
-                <button onclick="App.toggleMobileMenu()" class="text-gray-500 hover:text-black" aria-label="Close menu">
+                <button id="mobile-menu-close-btn" class="text-gray-500 hover:text-black" aria-label="Close menu">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
             <nav class="space-y-4">
-                <button onclick="App.handleProtectedAction('scrollToProducts'); App.toggleMobileMenu();" class="block w-full text-left text-lg font-medium hover:text-gray-600 py-2">New Arrivals</button>
-                <button onclick="App.handleProtectedAction('goToCollections'); App.toggleMobileMenu();" class="block w-full text-left text-lg font-medium hover:text-gray-600 py-2">Collections</button>
+                <button id="mobile-new-arrivals" class="block w-full text-left text-lg font-medium hover:text-gray-600 py-2">New Arrivals</button>
+                <button id="mobile-collections" class="block w-full text-left text-lg font-medium hover:text-gray-600 py-2">Collections</button>
                 <hr class="my-4">
-                <button id="mobile-user-btn" onclick="App.handleMobileUserAction()" class="block w-full text-left text-lg font-medium hover:text-gray-600 py-2">
+                <button id="mobile-user-btn" class="block w-full text-left text-lg font-medium hover:text-gray-600 py-2">
                     <i class="fas fa-user mr-2"></i><span id="mobile-user-text">Sign In</span>
                 </button>
             </nav>
         </div>
     </div>
 
-    <script>
-        // CONFIGURATION
-        const CONFIG = {
-            API_BASE_URL: 'http://localhost:5500/api/auth',
-            STORAGE_KEYS: {
-                TOKEN: 'auth_token',
-                USER: 'user_data',
-                PENDING_EMAIL: 'pending_email'
-            }
-        };
-
-        // APPLICATION STATE MANAGER
-        const App = (() => {
-            let state = {
-                currentCurrency: 'USD',
-                currentUser: null,
-                authToken: null,
-                filteredProducts: null,
-                isAuthenticated: false,
-                currentStep: 1,
-                pendingEmail: null,
-                exchangeRates: {
-                    USD: 1, EUR: 0.85, GBP: 0.73, JPY: 110.0, NGN: 1550.0,
-                    AUD: 1.35, CAD: 1.25, CNY: 6.45, INR: 74.5
-                }
-            };
-
-            const products = [
-                { id: 1, name: 'Silk Evening Dress', price: 899, category: 'Clothing', color: 'Midnight Blue', stock: 5 },
-                { id: 2, name: 'Cashmere Coat', price: 1299, category: 'Clothing', color: 'Camel', stock: 3 },
-                { id: 3, name: 'Designer Handbag', price: 2499, category: 'Bags', color: 'Black', stock: 8 },
-                { id: 4, name: 'Leather Boots', price: 599, category: 'Shoes', color: 'Brown', stock: 12 },
-                { id: 5, name: 'Diamond Necklace', price: 3999, category: 'Jewelry', color: 'Silver', stock: 2 },
-                { id: 6, name: 'Summer Maxi Dress', price: 399, category: 'Clothing', color: 'Floral', stock: 15 },
-                { id: 7, name: 'Wool Blazer', price: 799, category: 'Clothing', color: 'Navy', stock: 7 },
-                { id: 8, name: 'Stiletto Heels', price: 499, category: 'Shoes', color: 'Red', stock: 10 }
-            ];
-
-            // UTILITY FUNCTIONS
-            const utils = {
-                sanitizeHTML(str) {
-                    const div = document.createElement('div');
-                    div.textContent = str;
-                    return div.innerHTML;
-                },
-
-                convertCurrency(amount, from, to) {
-                    if (from === to) return amount;
-                    const amountInUSD = amount / state.exchangeRates[from];
-                    return amountInUSD * state.exchangeRates[to];
-                },
-
-                formatPrice(price) {
-                    const symbols = {
-                        USD: '$', EUR: '€', GBP: '£', NGN: '₦',
-                        JPY: '¥', AUD: 'A$', CAD: 'C$', CNY: '¥', INR: '₹'
-                    };
-                    const converted = this.convertCurrency(price, 'USD', state.currentCurrency);
-                    return `${symbols[state.currentCurrency]}${converted.toFixed(2)}`;
-                },
-
-                showNotification(message, type = 'success') {
-                    const colors = {
-                        success: 'bg-green-500',
-                        error: 'bg-red-500',
-                        info: 'bg-blue-500'
-                    };
-                    
-                    const notification = document.createElement('div');
-                    notification.className = `fixed top-20 right-4 ${colors[type]} text-white px-6 py-3 rounded shadow-lg z-50 fade-in`;
-                    notification.textContent = message;
-                    document.body.appendChild(notification);
-                    
-                    setTimeout(() => notification.remove(), 3000);
-                },
-
-                saveToStorage(key, data) {
-                    try {
-                        localStorage.setItem(key, JSON.stringify(data));
-                    } catch (e) {
-                        console.error('Storage error:', e);
-                    }
-                },
-
-                loadFromStorage(key) {
-                    try {
-                        const data = localStorage.getItem(key);
-                        return data ? JSON.parse(data) : null;
-                    } catch (e) {
-                        console.error('Storage error:', e);
-                        return null;
-                    }
-                },
-
-                clearStorage(key) {
-                    try {
-                        localStorage.removeItem(key);
-                    } catch (e) {
-                        console.error('Storage error:', e);
-                    }
-                },
-
-                getUrlParameter(name) {
-                    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-                    var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-                    var results = regex.exec(location.search);
-                    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-                },
-
-                // Parse response safely (handles both JSON and text)
-                async parseResponse(response) {
-                    const contentType = response.headers.get('content-type');
-                    
-                    if (contentType && contentType.includes('application/json')) {
-                        try {
-                            return await response.json();
-                        } catch (e) {
-                            const text = await response.text();
-                            return { message: text, success: response.ok };
-                        }
-                    } else {
-                        const text = await response.text();
-                        return { message: text, success: response.ok };
-                    }
-                }
-            };
-
-            // AUTHENTICATION FUNCTIONS
-            const auth = {
-                async handleSignIn(event) {
-                    event.preventDefault();
-                    const email = document.getElementById('signin-email').value;
-                    const submitBtn = event.target.querySelector('button[type="submit"]');
-                    const originalText = submitBtn.textContent;
-                    submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<div class="spinner"></div>';
-
-                    try {
-                        const response = await fetch(`${CONFIG.API_BASE_URL}/request-otp`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ email })
-                        });
-
-                        const data = await utils.parseResponse(response);
-
-                        if (!response.ok) {
-                            throw new Error(data.message || 'Failed to send OTP');
-                        }
-
-                        state.pendingEmail = email;
-                        utils.saveToStorage(CONFIG.STORAGE_KEYS.PENDING_EMAIL, email);
-                        document.getElementById('otp-email-display').textContent = email;
-                        ui.goToStep(3);
-                        utils.showNotification('OTP sent to your email!', 'info');
-
-                    } catch (error) {
-                        console.error('Sign in error:', error);
-                        utils.showNotification(error.message, 'error');
-                    } finally {
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = originalText;
-                    }
-                },
-
-                async handleSignUp(event) {
-                    event.preventDefault();
-                    const firstName = document.getElementById('signup-firstname').value;
-                    const lastName = document.getElementById('signup-lastname').value;
-                    const email = document.getElementById('signup-email').value;
-                    const password = document.getElementById('signup-password').value;
-                    const submitBtn = event.target.querySelector('button[type="submit"]');
-                    const originalText = submitBtn.textContent;
-                    submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<div class="spinner"></div>';
-
-                    try {
-                        const response = await fetch(`${CONFIG.API_BASE_URL}/register`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ firstName, lastName, email, password })
-                        });
-
-                        const data = await utils.parseResponse(response);
-
-                        if (!response.ok) {
-                            throw new Error(data.message || 'Registration failed');
-                        }
-
-                        state.pendingEmail = email;
-                        utils.saveToStorage(CONFIG.STORAGE_KEYS.PENDING_EMAIL, email);
-                        document.getElementById('verify-email-display').textContent = email;
-                        ui.goToStep(6);
-                        utils.showNotification('Check your email for verification link!', 'info');
-                        event.target.reset();
-
-                    } catch (error) {
-                        console.error('Sign up error:', error);
-                        utils.showNotification(error.message, 'error');
-                    } finally {
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = originalText;
-                    }
-                },
-
-                async handleOtpVerification(event) {
-                    event.preventDefault();
-                    const otpCode = document.getElementById('otp-code').value;
-                    const email = state.pendingEmail || utils.loadFromStorage(CONFIG.STORAGE_KEYS.PENDING_EMAIL);
-                    
-                    if (!email) {
-                        utils.showNotification('Session expired. Please sign in again.', 'error');
-                        ui.goToStep(1);
-                        return;
-                    }
-
-                    const submitBtn = event.target.querySelector('button[type="submit"]');
-                    const originalText = submitBtn.textContent;
-                    submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<div class="spinner"></div>';
-
-                    try {
-                        const response = await fetch(`${CONFIG.API_BASE_URL}/verify-otp`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ email, otp: otpCode })
-                        });
-
-                        const data = await utils.parseResponse(response);
-
-                        if (!response.ok) {
-                            throw new Error(data.message || 'OTP verification failed');
-                        }
-
-                        state.authToken = data.token || data.data?.token;
-                        state.currentUser = {
-                            email: data.email || data.data?.email || email,
-                            firstName: data.firstName || data.data?.firstName || 'User'
-                        };
-                        state.isAuthenticated = true;
-
-                        utils.saveToStorage(CONFIG.STORAGE_KEYS.TOKEN, state.authToken);
-                        utils.saveToStorage(CONFIG.STORAGE_KEYS.USER, state.currentUser);
-                        utils.clearStorage(CONFIG.STORAGE_KEYS.PENDING_EMAIL);
-
-                        document.getElementById('success-message').textContent = `Welcome ${state.currentUser.firstName}! You have successfully signed in.`;
-                        ui.goToStep(4);
-                        utils.showNotification(`Welcome ${state.currentUser.firstName}! 🎉`, 'success');
-                        ui.updateUserStatus();
-
-                    } catch (error) {
-                        console.error('OTP verification error:', error);
-                        utils.showNotification(error.message || 'OTP verification failed', 'error');
-                    } finally {
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = originalText;
-                    }
-                },
-
-                async resendOtp() {
-                    const email = state.pendingEmail || utils.loadFromStorage(CONFIG.STORAGE_KEYS.PENDING_EMAIL);
-                    if (!email) {
-                        utils.showNotification('No pending email found', 'error');
-                        return;
-                    }
-
-                    try {
-                        const response = await fetch(`${CONFIG.API_BASE_URL}/request-otp`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ email })
-                        });
-
-                        const data = await utils.parseResponse(response);
-
-                        if (!response.ok) {
-                            throw new Error(data.message || 'Failed to resend OTP');
-                        }
-                        
-                        utils.showNotification('OTP resent!', 'success');
-
-                    } catch (error) {
-                        utils.showNotification(error.message || 'Failed to resend OTP', 'error');
-                    }
-                },
-
-                logout() {
-                    state.authToken = null;
-                    state.currentUser = null;
-                    state.isAuthenticated = false;
-                    
-                    utils.clearStorage(CONFIG.STORAGE_KEYS.TOKEN);
-                    utils.clearStorage(CONFIG.STORAGE_KEYS.USER);
-                    
-                    ui.updateUserStatus();
-                    utils.showNotification('Logged out successfully', 'info');
-                }
-            };
-
-            // PRODUCT MANAGEMENT
-            const productManager = {
-                display(productList = products) {
-                    const grid = document.getElementById('products-grid');
-                    
-                    if (productList.length === 0) {
-                        grid.innerHTML = '<div class="col-span-full text-center py-12"><p class="text-gray-500 text-lg">No products found</p></div>';
-                        return;
-                    }
-
-                    grid.innerHTML = productList.map(product => `
-                        <div class="product-card bg-white rounded-lg overflow-hidden shadow-sm">
-                            <div class="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 relative group">
-                                <div class="absolute inset-0 flex items-center justify-center">
-                                    <i class="fas fa-image text-4xl text-gray-400"></i>
-                                </div>
-                                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition"></div>
-                                ${product.stock < 5 ? `<div class="absolute top-4 right-4 bg-red-500 text-white text-xs px-2 py-1 rounded">Only ${product.stock} left</div>` : ''}
-                            </div>
-                            <div class="p-4">
-                                <h4 class="font-semibold text-lg mb-1">${utils.sanitizeHTML(product.name)}</h4>
-                                <p class="text-gray-500 text-sm mb-2">${utils.sanitizeHTML(product.color)}</p>
-                                <p class="font-bold text-lg">${utils.formatPrice(product.price)}</p>
-                            </div>
-                        </div>
-                    `).join('');
-                },
-
-                filter(category) {
-                    const filtered = products.filter(p => p.category === category);
-                    state.filteredProducts = filtered;
-                    this.display(filtered);
-                    this.scrollToSection();
-                },
-
-                sort(sortBy) {
-                    const productList = state.filteredProducts || products;
-                    let sorted = [...productList];
-                    
-                    switch(sortBy) {
-                        case 'price-low':
-                            sorted.sort((a, b) => a.price - b.price);
-                            break;
-                        case 'price-high':
-                            sorted.sort((a, b) => b.price - a.price);
-                            break;
-                        case 'name':
-                            sorted.sort((a, b) => a.name.localeCompare(b.name));
-                            break;
-                        default:
-                            sorted = productList;
-                    }
-                    
-                    this.display(sorted);
-                },
-
-                search(query) {
-                    if (!query || query.trim() === '') {
-                        document.getElementById('search-results').innerHTML = `
-                            <div class="text-sm text-gray-500">
-                                Popular: Dresses, Handbags, Summer Collection, Designer Shoes
-                            </div>
-                        `;
-                        return;
-                    }
-
-                    const searchTerm = query.toLowerCase();
-                    const results = products.filter(p => 
-                        p.name.toLowerCase().includes(searchTerm) ||
-                        p.category.toLowerCase().includes(searchTerm) ||
-                        p.color.toLowerCase().includes(searchTerm)
-                    );
-
-                    if (results.length === 0) {
-                        document.getElementById('search-results').innerHTML = `
-                            <div class="text-sm text-gray-500 py-4">No products found for "${utils.sanitizeHTML(query)}"</div>
-                        `;
-                        return;
-                    }
-
-                    document.getElementById('search-results').innerHTML = `
-                        <div class="mt-4 space-y-2">
-                            ${results.map(product => `
-                                <div class="p-3 hover:bg-gray-50 rounded cursor-pointer">
-                                    <div class="font-semibold">${utils.sanitizeHTML(product.name)}</div>
-                                    <div class="text-sm text-gray-500">${utils.formatPrice(product.price)}</div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    `;
-                },
-
-                clearFilters() {
-                    state.filteredProducts = null;
-                    this.display(products);
-                    document.getElementById('sort-select').value = 'featured';
-                },
-
-                scrollToSection() {
-                    document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
-                }
-            };
-
-            // UI CONTROLS
-            const ui = {
-                toggleSearch() {
-                    const modal = document.getElementById('search-modal');
-                    modal.classList.toggle('hidden');
-                    
-                    if (!modal.classList.contains('hidden')) {
-                        setTimeout(() => document.getElementById('search-input').focus(), 100);
-                    }
-                },
-
-                toggleAuth() {
-                    document.getElementById('auth-modal').classList.toggle('hidden');
-                    if (!document.getElementById('auth-modal').classList.contains('hidden')) {
-                        ui.goToStep(1);
-                    }
-                },
-
-                goToStep(step) {
-                    document.querySelectorAll('[id^="step-"]').forEach(el => {
-                        el.classList.add('hidden');
-                    });
-                    
-                    document.getElementById(`step-${step}`).classList.remove('hidden');
-                    state.currentStep = step;
-                },
-
-                toggleMobileMenu() {
-                    document.getElementById('mobile-menu').classList.toggle('translate-x-full');
-                },
-
-                handleCurrencyChange(currency) {
-                    state.currentCurrency = currency;
-                    document.getElementById('announcement-currency').textContent = currency;
-                    productManager.display(state.filteredProducts || products);
-                },
-
-                updateUserStatus() {
-                    const userBtn = document.getElementById('user-btn');
-                    const userStatus = document.getElementById('user-status');
-                    const mobileUserBtn = document.getElementById('mobile-user-btn');
-                    const mobileUserText = document.getElementById('mobile-user-text');
-                    
-                    if (state.isAuthenticated) {
-                        userStatus.classList.remove('bg-red-500');
-                        userStatus.classList.add('bg-green-500');
-                        userBtn.title = `Logged in as ${state.currentUser.email}`;
-                        mobileUserText.textContent = `Logout (${state.currentUser.firstName})`;
-                    } else {
-                        userStatus.classList.add('bg-red-500');
-                        userStatus.classList.remove('bg-green-500');
-                        userBtn.title = 'Not logged in';
-                        mobileUserText.textContent = 'Sign In';
-                    }
-                }
-            };
-
-            // PROTECTED ACTIONS
-            const protectedActions = {
-                scrollToProducts() {
-                    productManager.scrollToSection();
-                },
-
-                goToCollections() {
-                    window.location.href = '/client/collections.html';
-                },
-
-                toggleSearch() {
-                    ui.toggleSearch();
-                },
-
-                filterByCategory(category) {
-                    productManager.filter(category);
-                },
-
-                sortProducts(sortBy) {
-                    productManager.sort(sortBy);
-                }
-            };
-
-            // NEWSLETTER  
-            function handleNewsletter(event) {
-                event.preventDefault();
-                const email = document.getElementById('newsletter-email').value;
-                utils.showNotification('Thanks for subscribing!', 'success');
-                event.target.reset();
-            }
-
-            // INITIALIZATION
-            function init() {
-                const savedToken = utils.loadFromStorage(CONFIG.STORAGE_KEYS.TOKEN);
-                const savedUser = utils.loadFromStorage(CONFIG.STORAGE_KEYS.USER);
-                
-                if (savedToken && savedUser) {
-                    state.authToken = savedToken;
-                    state.currentUser = savedUser;
-                    state.isAuthenticated = true;
-                }
-
-                productManager.display();
-                ui.updateUserStatus();
-
-                const verificationToken = utils.getUrlParameter('token');
-                if (verificationToken) {
-                    console.log('📧 Email verification token found:', verificationToken);
-                    auth.handleEmailVerificationFromLink(verificationToken);
-                }
-
-                document.getElementById('currency-selector').addEventListener('change', (e) => {
-                    ui.handleCurrencyChange(e.target.value);
-                });
-
-                ['search-modal', 'auth-modal'].forEach(id => {
-                    document.getElementById(id).addEventListener('click', (e) => {
-                        if (e.target.id === id) {
-                            e.target.classList.add('hidden');
-                        }
-                    });
-                });
-
-                document.addEventListener('keydown', (e) => {
-                    if (e.key === 'Escape') {
-                        document.getElementById('mobile-menu').classList.add('translate-x-full');
-                        document.getElementById('search-modal').classList.add('hidden');
-                        document.getElementById('auth-modal').classList.add('hidden');
-                    }
-                });
-
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('fade-in');
-                        }
-                    });
-                }, { threshold: 0.1 });
-                
-                document.querySelectorAll('.product-card').forEach(card => {
-                    observer.observe(card);
-                });
-            }
-
-            auth.handleEmailVerificationFromLink = async function(token) {
-                try {
-                    console.log('Verifying email with token from link...');
-                    utils.showNotification('Verifying your email...', 'info');
-                    
-                    const response = await fetch(`${CONFIG.API_BASE_URL}/verify-email?token=${token}`, {
-                        method: 'GET',
-                        headers: { 'Content-Type': 'application/json' },
-                        credentials: 'include'
-                    });
-
-                    const data = await utils.parseResponse(response);
-                    
-                    if (!response.ok) {
-                        throw new Error(data.message || 'Email verification failed');
-                    }
-
-                    console.log('Email verified successfully from link!');
-                    utils.showNotification('Email verified successfully! Please sign in to continue.', 'success');
-                    
-                    setTimeout(() => {
-                        ui.toggleAuth();
-                        ui.goToStep(1);
-                    }, 1500);
-
-                } catch (error) {
-                    console.error('Email verification error:', error);
-                    utils.showNotification(error.message, 'error');
-                }
-            };
-
-            // PUBLIC API
-            return {
-                init,
-                toggleSearch: () => ui.toggleSearch(),
-                toggleAuth: () => ui.toggleAuth(),
-                toggleMobileMenu: () => ui.toggleMobileMenu(),
-                handleSignIn: (e) => auth.handleSignIn(e),
-                handleSignUp: (e) => auth.handleSignUp(e),
-                handleOtpVerification: (e) => auth.handleOtpVerification(e),
-                resendOtp: () => auth.resendOtp(),
-                handleSearch: (query) => productManager.search(query),
-                handleNewsletter,
-                filterByCategory: (cat) => productManager.filter(cat),
-                sortProducts: (sort) => productManager.sort(sort),
-                clearFilters: () => productManager.clearFilters(),
-                scrollToProducts: () => productManager.scrollToSection(),
-                logout: () => auth.logout(),
-                goToStep: (step) => ui.goToStep(step),
-                completeAuth() {
-                    ui.toggleAuth();
-                    utils.showNotification('You are now logged in!', 'success');
-                },
-                
-                handleMobileUserAction() {
-                    if (state.isAuthenticated) {
-                        auth.logout();
-                        App.toggleMobileMenu();
-                    } else {
-                        App.toggleAuth();
-                        App.toggleMobileMenu();
-                    }
-                },
-                
-                handleProtectedAction(action, param) {
-                    if (!state.isAuthenticated) {
-                        utils.showNotification('Please sign in to continue', 'info');
-                        ui.toggleAuth();
-                        return;
-                    }
-                    
-                    if (param) {
-                        protectedActions[action](param);
-                    } else {
-                        protectedActions[action]();
-                    }
-                }
-            };
-        })();
-
-        document.addEventListener('DOMContentLoaded', () => {
-            App.init();
-        });
-    </script>
+    <!-- External JavaScript -->
+    <script src="js/app.js"></script>
 </body>
 </html>

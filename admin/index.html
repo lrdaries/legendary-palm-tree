@@ -458,7 +458,7 @@
                             required
                         >
                         <i class="fas fa-lock input-icon"></i>
-                        <button type="button" onclick="togglePassword()" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                        <button id="toggle-password-btn" type="button" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
                             <i class="fas fa-eye" id="password-toggle"></i>
                         </button>
                     </div>
@@ -469,7 +469,7 @@
                             <input type="checkbox" class="checkbox-custom mr-2" id="remember">
                             <span class="text-sm text-gray-600">Remember me</span>
                         </label>
-                        <a href="#" onclick="showForgotPassword(); return false;" class="text-sm text-black hover:underline font-medium">
+                        <a href="#" id="forgot-password-link" class="text-sm text-black hover:underline font-medium">
                             Forgot password?
                         </a>
                     </div>
@@ -483,7 +483,7 @@
                     <div class="text-center pt-4 border-t">
                         <p class="text-gray-600 text-sm">
                             Don't have an account?
-                            <a href="#" onclick="showRegisterForm(); return false;" class="text-black font-semibold hover:underline ml-1">Create an account</a>
+                            <a href="#" id="create-account-link" class="text-black font-semibold hover:underline ml-1">Create an account</a>
                         </p>
                     </div>
                     
@@ -523,7 +523,7 @@
                         Send Reset Link
                     </button>
                     
-                    <button type="button" onclick="showLoginForm()" class="w-full py-3 text-black font-semibold hover:underline">
+                    <button id="back-to-login-btn" type="button" class="w-full py-3 text-black font-semibold hover:underline">
                         <i class="fas fa-arrow-left mr-2"></i>Back to Login
                     </button>
                 </form>
@@ -549,7 +549,7 @@
                     </button>
                     
                     <div class="text-center">
-                        <button type="button" onclick="resendCode()" class="text-sm text-black hover:underline">
+                        <button id="resend-code-btn" type="button" class="text-sm text-black hover:underline">
                             Didn't receive code? Resend
                         </button>
                     </div>
@@ -600,7 +600,7 @@
                             minlength="8"
                         >
                         <i class="fas fa-lock input-icon"></i>
-                        <button type="button" onclick="toggleRegisterPassword()" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                        <button id="toggle-register-password-btn" type="button" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
                             <i class="fas fa-eye" id="register-password-toggle"></i>
                         </button>
                     </div>
@@ -617,7 +617,7 @@
                             minlength="8"
                         >
                         <i class="fas fa-lock input-icon"></i>
-                        <button type="button" onclick="toggleConfirmPassword()" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                        <button id="toggle-confirm-password-btn" type="button" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
                             <i class="fas fa-eye" id="confirm-password-toggle"></i>
                         </button>
                     </div>
@@ -639,7 +639,7 @@
                     <div class="text-center pt-4 border-t">
                         <p class="text-gray-600 text-sm">
                             Already have an account?
-                            <a href="#" onclick="showLoginForm(); return false;" class="text-black font-semibold hover:underline ml-1">Sign in</a>
+                            <a href="#" id="signin-link" class="text-black font-semibold hover:underline ml-1">Sign in</a>
                         </p>
                     </div>
                 </form>
@@ -659,20 +659,20 @@
         </div>
     </div>
     
+    <script src="/admin/config.js"></script>
     <script>
-        // Supabase Configuration
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
-        
-        // Initialize Supabase (commented out until credentials are provided)
-        // const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
-        // Demo credentials
+        // DEBUG: Check if CONFIG loaded
+        console.log('📍 CONFIG loaded:', window.CONFIG);
+        if (!window.CONFIG) {
+            console.error('❌ CONFIG is undefined! Check /admin/config.js');
+        }
+
+        // Demo credentials (for development only)
         const DEMO_CREDENTIALS = {
-            email: 'admin@divascloset.com',
-            password: 'Admin@123'
+            email: window.CONFIG?.ADMIN_EMAIL || 'admin@example.com',
+            password: window.CONFIG?.ADMIN_PASSWORD || ''
         };
-        
+
         // Form Elements
         const loginForm = document.getElementById('login-form');
         const registerForm = document.getElementById('register-form');
@@ -779,41 +779,76 @@
         }
         
         // Login Handler
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            clearAlerts();
+        if (!loginForm) {
+            console.error('❌ CRITICAL: Login form element not found!');
+            document.body.innerHTML = '<h1>Error: Login form not found</h1>';
+        } else {
+            console.log('✅ Login form found, attaching event listener');
             
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const remember = document.getElementById('remember').checked;
-            
-            // Show loading
-            loading.classList.add('active');
-            
-            // Simulate API call
-            setTimeout(() => {
-                loading.classList.remove('active');
-                
-                // Check demo credentials
-                if (email === DEMO_CREDENTIALS.email && password === DEMO_CREDENTIALS.password) {
-                    // Save session
-                    if (remember) {
-                        localStorage.setItem('adminSession', JSON.stringify({ email, timestamp: Date.now() }));
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                console.log('🔐 Form submitted, preventing default...');
+                clearAlerts();
+
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const remember = document.getElementById('remember').checked;
+
+                console.log('🔐 Login attempt for:', email);
+                console.log('📍 API URL:', CONFIG.API_BASE_URL + '/admin/auth/login');
+
+                // Show loading
+                loading.classList.add('active');
+
+                try {
+                    const response = await fetch(`${CONFIG.API_BASE_URL}/admin/auth/login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ email, password })
+                    });
+
+                    console.log('📬 Server response status:', response.status);
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Save token and session
+                        const token = data.token;
+                        const sessionData = {
+                            email: data.user.email,
+                            role: data.user.role,
+                            token,
+                            timestamp: Date.now()
+                        };
+
+                        console.log('✅ Login successful, session data:', sessionData);
+
+                        // Force re-login on reconnect: keep session in sessionStorage only
+                        try { localStorage.removeItem('adminSession'); } catch {}
+                        sessionStorage.setItem('adminSession', JSON.stringify(sessionData));
+                        console.log('✅ Session saved to sessionStorage');
+
+                        showAlert('Login successful! Redirecting...', 'success');
+
+                        // Redirect to dashboard
+                        setTimeout(() => {
+                            console.log('🔄 Redirecting to dashboard...');
+                            window.location.href = 'dashboard.html';
+                        }, 1500);
                     } else {
-                        sessionStorage.setItem('adminSession', JSON.stringify({ email, timestamp: Date.now() }));
+                        console.error('❌ Login failed:', data.message, data);
+                        showAlert(data.message || 'Login failed. Please try again.');
                     }
-                    
-                    showAlert('Login successful! Redirecting...', 'success');
-                    
-                    // Redirect to dashboard
-                    setTimeout(() => {
-                        window.location.href = 'dashboard.html';
-                    }, 1500);
-                } else {
-                    showAlert('Invalid email or password. Please try again.');
+                } catch (error) {
+                    console.error('❌ Login error:', error);
+                    showAlert('Network error. Please check your connection and try again: ' + error.message);
+                } finally {
+                    loading.classList.remove('active');
                 }
-            }, 1500);
-        });
+            });
+        }
         
         // Forgot Password Handler
         forgotForm.addEventListener('submit', async (e) => {
@@ -944,37 +979,78 @@
         
         // Session Check
         function checkSession() {
-            const session = localStorage.getItem('adminSession') || sessionStorage.getItem('adminSession');
-            
+            // Clear any legacy persistent session
+            try { localStorage.removeItem('adminSession'); } catch {}
+            const session = sessionStorage.getItem('adminSession');
+
             if (session) {
-                const { timestamp } = JSON.parse(session);
-                const hoursSinceLogin = (Date.now() - timestamp) / (1000 * 60 * 60);
-                
-                // Auto-logout after 24 hours
-                if (hoursSinceLogin > 24) {
-                    localStorage.removeItem('adminSession');
+                try {
+                    const sessionData = JSON.parse(session);
+                    const loginTime = sessionData.timestamp;
+                    const hoursSinceLogin = (Date.now() - loginTime) / (1000 * 60 * 60);
+
+                    console.log('📋 Session found:', sessionData);
+                    console.log('⏰ Hours since login:', hoursSinceLogin);
+
+                    // Auto-logout after 24 hours
+                    if (hoursSinceLogin > 24) {
+                        console.log('⏳ Session expired, clearing...');
+                        sessionStorage.removeItem('adminSession');
+                        return false;
+                    } else if (sessionData.token && sessionData.email && sessionData.role) {
+                        // Only redirect if we have valid session data with token
+                        return true;
+                    } else {
+                        console.log('⚠️ Session data incomplete, staying on login page');
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('❌ Error parsing session:', error);
                     sessionStorage.removeItem('adminSession');
-                } else {
-                    // Redirect to dashboard if already logged in
-                    window.location.href = 'dashboard.html';
+                    return false;
                 }
             }
+            return false;
         }
-        
+
+        // Add these inside the existing DOMContentLoaded event listener
+document.addEventListener('DOMContentLoaded', () => {
+    // Existing code...
+    
+    // Add these new event listeners
+    document.getElementById('toggle-password-btn')?.addEventListener('click', togglePassword);
+    document.getElementById('forgot-password-link')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        showForgotPassword();
+    });
+    document.getElementById('create-account-link')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        showRegisterForm();
+    });
+    document.getElementById('back-to-login-btn')?.addEventListener('click', showLoginForm);
+    document.getElementById('resend-code-btn')?.addEventListener('click', resendCode);
+    document.getElementById('toggle-register-password-btn')?.addEventListener('click', toggleRegisterPassword);
+    document.getElementById('toggle-confirm-password-btn')?.addEventListener('click', toggleConfirmPassword);
+    document.getElementById('signin-link')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        showLoginForm();
+    });
+    
+    // Existing code...
+});
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('📄 Page loaded, checking for existing session...');
             checkSession();
             
-            // Add demo credentials hint
+            // Remove demo credentials for security
             const emailInput = document.getElementById('email');
             const passwordInput = document.getElementById('password');
             
-            emailInput.setAttribute('title', 'Demo: admin@divascloset.com');
-            passwordInput.setAttribute('title', 'Demo: Admin@123');
+            if (emailInput) emailInput.setAttribute('placeholder', 'Enter admin email');
+            if (passwordInput) passwordInput.setAttribute('placeholder', 'Enter password');
             
-            // Auto-fill for demo (remove in production)
-            emailInput.value = DEMO_CREDENTIALS.email;
-            passwordInput.value = DEMO_CREDENTIALS.password;
+            console.log('✅ Login page ready');
         });
         
         // Prevent form resubmission on refresh
@@ -982,5 +1058,6 @@
             window.history.replaceState(null, null, window.location.href);
         }
     </script>
+   
 </body>
 </html>
