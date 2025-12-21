@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const Database = require('../database');
 const { verifyPassword } = require('../utils/auth');
-const { setAuthCookie, clearAuthCookie } = require('../utils/admin-auth');
+const { setAuthCookie, clearAuthCookie, verifyAdminToken } = require('../utils/admin-auth');
 
 // Admin login
 router.post('/login', async (req, res) => {
@@ -28,8 +28,15 @@ router.post('/login', async (req, res) => {
             });
         }
 
+        if (!user.password_hash) {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid credentials'
+            });
+        }
+
         // Verify password
-        const isMatch = await verifyPassword(password, user.password);
+        const isMatch = await verifyPassword(password, user.password_hash);
         if (!isMatch) {
             return res.status(401).json({ 
                 success: false, 
@@ -38,7 +45,7 @@ router.post('/login', async (req, res) => {
         }
 
         // Set HTTP-only cookie
-        setAuthCookie(res, {
+        const token = setAuthCookie(res, {
             id: user.id,
             email: user.email,
             role: user.role
@@ -47,6 +54,7 @@ router.post('/login', async (req, res) => {
         res.json({ 
             success: true, 
             message: 'Login successful',
+            token,
             user: {
                 id: user.id,
                 email: user.email,
@@ -72,9 +80,7 @@ router.post('/logout', (req, res) => {
 });
 
 // Verify admin session
-router.get('/verify', (req, res) => {
-    // The verifyAdminToken middleware will handle the verification
-    // This route is just to trigger the middleware
+router.get('/verify', verifyAdminToken, (req, res) => {
     res.json({ 
         success: true, 
         message: 'Session is valid',

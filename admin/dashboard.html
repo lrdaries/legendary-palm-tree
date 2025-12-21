@@ -102,11 +102,11 @@
             <div class="p-4 rounded-lg bg-white">
               <div class="flex items-center justify-between">
                 <div>
-                  <p class="text-sm text-slate-500">Total Revenue</p>
-                  <h3 class="text-2xl font-semibold">$—</h3>
+                  <p class="text-sm text-slate-500">Total Products</p>
+                  <h3 id="stat-total-products" class="text-2xl font-semibold">—</h3>
                 </div>
                 <div class="p-3 rounded-lg bg-blue-50">
-                  <i class="fas fa-dollar-sign text-blue-600"></i>
+                  <i class="fas fa-boxes-stacked text-blue-600"></i>
                 </div>
               </div>
             </div>
@@ -114,11 +114,11 @@
             <div class="p-4 rounded-lg bg-white">
               <div class="flex items-center justify-between">
                 <div>
-                  <p class="text-sm text-slate-500">Orders</p>
-                  <h3 class="text-2xl font-semibold">—</h3>
+                  <p class="text-sm text-slate-500">In Stock</p>
+                  <h3 id="stat-in-stock" class="text-2xl font-semibold">—</h3>
                 </div>
                 <div class="p-3 rounded-lg bg-blue-50">
-                  <i class="fas fa-shopping-bag text-blue-600"></i>
+                  <i class="fas fa-check-circle text-blue-600"></i>
                 </div>
               </div>
             </div>
@@ -126,11 +126,11 @@
             <div class="p-4 rounded-lg bg-white">
               <div class="flex items-center justify-between">
                 <div>
-                  <p class="text-sm text-slate-500">Customers</p>
-                  <h3 class="text-2xl font-semibold">—</h3>
+                  <p class="text-sm text-slate-500">Out of Stock</p>
+                  <h3 id="stat-out-of-stock" class="text-2xl font-semibold">—</h3>
                 </div>
                 <div class="p-3 rounded-lg bg-blue-50">
-                  <i class="fas fa-users text-blue-600"></i>
+                  <i class="fas fa-circle-xmark text-blue-600"></i>
                 </div>
               </div>
             </div>
@@ -138,11 +138,11 @@
             <div class="p-4 rounded-lg bg-white">
               <div class="flex items-center justify-between">
                 <div>
-                  <p class="text-sm text-slate-500">Conversion</p>
-                  <h3 class="text-2xl font-semibold">—</h3>
+                  <p class="text-sm text-slate-500">Categories</p>
+                  <h3 id="stat-categories" class="text-2xl font-semibold">—</h3>
                 </div>
                 <div class="p-3 rounded-lg bg-blue-50">
-                  <i class="fas fa-chart-line text-blue-600"></i>
+                  <i class="fas fa-tags text-blue-600"></i>
                 </div>
               </div>
             </div>
@@ -616,12 +616,32 @@
           };
         });
         document.getElementById('product-count').textContent = Array.isArray(products) ? products.length : 0;
+        updateDashboardStats(products);
         renderProductsTable(products);
       } catch (err) {
         console.error(err);
         tbody.innerHTML = '<tr><td colspan="8" class="px-6 py-6 text-center text-red-500">Failed to load products. Check API and CORS.</td></tr>';
         showNotification('error','Load failed','Could not fetch products.');
       }
+    }
+
+    function updateDashboardStats(list) {
+      const items = Array.isArray(list) ? list : [];
+
+      const totalProductsEl = document.getElementById('stat-total-products');
+      const inStockEl = document.getElementById('stat-in-stock');
+      const outOfStockEl = document.getElementById('stat-out-of-stock');
+      const categoriesEl = document.getElementById('stat-categories');
+
+      const totalProducts = items.length;
+      const inStock = items.filter(p => Number(p && p.in_stock) > 0).length;
+      const outOfStock = items.filter(p => !Number.isFinite(Number(p && p.in_stock)) || Number(p && p.in_stock) <= 0).length;
+      const categories = new Set(items.map(p => String((p && p.category) || '').trim().toLowerCase()).filter(Boolean)).size;
+
+      if (totalProductsEl) totalProductsEl.textContent = String(totalProducts);
+      if (inStockEl) inStockEl.textContent = String(inStock);
+      if (outOfStockEl) outOfStockEl.textContent = String(outOfStock);
+      if (categoriesEl) categoriesEl.textContent = String(categories);
     }
 
     // ---------- Render products table ----------

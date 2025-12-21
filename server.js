@@ -2,13 +2,14 @@ require('dotenv').config();
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const xss = require('xss-clean');
 const mongoSanitize = require('express-mongo-sanitize');
 const Database = require('./database');
 const { generateJWT, hashPassword, verifyPassword } = require('./utils/auth');
-const { initializeResend, sendOTPEmail, sendLoginLinkEmail, sendWelcomeEmail, generateOTP } = require('./services/email');
+const { initializeResend, sendOTPEmail, sendLoginLinkEmail, sendWelcomeEmail, sendEmailVerificationEmail, generateOTP } = require('./services/email');
 const path = require('path');
 const winston = require('winston');
 const crypto = require('crypto'); // Added for token generation
@@ -102,10 +103,19 @@ app.set('trust proxy', 1);
 // Body parsing
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(cookieParser());
 
 // CORS configuration
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim()).filter(Boolean)
+    : [];
 const corsOptions = {
-    origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : '*',
+    origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.length === 0) return callback(null, true);
+        if (allowedOrigins.includes(origin)) return callback(null, true);
+        return callback(null, false);
+    },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
@@ -136,26 +146,6 @@ const limiter = rateLimit({
     message: 'Too many requests, please try again later.'
 });
 app.use(limiter);
-
-// CORS configuration
-app.use((req, res, next) => {
-    const allowedOrigins = process.env.ALLOWED_ORIGINS 
-        ? process.env.ALLOWED_ORIGINS.split(',') 
-        : ['http://localhost:3000', 'http://localhost:8000', 'http://127.0.0.1:3000'];
-    
-    const origin = req.headers.origin;
-    if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
-        res.header('Access-Control-Allow-Origin', origin || '*');
-    }
-    
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    
-    if (req.method === 'OPTIONS') {
-        return res.sendStatus(200);
-    }
-    next();
-});
 
 // Request logging
 app.use((req, res, next) => {
@@ -362,15 +352,29 @@ app.post('/api/auth/register', async (req, res) => {
         const expiresAt = new Date(Date.now() + (EMAIL_TOKEN_EXPIRY_HOURS * 60 * 60 * 1000));
         await Database.createEmailToken(verificationToken, emailLower, expiresAt);
 
-        const emailSent = await sendWelcomeEmail(email, verificationToken); // Fixed: Use imported function
-        
-        if (!emailSent) {
-            console.error('Failed to send verification email to:', email);
-        } else {
-            console.log(`📧 Verification email sent to ${email}`);
+        const verificationUrl = `${process.env.BASE_URL || `http://${HOST}:${PORT}`}/verify-email?token=${verificationToken}`;
+
+        const nameForEmail = firstName.trim();
+
+        // Welcome email (non-blocking for signup success)
+        try {
+            const welcomeRes = await sendWelcomeEmail(emailLower, nameForEmail);
+            if (!welcomeRes || !welcomeRes.success) {
+                console.error('Failed to send welcome email to:', emailLower);
+            }
+        } catch (e) {
+            console.error('Failed to send welcome email to:', emailLower, e);
         }
 
-        const verificationUrl = `${process.env.BASE_URL || `http://${HOST}:${PORT}`}/verify-email?token=${verificationToken}`;
+        // Verification email with link (non-blocking for signup success)
+        try {
+            const verifyRes = await sendEmailVerificationEmail(emailLower, verificationUrl, nameForEmail);
+            if (!verifyRes || !verifyRes.success) {
+                console.error('Failed to send verification email to:', emailLower);
+            }
+        } catch (e) {
+            console.error('Failed to send verification email to:', emailLower, e);
+        }
 
         res.status(201).json({
             success: true,
@@ -444,6 +448,15 @@ app.use('/pages', express.static(path.join(__dirname, 'client/pages')));
 // Serve admin static files
 app.use('/admin', express.static(path.join(__dirname, 'admin')));
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.status(200).json({
+        status: 'ok',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime()
+    });
+});
+
 // Handle SPA routing - serve index.html for all other routes
 app.get('*', (req, res) => {
     // Check if it's an admin route
@@ -513,80 +526,6 @@ app.use((req, res) => {
 
 // Security Headers
 app.disable('x-powered-by');
-app.use(helmet({
-    contentSecurityPolicy: {
-        directives: {
-            defaultSrc: ["'self'"],
-            scriptSrc: [
-                "'self'",
-                "https://cdn.tailwindcss.com",
-                "https://cdnjs.cloudflare.com",
-                process.env.NODE_ENV === 'production' ? "'none'" : "'unsafe-inline'"
-            ],
-            styleSrc: [
-                "'self'",
-                "https://cdn.tailwindcss.com",
-                "https://cdnjs.cloudflare.com",
-                "https://fonts.googleapis.com",
-                process.env.NODE_ENV === 'production' ? "'none'" : "'unsafe-inline'"
-            ],
-            imgSrc: [
-                "'self'",
-                "data:",
-                "blob:",
-                "https:"
-            ],
-            connectSrc: [
-                "'self'",
-                "http://localhost:3000",
-                "ws://localhost:3000" // For WebSocket if used
-            ],
-            fontSrc: [
-                "'self'",
-                "data:",
-                "https://fonts.gstatic.com",
-                "https://cdnjs.cloudflare.com"
-            ],
-            frameSrc: ["'self'"],
-            objectSrc: ["'none'"],
-            mediaSrc: ["'self'"],
-            formAction: ["'self'"],
-            frameAncestors: ["'self'"],
-            upgradeInsecureRequests: process.env.NODE_ENV === 'production' ? [] : null
-        }
-    }
-}));
-app.use(helmet.hsts({
-  maxAge: 31536000,
-  includeSubDomains: true,
-  preload: true
-}));
-
-// ============================================
-// START SERVER
-// ============================================
-
-// Health check endpoint
-app.get('/health', (req, res) => {
-    res.status(200).json({
-        status: 'ok',
-        timestamp: new Date().toISOString(),
-        uptime: process.uptime()
-    });
-});
-
-// Handle unhandled promise rejections
-process.on('unhandledRejection', (reason, promise) => {
-    logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
-    // Consider restarting the server or gracefully shutting down
-});
-
-// Handle uncaught exceptions
-process.on('uncaughtException', (error) => {
-    logger.error('Uncaught Exception:', error);
-    // Consider restarting the server
-    process.exit(1);
-});
 
 // Start server
 const server = app.listen(PORT, HOST, () => {

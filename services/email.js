@@ -35,10 +35,10 @@ async function sendOTPEmail(email, otp, firstName = 'User') {
     const result = await resend.emails.send({
       from: RESEND_FROM_EMAIL,
       to: email,
-      subject: 'Your DIVA\'s Closet Verification Code',
+      subject: 'Your Diva\'s Kloset Verification Code',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2>Welcome to DIVA's Closet, ${firstName}!</h2>
+          <h2>Welcome to Diva's Kloset, ${firstName}!</h2>
           <p>Your one-time verification code is:</p>
           <div style="background-color: #f0f0f0; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
             <h1 style="color: #333; letter-spacing: 5px; margin: 0;">${otp}</h1>
@@ -120,7 +120,7 @@ async function sendWelcomeEmail(email, firstName = 'User') {
               Browse Collections
             </a>
           </div>
-          <p style="color: #666; font-size: 12px;">© 2024 DIVA's Closet. All rights reserved.</p>
+          <p style="color: #666; font-size: 12px;"> 2025 DIVA's Closet. All rights reserved.</p>
         </div>
       `
     });
@@ -129,6 +129,42 @@ async function sendWelcomeEmail(email, firstName = 'User') {
     return { success: true, messageId: result.id };
   } catch (err) {
     console.error('❌ Error sending welcome email:', err.message);
+    return { success: false, message: err.message };
+  }
+}
+
+// Send email verification link
+async function sendEmailVerificationEmail(email, verificationUrl, firstName = 'User') {
+  try {
+    if (!resend) {
+      console.warn('⚠️ Resend not initialized - email not sent');
+      return { success: false, message: 'Email service not configured' };
+    }
+
+    const result = await resend.emails.send({
+      from: RESEND_FROM_EMAIL,
+      to: email,
+      subject: "Verify your Diva's Kloset email",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2>Welcome to Diva's Kloset, ${firstName}!</h2>
+          <p>Please verify your email address to complete your registration:</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${verificationUrl}" style="display: inline-block; background-color: #667eea; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+              Verify Email
+            </a>
+          </div>
+          <p>Or copy and paste this link: <a href="${verificationUrl}">${verificationUrl}</a></p>
+          <p>This link will expire in 24 hours.</p>
+          <p style="color: #666; font-size: 12px;">If you didn't create an account, please ignore this email.</p>
+        </div>
+      `
+    });
+
+    console.log('✅ Verification email sent to', email);
+    return { success: true, messageId: result.id };
+  } catch (err) {
+    console.error('❌ Error sending verification email:', err.message);
     return { success: false, message: err.message };
   }
 }
@@ -176,6 +212,7 @@ module.exports = {
   sendOTPEmail,
   sendLoginLinkEmail,
   sendWelcomeEmail,
+  sendEmailVerificationEmail,
   sendPasswordResetEmail,
   resend
 };

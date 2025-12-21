@@ -4,9 +4,18 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 const COOKIE_NAME = 'admin_auth';
 
+const getBearerToken = (req) => {
+    const header = req && req.headers ? req.headers.authorization : null;
+    if (!header) return null;
+    const m = String(header).match(/^Bearer\s+(.+)$/i);
+    return m && m[1] ? m[1].trim() : null;
+};
+
 // Middleware to verify admin token from HTTP-only cookie
 const verifyAdminToken = (req, res, next) => {
-    const token = req.cookies[COOKIE_NAME];
+    const cookieToken = req.cookies ? req.cookies[COOKIE_NAME] : null;
+    const bearerToken = getBearerToken(req);
+    const token = cookieToken || bearerToken;
     
     if (!token) {
         return res.status(401).json({ 
@@ -53,6 +62,8 @@ const setAuthCookie = (res, userData) => {
         sameSite: 'strict',
         maxAge: 24 * 60 * 60 * 1000 // 24 hours
     });
+
+    return token;
 };
 
 // Clear authentication cookie
