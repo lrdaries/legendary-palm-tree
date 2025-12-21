@@ -1057,13 +1057,34 @@
       await saveProductToBackend(values, files);
     });
 
-    // ---------- Import / Export helpers (client-side) ----------
-    document.getElementById('export-btn').addEventListener('click', () => {
-      const dataStr = JSON.stringify(products || [], null, 2);
-      const dl = document.createElement('a');
-      dl.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-      dl.download = 'products_export.json';
-      dl.click();
+    // ---------- Import / Export helpers (persist via API) ----------
+    document.getElementById('export-btn').addEventListener('click', async () => {
+      try {
+        const session = sessionStorage.getItem('adminSession');
+        if (!session) { window.location.href = 'index.html'; return; }
+        const sessionData = JSON.parse(session);
+        const token = sessionData.token;
+
+        const usersRes = await fetch(`${CONFIG.API_BASE_URL}/admin/users`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const usersJson = await usersRes.json();
+        if (!usersRes.ok || !usersJson.success) throw new Error(usersJson.message || 'Failed to export users');
+
+        const exportPayload = {
+          exportedAt: new Date().toISOString(),
+          users: usersJson.data || [],
+          products: products || []
+        };
+
+        const dataStr = JSON.stringify(exportPayload, null, 2);
+        const dl = document.createElement('a');
+        dl.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+        dl.download = 'divas_kloset_export.json';
+        dl.click();
+      } catch (err) {
+        showNotification('error','Export failed', err.message || 'Could not export.');
+      }
     });
 
     document.getElementById('import-btn').addEventListener('click', () => {
@@ -1073,15 +1094,32 @@
       input.onchange = async (ev) => {
         const f = ev.target.files[0];
         if (!f) return;
-        const txt = await f.text();
+
         try {
+          const session = sessionStorage.getItem('adminSession');
+          if (!session) { window.location.href = 'index.html'; return; }
+          const sessionData = JSON.parse(session);
+          const token = sessionData.token;
+
+          const txt = await f.text();
           const imported = JSON.parse(txt);
-          // Local merge; optionally POST to backend to persist
-          products = [...products, ...imported];
-          renderProductsTable(products);
-          showNotification('success','Imported','Imported locally. To persist, POST these to your API.');
+
+          const importRes = await fetch(`${CONFIG.API_BASE_URL}/admin/import`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(imported)
+          });
+
+          const importJson = await importRes.json();
+          if (!importRes.ok || !importJson.success) throw new Error(importJson.message || 'Import failed');
+
+          showNotification('success','Imported', 'Data imported successfully.');
+          await fetchProducts();
         } catch (err) {
-          showNotification('error','Import failed','Invalid JSON file.');
+          showNotification('error','Import failed', err.message || 'Invalid JSON file.');
         }
       };
       input.click();

@@ -1,7 +1,17 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const fs = require('fs');
 
-const DB_PATH = path.join(__dirname, 'app.db');
+const DB_PATH = process.env.DATABASE_PATH || process.env.DB_PATH || path.join(__dirname, 'app.db');
+
+try {
+    const dir = path.dirname(DB_PATH);
+    if (dir && dir !== '.' && !fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+    }
+} catch (err) {
+    console.error('Error ensuring database directory exists:', err.message);
+}
 
 let db;
 let isInitialized = false;
@@ -221,6 +231,13 @@ class Database {
         }
     }
 
+    static async getAllUsers() {
+        await ensureInitialized();
+        const sql = `SELECT id, email, first_name, last_name, role, verified, created_at, updated_at
+                     FROM users ORDER BY created_at DESC`;
+        return await getAllRows(sql, []);
+    }
+
     static async createUser(userData) {
         await ensureInitialized();
         const sql = `INSERT INTO users (email, first_name, last_name, password_hash, role, verified)
@@ -409,6 +426,30 @@ class Database {
         const sql = `SELECT id, sku, name, description, price, image_url, image_urls, category, in_stock,
                             created_at, updated_at FROM products WHERE id = ?`;
         const row = await getRow(sql, [id]);
+        if (!row) return null;
+
+        let imageUrls = [];
+        try {
+            imageUrls = row.image_urls ? JSON.parse(row.image_urls) : [];
+        } catch {
+            imageUrls = [];
+        }
+
+        const primaryImage = row.image_url || imageUrls[0] || null;
+        return {
+            ...row,
+            image_url: primaryImage,
+            image_urls: Array.isArray(imageUrls) ? imageUrls : []
+        };
+    }
+
+    static async getProductBySku(sku) {
+        await ensureInitialized();
+        const normalized = (sku || '').trim();
+        if (!normalized) return null;
+        const sql = `SELECT id, sku, name, description, price, image_url, image_urls, category, in_stock,
+                            created_at, updated_at FROM products WHERE sku = ?`;
+        const row = await getRow(sql, [normalized]);
         if (!row) return null;
 
         let imageUrls = [];
