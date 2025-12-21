@@ -191,12 +191,49 @@ process.on('unhandledRejection', (reason, promise) => {
 // ============================================
 
 // Initialize database on startup
-Database.initializeDatabase().catch((error) => {
-    console.error('Failed to initialize database:', error);
-    if (process.env.NODE_ENV === 'production') {
-        process.exit(1);
+async function ensureAdminUser() {
+    const email = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
+    const password = process.env.ADMIN_PASSWORD;
+    const firstName = process.env.ADMIN_FIRST_NAME || 'Admin';
+    const lastName = process.env.ADMIN_LAST_NAME || 'User';
+
+    if (!email || !password) return;
+
+    try {
+        const existing = await Database.getUserByEmail(email);
+        const passwordHash = await hashPassword(password);
+
+        if (existing) {
+            if (existing.role === 'admin' && existing.password_hash) return;
+            await Database.updateUser(email, {
+                role: 'admin',
+                password_hash: passwordHash,
+                verified: true
+            });
+            return;
+        }
+
+        await Database.createUser({
+            email,
+            first_name: firstName,
+            last_name: lastName,
+            password_hash: passwordHash,
+            role: 'admin',
+            verified: true
+        });
+    } catch (err) {
+        console.error('Failed to ensure admin user:', err);
     }
-});
+}
+
+Database.initializeDatabase()
+    .then(() => ensureAdminUser())
+    .catch((error) => {
+        console.error('Failed to initialize database:', error);
+        if (process.env.NODE_ENV === 'production') {
+            process.exit(1);
+        }
+    });
 
 // ============================================
 // API ROUTES
