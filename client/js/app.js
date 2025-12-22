@@ -47,7 +47,7 @@
       NGN: 1550.0, AUD: 1.35, CAD: 1.25, CNY: 6.45, INR: 74.5
     };
 
-    let current = 'USD';
+    let current = 'NGN';
     let rates = { ...fallbackRates };
 
     const loadSelected = () => {
@@ -338,9 +338,9 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
           ${imgHtml}
           <div>
-            <div class="text-sm text-gray-500 mb-1">${category}</div>
             <div class="text-3xl font-bold text-gray-900 mb-2">${name}</div>
             <div class="text-2xl font-bold mb-4">${price}</div>
+            ${category ? `<div class="text-sm text-gray-500 mb-4">${category}</div>` : ''}
             ${description ? `<div class=\"text-gray-600 mb-6\">${description}</div>` : ''}
             <a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition font-semibold">
               <i class="fab fa-whatsapp mr-2"></i>

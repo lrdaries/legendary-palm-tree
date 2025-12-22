@@ -802,7 +802,7 @@
           await fetchProducts();
           
           // Close modal and reset form
-          closeModal();
+          closeProductModal();
           resetForm();
         } else {
           throw new Error(result.message || 'Failed to save product');

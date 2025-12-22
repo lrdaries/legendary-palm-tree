@@ -526,7 +526,7 @@
                 products: [],
                 filteredProducts: [],
                 // cart: [], // Commented out - site is catalogue only
-                currentCurrency: 'USD',
+                currentCurrency: 'NGN',
                 currentView: 'grid',
                 currentPage: 1,
                 itemsPerPage: 12,
@@ -1057,6 +1057,11 @@
                                     <span class="text-gray-600 ml-2">(${product.reviews} reviews)</span>
                                 </div>
                                 <p class="text-3xl font-bold mb-6">${utils.formatPrice(product.price)}</p>
+
+                                <div class="mb-6">
+                                    <h4 class="font-semibold mb-2">Category:</h4>
+                                    <span class="inline-block px-3 py-1 bg-gray-100 rounded-full text-sm capitalize">${utils.sanitizeHTML(product.category)}</span>
+                                </div>
                                 ${product?.description ? `
                                     <div class="mb-6">
                                         <h4 class="font-semibold mb-2">Description:</h4>
@@ -1073,11 +1078,6 @@
                                             </button>
                                         `).join('')}
                                     </div>
-                                </div>
-
-                                <div class="mb-6">
-                                    <h4 class="font-semibold mb-2">Category:</h4>
-                                    <span class="inline-block px-3 py-1 bg-gray-100 rounded-full text-sm capitalize">${utils.sanitizeHTML(product.category)}</span>
                                 </div>
 
                                 <div class="mb-6">
