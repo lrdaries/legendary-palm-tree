@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
+const { createClient } = require('@supabase/supabase-js');
+const { v4: uuidv4 } = require('uuid');
 const Database = require('../../database');
 const { verifyAdminToken } = require('../../utils/admin-auth');
 const {
@@ -12,7 +14,7 @@ const {
 } = require('../../middleware/validation');
 
 // Configure multer for image uploads
-const storage = multer.diskStorage({
+const diskStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'uploads/');
   },
@@ -21,6 +23,8 @@ const storage = multer.diskStorage({
     cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
   }
 });
+
+const memoryStorage = multer.memoryStorage();
 
 async function generateUniqueSku(base, excludeProductId = null) {
   const raw = (base || '').toString().trim().toUpperCase();
@@ -43,25 +47,66 @@ async function generateUniqueSku(base, excludeProductId = null) {
   throw new Error('Failed to generate unique SKU');
 }
 
-const upload = multer({
-  storage: storage,
-  limits: {
-    fileSize: 5 * 1024 * 1024
-  },
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype && file.mimetype.startsWith('image/')) {
-      cb(null, true);
-    } else {
-      cb(new Error('Only image files are allowed!'), false);
+function isSupabaseStorageConfigured() {
+  return !!(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.SUPABASE_STORAGE_BUCKET);
+}
+
+function getUploadMiddleware() {
+  return multer({
+    storage: isSupabaseStorageConfigured() ? memoryStorage : diskStorage,
+    limits: {
+      fileSize: 5 * 1024 * 1024
+    },
+    fileFilter: (req, file, cb) => {
+      if (file.mimetype && file.mimetype.startsWith('image/')) {
+        cb(null, true);
+      } else {
+        cb(new Error('Only image files are allowed!'), false);
+      }
     }
-  }
-});
+  });
+}
+
+const upload = getUploadMiddleware();
 
 // Upload images (admin only)
 router.post('/upload-images', verifyAdminToken, upload.array('images', 10), async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ success: false, message: 'No files uploaded' });
+    }
+
+    if (isSupabaseStorageConfigured()) {
+      const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+      const bucket = process.env.SUPABASE_STORAGE_BUCKET;
+
+      const uploaded = [];
+
+      for (const file of req.files) {
+        const ext = path.extname(file.originalname || '') || '';
+        const objectPath = `products/${uuidv4()}${ext}`;
+
+        // eslint-disable-next-line no-await-in-loop
+        const { error } = await supabase.storage
+          .from(bucket)
+          .upload(objectPath, file.buffer, {
+            contentType: file.mimetype,
+            upsert: false
+          });
+
+        if (error) {
+          return res.status(500).json({ success: false, message: `Upload failed: ${error.message}` });
+        }
+
+        const { data } = supabase.storage.from(bucket).getPublicUrl(objectPath);
+        uploaded.push(data.publicUrl);
+      }
+
+      return res.json({
+        success: true,
+        message: `${uploaded.length} images uploaded successfully`,
+        imageUrls: uploaded
+      });
     }
 
     const imageUrls = req.files.map(file => `/uploads/${file.filename}`);

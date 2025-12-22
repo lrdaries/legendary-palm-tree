@@ -512,6 +512,15 @@
             const FX_CACHE_KEY = 'dk_fx_rates_usd_v1';
             const FX_TTL_MS = 12 * 60 * 60 * 1000; // 12 hours
 
+            const SELLER_WHATSAPP_NUMBER = '+17083238600';
+            const toWhatsAppDigits = (num) => String(num || '').replace(/[^0-9]/g, '');
+            const buildWhatsAppUrl = ({ productName, productUrl } = {}) => {
+                const digits = toWhatsAppDigits(SELLER_WHATSAPP_NUMBER);
+                const url = digits ? `https://wa.me/${digits}` : 'https://wa.me/';
+                const text = `Hello, I'm interested in: ${productName || 'a product'}${productUrl ? `\n${productUrl}` : ''}`;
+                return `${url}?text=${encodeURIComponent(text)}`;
+            };
+
             // State Management
             let state = {
                 products: [],
@@ -596,6 +605,7 @@
                         const products = (data.data || []).map(product => ({
                             id: product.id,
                             name: product.name || 'Unnamed Product',
+                            description: product.description || product.details || product.long_description || '',
                             price: parseFloat(product.price) || 0,
                             category: product.category || 'Uncategorized',
                             color: product.category ? product.category.toLowerCase().split(' ')[0] : 'gray',
@@ -1031,6 +1041,8 @@
 
                     const content = document.getElementById('quick-view-content');
                     const img = utils.normalizeImageUrl(product?.image_url);
+                    const productUrl = window.location.href;
+                    const waUrl = buildWhatsAppUrl({ productName: product?.name || 'a product', productUrl });
                     content.innerHTML = `
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div class="aspect-square bg-gradient-to-br from-${product.color === 'white' ? 'gray' : product.color}-100 to-${product.color === 'white' ? 'gray' : product.color}-200 rounded-lg overflow-hidden relative flex items-center justify-center">
@@ -1045,6 +1057,12 @@
                                     <span class="text-gray-600 ml-2">(${product.reviews} reviews)</span>
                                 </div>
                                 <p class="text-3xl font-bold mb-6">${utils.formatPrice(product.price)}</p>
+                                ${product?.description ? `
+                                    <div class="mb-6">
+                                        <h4 class="font-semibold mb-2">Description:</h4>
+                                        <p class="text-gray-600">${utils.sanitizeHTML(product.description)}</p>
+                                    </div>
+                                ` : ''}
                                 
                                 <div class="mb-6">
                                     <h4 class="font-semibold mb-2">Available Sizes:</h4>
@@ -1067,6 +1085,11 @@
                                         ${product.stock < 5 ? `<span class="text-red-500 font-semibold">Only ${product.stock} left in stock!</span>` : `<span class="text-green-600">In Stock (${product.stock} available)</span>`}
                                     </p>
                                 </div>
+
+                                <a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center w-full bg-green-600 text-white py-4 rounded-lg hover:bg-green-700 transition text-lg font-semibold">
+                                    <i class="fab fa-whatsapp mr-2"></i>
+                                    Message Seller on WhatsApp
+                                </a>
 
                                 <!-- <button onclick="ProductPage.addToCart(${product.id}); ProductPage.closeQuickView();" class="w-full bg-black text-white py-4 rounded-lg hover:bg-gray-800 transition text-lg font-semibold">
                                     Add to Cart

@@ -30,6 +30,17 @@
     return div.innerHTML;
   };
 
+  const SELLER_WHATSAPP_NUMBER = '+17083238600';
+
+  const toWhatsAppDigits = (num) => String(num || '').replace(/[^0-9]/g, '');
+
+  const buildWhatsAppUrl = ({ productName, productUrl } = {}) => {
+    const digits = toWhatsAppDigits(SELLER_WHATSAPP_NUMBER);
+    const url = digits ? `https://wa.me/${digits}` : 'https://wa.me/';
+    const text = `Hello, I'm interested in: ${productName || 'a product'}${productUrl ? `\n${productUrl}` : ''}`;
+    return `${url}?text=${encodeURIComponent(text)}`;
+  };
+
   const currency = (() => {
     const fallbackRates = {
       USD: 1, EUR: 0.85, GBP: 0.73, JPY: 110.0,
@@ -284,7 +295,11 @@
       profileName: qs('#profile-name'),
       profileEmail: qs('#profile-email'),
       logoutBtn: qs('#logout-btn'),
-      profileCloseBtn: qs('#profile-close-btn')
+      profileCloseBtn: qs('#profile-close-btn'),
+
+      productQuickView: qs('#product-quick-view'),
+      productQuickViewClose: qs('#product-quick-view-close'),
+      productQuickViewContent: qs('#product-quick-view-content'),
     };
 
     const setStep = (stepId) => {
@@ -301,6 +316,41 @@
     const closeModal = (modal) => {
       hide(modal);
       document.body.style.overflow = '';
+    };
+
+    const openQuickView = (product) => {
+      if (!els.productQuickView || !els.productQuickViewContent) return;
+
+      const name = safeText(product?.name || 'Unnamed Product');
+      const category = safeText(product?.category || '');
+      const img = product?.image_url ? safeText(product.image_url) : '';
+      const price = currency.formatUSD(product?.price);
+      const description = safeText(product?.description || product?.details || '');
+      const productUrl = window.location.href;
+
+      const imgHtml = img
+        ? `<div class="aspect-square bg-gray-100 overflow-hidden rounded-lg"><img src="${img}" alt="${name}" class="w-full h-full object-cover" loading="lazy"></div>`
+        : `<div class="aspect-square bg-gray-100 rounded-lg flex items-center justify-center text-gray-400"><i class="fas fa-image text-5xl"></i></div>`;
+
+      const waUrl = buildWhatsAppUrl({ productName: product?.name || 'a product', productUrl });
+
+      els.productQuickViewContent.innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          ${imgHtml}
+          <div>
+            <div class="text-sm text-gray-500 mb-1">${category}</div>
+            <div class="text-3xl font-bold text-gray-900 mb-2">${name}</div>
+            <div class="text-2xl font-bold mb-4">${price}</div>
+            ${description ? `<div class=\"text-gray-600 mb-6\">${description}</div>` : ''}
+            <a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition font-semibold">
+              <i class="fab fa-whatsapp mr-2"></i>
+              Message Seller on WhatsApp
+            </a>
+          </div>
+        </div>
+      `;
+
+      openModal(els.productQuickView);
     };
 
     const toggleMobileMenu = (open) => {
@@ -335,7 +385,7 @@
             : `<div class="aspect-square bg-gray-100 rounded-lg mb-4"></div>`;
 
           return `
-            <div class="bg-white rounded-xl shadow-sm hover:shadow-lg transition overflow-hidden">
+            <div class="bg-white rounded-xl shadow-sm hover:shadow-lg transition overflow-hidden cursor-pointer" data-product-id="${safeText(p.id)}" role="button" tabindex="0">
               <div class="p-4">
                 ${imgHtml}
                 <div class="text-sm text-gray-500 mb-1">${category}</div>
@@ -346,6 +396,20 @@
           `;
         })
         .join('');
+
+      qsa('[data-product-id]', els.productsGrid).forEach((card) => {
+        const id = Number(card.getAttribute('data-product-id'));
+        card.addEventListener('click', () => {
+          const product = products.find((p) => Number(p.id) === id);
+          if (product) openQuickView(product);
+        });
+        card.addEventListener('keydown', (e) => {
+          if (e.key !== 'Enter' && e.key !== ' ') return;
+          e.preventDefault();
+          const product = products.find((p) => Number(p.id) === id);
+          if (product) openQuickView(product);
+        });
+      });
     };
 
     const syncAuthUI = () => {
@@ -383,6 +447,7 @@
       closeModal,
       toggleMobileMenu,
       renderProducts,
+      openQuickView,
       syncAuthUI,
       syncCurrencyUI
     };
@@ -403,6 +468,11 @@
   const wireUp = () => {
     ui.syncAuthUI();
     ui.syncCurrencyUI();
+
+    ui.els.productQuickViewClose?.addEventListener('click', () => ui.closeModal(ui.els.productQuickView));
+    ui.els.productQuickView?.addEventListener('click', (e) => {
+      if (e.target === ui.els.productQuickView) ui.closeModal(ui.els.productQuickView);
+    });
 
     ui.els.currencySelector?.addEventListener('change', async (e) => {
       currency.set(e.target.value);

@@ -73,13 +73,15 @@ app.use(helmet({
                 "'self'",
                 "data:",
                 "blob:",
-                "https://images.pexels.com" // Specific domain for your images
+                "https://images.pexels.com", // Specific domain for your images
+                "https://*.supabase.co"
             ],
             connectSrc: [
                 "'self'",
                 "http://localhost:*",
                 "http://127.0.0.1:*",
-                "https://open.er-api.com"
+                "https://open.er-api.com",
+                "https://*.supabase.co"
             ],
             fontSrc: [
                 "'self'",
@@ -475,7 +477,7 @@ app.use(express.static(path.join(__dirname, 'client'), {
             res.set('Content-Type', 'application/javascript');
         }
         // Add CSP headers for static files
-        res.set('Content-Security-Policy', "default-src 'self'; script-src 'self' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com 'unsafe-inline'; style-src 'self' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://fonts.googleapis.com 'unsafe-inline'; img-src 'self' data: blob: https://images.pexels.com; font-src 'self' data: https://cdnjs.cloudflare.com https://fonts.gstatic.com; connect-src 'self' https://open.er-api.com");
+        res.set('Content-Security-Policy', "default-src 'self'; script-src 'self' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com 'unsafe-inline'; style-src 'self' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://fonts.googleapis.com 'unsafe-inline'; img-src 'self' data: blob: https://images.pexels.com https://*.supabase.co; font-src 'self' data: https://cdnjs.cloudflare.com https://fonts.gstatic.com; connect-src 'self' https://open.er-api.com https://*.supabase.co");
     }
 }));
 
