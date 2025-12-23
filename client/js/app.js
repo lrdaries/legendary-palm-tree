@@ -30,7 +30,7 @@
     return div.innerHTML;
   };
 
-  const SELLER_WHATSAPP_NUMBER = '+17083238600';
+  const SELLER_WHATSAPP_NUMBER = '+2347073994915';
 
   const toWhatsAppDigits = (num) => String(num || '').replace(/[^0-9]/g, '');
 

@@ -512,7 +512,7 @@
             const FX_CACHE_KEY = 'dk_fx_rates_usd_v1';
             const FX_TTL_MS = 12 * 60 * 60 * 1000; // 12 hours
 
-            const SELLER_WHATSAPP_NUMBER = '+17083238600';
+            const SELLER_WHATSAPP_NUMBER = '+2347073994915';
             const toWhatsAppDigits = (num) => String(num || '').replace(/[^0-9]/g, '');
             const buildWhatsAppUrl = ({ productName, productUrl } = {}) => {
                 const digits = toWhatsAppDigits(SELLER_WHATSAPP_NUMBER);
@@ -607,7 +607,7 @@
                             name: product.name || 'Unnamed Product',
                             description: product.description || product.details || product.long_description || '',
                             price: parseFloat(product.price) || 0,
-                            category: product.category || 'Uncategorized',
+                            category: utils.normalizeCategory(product.category || 'Uncategorized'),
                             color: product.category ? product.category.toLowerCase().split(' ')[0] : 'gray',
                             size: ['One Size'],
                             stock: Number(product.in_stock) || 0,
@@ -658,6 +658,20 @@
                     const div = document.createElement('div');
                     div.textContent = str;
                     return div.innerHTML;
+                },
+
+                normalizeCategory(category) {
+                    const raw = String(category || '').trim();
+                    if (!raw) return 'Uncategorized';
+                    const k = raw.toLowerCase();
+
+                    if (k === 'shoes' || k === 'shoe') return 'Shoes';
+                    if (k === 'bags' || k === 'bag' || k === 'handbag' || k === 'handbags' || k === 'purse' || k === 'purses') return 'Bags';
+                    if (k === 'clothing' || k === 'clothes' || k === 'apparel') return 'Clothing';
+                    if (k === 'jewelry' || k === 'jewellery') return 'Jewelry';
+                    if (k === 'accessories' || k === 'accessory') return 'Accessories';
+
+                    return raw;
                 },
 
                 normalizeImageUrl(url) {
@@ -724,7 +738,7 @@
 
                     // Category filter
                     if (!state.filters.categories.includes('all')) {
-                        filtered = filtered.filter(p => state.filters.categories.includes(p.category));
+                        filtered = filtered.filter(p => state.filters.categories.includes(utils.normalizeCategory(p.category)));
                     }
 
                     // Price filter
@@ -754,7 +768,7 @@
                     document.getElementById('count-all').textContent = state.products.length;
                     
                     categories.forEach(cat => {
-                        const count = state.products.filter(p => p.category === cat).length;
+                        const count = state.products.filter(p => utils.normalizeCategory(p.category) === cat).length;
                         const element = document.getElementById(`count-${cat.toLowerCase()}`);
                         if (element) element.textContent = count;
                     });
