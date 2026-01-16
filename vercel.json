@@ -11,7 +11,7 @@
     }
   ],
   "env": {
-    "DATABASE_URL": "@supabase_db_url",
+    "DATABASE_URL": "@supabase_database_url",
     "RESEND_API_KEY": "@resend_api_key",
     "NODE_ENV": "production",
     "JWT_SECRET": "@jwt_secret"
