@@ -14,7 +14,7 @@
     }
   ],
   "functions": {
-    "api/server.js": {
+    "server.js": {
       "maxDuration": 30
     }
   }
