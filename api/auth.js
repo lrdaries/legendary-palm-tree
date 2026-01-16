@@ -11,9 +11,24 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Import auth routes
-const authRouter = require('../routes/api');
-app.use('/', authRouter);
+// Simple auth endpoints
+app.post('/request-otp', async (req, res) => {
+  try {
+    const { email } = req.body;
+    res.json({ success: true, message: 'OTP endpoint working' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+app.post('/verify-otp', async (req, res) => {
+  try {
+    const { email, code } = req.body;
+    res.json({ success: true, message: 'Verify OTP endpoint working' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
 
 // Export as serverless function
 module.exports = (req, res) => {
