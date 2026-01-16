@@ -1,7 +1,10 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const Database = require('../database');
+
+// Database selection based on environment
+const isVercel = process.env.NODE_ENV === 'production' && process.env.VERCEL;
+const Database = isVercel ? require('../database-postgres') : require('../database');
 
 // Create Express app for this function
 const app = express();
