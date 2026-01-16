@@ -502,7 +502,23 @@ app.get('/health', (req, res) => {
     res.status(200).json({
         status: 'ok',
         timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV,
+        vercel: !!process.env.VERCEL,
+        database: process.env.DATABASE_URL ? 'configured' : 'missing',
+        email: process.env.RESEND_API_KEY ? 'configured' : 'missing',
         uptime: process.uptime()
+    });
+});
+
+// Debug endpoint for Vercel
+app.get('/debug', (req, res) => {
+    res.json({
+        NODE_ENV: process.env.NODE_ENV,
+        VERCEL: process.env.VERCEL,
+        DATABASE_URL_EXISTS: !!process.env.DATABASE_URL,
+        RESEND_API_KEY_EXISTS: !!process.env.RESEND_API_KEY,
+        JWT_SECRET_EXISTS: !!process.env.JWT_SECRET,
+        IS_VERCEL: process.env.NODE_ENV === 'production' && process.env.VERCEL
     });
 });
 
