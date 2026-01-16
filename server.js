@@ -595,28 +595,23 @@ app.use((req, res) => {
 // Security Headers
 app.disable('x-powered-by');
 
-// Local development server startup
-if (!process.env.VERCEL) {
-    const PORT = process.env.PORT || 3000;
-    const HOST = '0.0.0.0';
+// Server configuration is already defined above (lines 68-69)
+// const PORT = process.env.PORT || 3000;
+// const HOST = '0.0.0.0';
 
-    // Start server
-    const server = app.listen(PORT, HOST, () => {
-        logger.info(`Server running in ${process.env.NODE_ENV} mode on http://${HOST}:${PORT}`);
-        logger.info(`Health check available at http://${HOST}:${PORT}/health`);
+// Start server
+const server = app.listen(PORT, HOST, () => {
+    logger.info(`Server running in ${process.env.NODE_ENV} mode on http://${HOST}:${PORT}`);
+    logger.info(`Health check available at http://${HOST}:${PORT}/health`);
+});
+
+// Graceful shutdown
+function shutdown() {
+    console.log('\nShutting down gracefully...');
+    server.close(() => {
+        process.exit(0);
     });
-
-    // Graceful shutdown for local development
-    function shutdown() {
-        console.log('\nShutting down gracefully...');
-        server.close(() => {
-            process.exit(0);
-        });
-    }
-
-    process.on('SIGTERM', shutdown);
-    process.on('SIGINT', shutdown);
 }
 
-// Export for Vercel serverless functions
-module.exports = app;
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
