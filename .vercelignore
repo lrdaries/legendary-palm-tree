@@ -1,0 +1,23 @@
+# Ignore admin folder - it's a separate project
+admin/
+
+# Ignore archive folder
+archive/
+
+# Ignore node_modules
+node_modules/
+
+# Ignore database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Ignore logs
+*.log
+logs/
+
+# Ignore environment files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
