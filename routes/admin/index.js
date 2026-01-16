@@ -10,8 +10,194 @@ const productsRouter = require('./products');
 // Mount routes
 router.use('/products', productsRouter);
 
-// Export users (admin only - already protected by verifyAdminToken at mount)
+// Get all users with pagination and filtering
 router.get('/users', async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 50;
+    const offset = parseInt(req.query.offset) || 0;
+    const search = req.query.search || '';
+    const role = req.query.role || 'all';
+    
+    let users = await Database.getAllUsers(limit, offset);
+    
+    // Apply filters
+    if (search) {
+      users = users.filter(user => 
+        user.email.toLowerCase().includes(search.toLowerCase()) ||
+        (user.first_name && user.first_name.toLowerCase().includes(search.toLowerCase())) ||
+        (user.last_name && user.last_name.toLowerCase().includes(search.toLowerCase()))
+      );
+    }
+    
+    if (role !== 'all') {
+      users = users.filter(user => user.role === role);
+    }
+    
+    const total = await Database.countUsers();
+    
+    res.json({ 
+      success: true, 
+      data: users,
+      pagination: {
+        limit,
+        offset,
+        total,
+        hasMore: offset + limit < total
+      }
+    });
+  } catch (err) {
+    console.error('Error fetching users:', err);
+    res.status(500).json({ success: false, message: 'Failed to fetch users' });
+  }
+});
+
+// Get all orders with pagination and filtering
+router.get('/orders', async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 50;
+    const offset = parseInt(req.query.offset) || 0;
+    const search = req.query.search || '';
+    const status = req.query.status || 'all';
+    
+    let orders = await Database.getAllOrders(limit, offset);
+    
+    // Apply filters
+    if (search) {
+      orders = orders.filter(order => 
+        order.order_number.toLowerCase().includes(search.toLowerCase()) ||
+        order.customer_email.toLowerCase().includes(search.toLowerCase()) ||
+        (order.customer_name && order.customer_name.toLowerCase().includes(search.toLowerCase()))
+      );
+    }
+    
+    if (status !== 'all') {
+      orders = orders.filter(order => order.status === status);
+    }
+    
+    const total = await Database.countOrders();
+    
+    res.json({ 
+      success: true, 
+      data: orders,
+      pagination: {
+        limit,
+        offset,
+        total,
+        hasMore: offset + limit < total
+      }
+    });
+  } catch (err) {
+    console.error('Error fetching orders:', err);
+    res.status(500).json({ success: false, message: 'Failed to fetch orders' });
+  }
+});
+
+// Update order status
+router.put('/orders/:id/status', async (req, res) => {
+  try {
+    const { status } = req.body;
+    const orderId = req.params.id;
+    
+    if (!['pending', 'processing', 'shipped', 'delivered', 'cancelled'].includes(status)) {
+      return res.status(400).json({ success: false, message: 'Invalid status' });
+    }
+    
+    const updated = await Database.updateOrderStatus(orderId, status);
+    
+    if (updated) {
+      res.json({ 
+        success: true, 
+        message: 'Order status updated successfully',
+        data: updated
+      });
+    } else {
+      res.status(404).json({ success: false, message: 'Order not found' });
+    }
+  } catch (err) {
+    console.error('Error updating order status:', err);
+    res.status(500).json({ success: false, message: 'Failed to update order status' });
+  }
+});
+
+// Update user role
+router.put('/users/:id/role', async (req, res) => {
+  try {
+    const { role } = req.body;
+    const userId = req.params.id;
+    
+    if (!['admin', 'customer'].includes(role)) {
+      return res.status(400).json({ success: false, message: 'Invalid role' });
+    }
+    
+    const updated = await Database.updateUserRole(userId, role);
+    
+    if (updated) {
+      res.json({ 
+        success: true, 
+        message: 'User role updated successfully',
+        data: updated
+      });
+    } else {
+      res.status(404).json({ success: false, message: 'User not found' });
+    }
+  } catch (err) {
+    console.error('Error updating user role:', err);
+    res.status(500).json({ success: false, message: 'Failed to update user role' });
+  }
+});
+
+// Delete user
+router.delete('/users/:id', async (req, res) => {
+  try {
+    const userId = req.params.id;
+    
+    const deleted = await Database.deleteUser(userId);
+    
+    if (deleted) {
+      res.json({ 
+        success: true, 
+        message: 'User deleted successfully'
+      });
+    } else {
+      res.status(404).json({ success: false, message: 'User not found' });
+    }
+  } catch (err) {
+    console.error('Error deleting user:', err);
+    res.status(500).json({ success: false, message: 'Failed to delete user' });
+  }
+});
+
+// Get dashboard stats
+router.get('/stats', async (req, res) => {
+  try {
+    const [ordersCount, usersCount, productsCount] = await Promise.all([
+      Database.countOrders(),
+      Database.countUsers(),
+      Database.countProducts()
+    ]);
+    
+    const recentOrders = await Database.getRecentOrders(5);
+    const pendingOrders = await Database.getOrdersByStatus('pending');
+    
+    res.json({
+      success: true,
+      data: {
+        totalOrders: ordersCount,
+        totalUsers: usersCount,
+        totalProducts: productsCount,
+        pendingOrders: pendingOrders.length,
+        recentOrders,
+        totalRevenue: 284750 // Mock data - would calculate from actual orders
+      }
+    });
+  } catch (err) {
+    console.error('Error fetching stats:', err);
+    res.status(500).json({ success: false, message: 'Failed to fetch stats' });
+  }
+});
+
+// Legacy: Export users (admin only - already protected by verifyAdminToken at mount)
+router.get('/export-users', async (req, res) => {
   try {
     const users = await Database.getAllUsers();
     res.json({ success: true, data: users });
@@ -21,7 +207,7 @@ router.get('/users', async (req, res) => {
   }
 });
 
-// Bulk import users + products
+// Legacy: Bulk import users + products
 router.post('/import', async (req, res) => {
   try {
     const payload = req.body;

@@ -1,1 +1,1 @@
-module.exports = require('./database-supabase');
+module.exports = require('./database-sqlite');

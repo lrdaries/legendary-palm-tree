@@ -68,5 +68,8 @@ jspm_packages/
 ehthumbs.db
 Thumbs.db
 
+# Archive folder
+_archive/
+
 # PM2
 ecosystem.config.js

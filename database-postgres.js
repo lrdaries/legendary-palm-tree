@@ -1,469 +1,356 @@
 const { Pool } = require('pg');
 
-const DATABASE_URL = process.env.DATABASE_URL;
-
-if (!DATABASE_URL) {
-    throw new Error('DATABASE_URL is required to use Postgres database');
-}
-
-const pool = new Pool({
-    connectionString: DATABASE_URL,
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined
-});
-
-let isInitialized = false;
-
-async function q(text, params = []) {
-    return pool.query(text, params);
-}
-
-function normalizeEmail(email) {
-    return String(email || '').trim().toLowerCase();
-}
-
-function safeJsonParseArray(value) {
-    if (!value) return [];
-    if (Array.isArray(value)) return value;
-    try {
-        const parsed = JSON.parse(value);
-        return Array.isArray(parsed) ? parsed : [];
-    } catch {
-        return [];
-    }
-}
-
-class Database {
-    static async initializeDatabase() {
-        if (isInitialized) return;
-
-        await q(`CREATE TABLE IF NOT EXISTS users (
-            id BIGSERIAL PRIMARY KEY,
-            email TEXT UNIQUE NOT NULL,
-            first_name TEXT NOT NULL,
-            last_name TEXT NOT NULL,
-            password_hash TEXT,
-            role TEXT DEFAULT 'user',
-            verified BOOLEAN DEFAULT FALSE,
-            created_at TIMESTAMPTZ DEFAULT NOW(),
-            updated_at TIMESTAMPTZ DEFAULT NOW()
-        )`);
-
-        await q(`CREATE TABLE IF NOT EXISTS otp_codes (
-            id BIGSERIAL PRIMARY KEY,
-            email TEXT NOT NULL,
-            code TEXT NOT NULL,
-            expires_at TIMESTAMPTZ NOT NULL,
-            attempts INTEGER DEFAULT 0,
-            created_at TIMESTAMPTZ DEFAULT NOW()
-        )`);
-
-        await q(`CREATE TABLE IF NOT EXISTS email_tokens (
-            id BIGSERIAL PRIMARY KEY,
-            token TEXT UNIQUE NOT NULL,
-            email TEXT NOT NULL,
-            expires_at TIMESTAMPTZ NOT NULL,
-            created_at TIMESTAMPTZ DEFAULT NOW()
-        )`);
-
-        await q(`CREATE TABLE IF NOT EXISTS products (
-            id BIGSERIAL PRIMARY KEY,
-            sku TEXT UNIQUE,
-            name TEXT NOT NULL,
-            description TEXT,
-            price DOUBLE PRECISION,
-            image_url TEXT,
-            image_urls TEXT,
-            category TEXT,
-            in_stock INTEGER DEFAULT 0,
-            created_at TIMESTAMPTZ DEFAULT NOW(),
-            updated_at TIMESTAMPTZ DEFAULT NOW()
-        )`);
-
-        await q('CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)');
-        await q('CREATE INDEX IF NOT EXISTS idx_users_role ON users(role)');
-        await q('CREATE INDEX IF NOT EXISTS idx_otp_codes_email ON otp_codes(email)');
-        await q('CREATE INDEX IF NOT EXISTS idx_email_tokens_token ON email_tokens(token)');
-        await q('CREATE INDEX IF NOT EXISTS idx_products_category ON products(category)');
-
-        isInitialized = true;
+class PostgresDatabase {
+    constructor() {
+        this.pool = null;
     }
 
-    static async getAllUsers() {
-        await this.initializeDatabase();
-        const res = await q(
-            `SELECT id, email, first_name, last_name, role, verified, created_at, updated_at
-             FROM users ORDER BY created_at DESC`,
-            []
+    async init() {
+        try {
+            const databaseUrl = process.env.DATABASE_URL;
+            
+            if (!databaseUrl) {
+                console.error('DATABASE_URL environment variable is not set');
+                throw new Error('DATABASE_URL environment variable is required for PostgreSQL connection');
+            }
+
+            this.pool = new Pool({
+                connectionString: databaseUrl,
+                ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+            });
+            
+            // Test the connection
+            const client = await this.pool.connect();
+            await client.query('SELECT NOW()');
+            client.release();
+            
+            console.log('Connected to PostgreSQL database');
+            await this.createTables();
+        } catch (error) {
+            console.error('Failed to connect to PostgreSQL:', error.message);
+            throw error;
+        }
+    }
+
+    async createTables() {
+        const createUsersTable = `
+            CREATE TABLE IF NOT EXISTS users (
+                id SERIAL PRIMARY KEY,
+                email VARCHAR(255) UNIQUE NOT NULL,
+                first_name VARCHAR(255) NOT NULL,
+                last_name VARCHAR(255) NOT NULL,
+                password_hash VARCHAR(255),
+                role VARCHAR(50) DEFAULT 'user',
+                verified BOOLEAN DEFAULT false,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `;
+
+        const createProductsTable = `
+            CREATE TABLE IF NOT EXISTS products (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                description TEXT,
+                price DECIMAL(10,2) NOT NULL,
+                category VARCHAR(100),
+                image_url TEXT,
+                in_stock BOOLEAN DEFAULT true,
+                sku VARCHAR(100),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `;
+
+        const createOrdersTable = `
+            CREATE TABLE IF NOT EXISTS orders (
+                id SERIAL PRIMARY KEY,
+                order_number VARCHAR(255) UNIQUE NOT NULL,
+                customer_email VARCHAR(255) NOT NULL,
+                customer_name VARCHAR(255),
+                total DECIMAL(10,2) NOT NULL,
+                status VARCHAR(50) DEFAULT 'pending',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `;
+
+        const createOTPsTable = `
+            CREATE TABLE IF NOT EXISTS otps (
+                id SERIAL PRIMARY KEY,
+                email VARCHAR(255) NOT NULL,
+                otp_code VARCHAR(10) NOT NULL,
+                expires_at TIMESTAMP NOT NULL,
+                used BOOLEAN DEFAULT false,
+                attempts INTEGER DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `;
+
+        const createEmailTokensTable = `
+            CREATE TABLE IF NOT EXISTS email_tokens (
+                id SERIAL PRIMARY KEY,
+                token VARCHAR(255) NOT NULL,
+                email VARCHAR(255) NOT NULL,
+                expires_at TIMESTAMP NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `;
+
+        try {
+            const client = await this.pool.connect();
+            
+            await client.query(createUsersTable);
+            await client.query(createProductsTable);
+            await client.query(createOrdersTable);
+            await client.query(createOTPsTable);
+            await client.query(createEmailTokensTable);
+            
+            client.release();
+            console.log('All tables created successfully');
+        } catch (error) {
+            console.error('Error creating tables:', error);
+            throw error;
+        }
+    }
+
+    async query(sql, params = []) {
+        if (!this.pool) {
+            await this.init();
+        }
+        
+        const client = await this.pool.connect();
+        try {
+            const result = await client.query(sql, params);
+            return result.rows;
+        } finally {
+            client.release();
+        }
+    }
+
+    async run(sql, params = []) {
+        if (!this.pool) {
+            await this.init();
+        }
+        
+        const client = await this.pool.connect();
+        try {
+            const result = await client.query(sql, params);
+            return { id: result.rows[0]?.id, changes: result.rowCount || 0 };
+        } finally {
+            client.release();
+        }
+    }
+
+    // User methods
+    async createUser(userData) {
+        const { email, first_name, last_name, password_hash, role = 'user', verified = false } = userData;
+        const result = await this.run(
+            'INSERT INTO users (email, first_name, last_name, password_hash, role, verified) VALUES ($1, $2, $3, $4, $5, $6)',
+            [email, first_name, last_name, password_hash, role, verified]
         );
-        return res.rows || [];
+        return { id: result.id, email, first_name, last_name, role, verified };
     }
 
-    static async createUser(userData) {
-        await this.initializeDatabase();
-
-        const email = normalizeEmail(userData.email);
-        const firstName = userData.first_name;
-        const lastName = userData.last_name;
-        const passwordHash = userData.password_hash !== undefined ? userData.password_hash : null;
-        const role = userData.role || 'user';
-        const verified = !!userData.verified;
-
-        const res = await q(
-            `INSERT INTO users (email, first_name, last_name, password_hash, role, verified)
-             VALUES ($1, $2, $3, $4, $5, $6)
-             RETURNING id`,
-            [email, firstName, lastName, passwordHash, role, verified]
-        );
-
-        return await this.getUserById(res.rows[0].id);
+    async getUserByEmail(email) {
+        const users = await this.query('SELECT * FROM users WHERE email = $1', [email]);
+        return users.length > 0 ? users[0] : null;
     }
 
-    static async getUserById(id) {
-        await this.initializeDatabase();
-        const res = await q(
-            `SELECT id, email, first_name, last_name, password_hash, role, verified, created_at, updated_at
-             FROM users WHERE id = $1`,
-            [id]
-        );
-        return res.rows && res.rows[0] ? res.rows[0] : null;
-    }
-
-    static async getUserByEmail(email) {
-        await this.initializeDatabase();
-        const e = normalizeEmail(email);
-        const res = await q(
-            `SELECT id, email, first_name, last_name, password_hash, role, verified, created_at, updated_at
-             FROM users WHERE email = $1`,
-            [e]
-        );
-        return res.rows && res.rows[0] ? res.rows[0] : null;
-    }
-
-    static async updateUser(email, updates) {
-        await this.initializeDatabase();
-        const e = normalizeEmail(email);
-
-        const sets = [];
+    async updateUser(email, updateData) {
+        const fields = [];
         const values = [];
-        let idx = 1;
+        let paramIndex = 1;
 
-        if (updates.first_name !== undefined) {
-            sets.push(`first_name = $${idx++}`);
-            values.push(updates.first_name);
+        for (const [key, value] of Object.entries(updateData)) {
+            fields.push(`${key} = $${paramIndex}`);
+            values.push(value);
+            paramIndex++;
         }
-        if (updates.last_name !== undefined) {
-            sets.push(`last_name = $${idx++}`);
-            values.push(updates.last_name);
+        
+        values.push(email);
+        
+        await this.run(
+            `UPDATE users SET ${fields.join(', ')}, updated_at = CURRENT_TIMESTAMP WHERE email = $${paramIndex}`,
+            values
+        );
+    }
+
+    // Product methods
+    async getAllProducts(limit = 50, offset = 0) {
+        return await this.query('SELECT * FROM products ORDER BY created_at DESC LIMIT $1 OFFSET $2', [limit, offset]);
+    }
+
+    async getProductById(id) {
+        const products = await this.query('SELECT * FROM products WHERE id = $1', [id]);
+        return products.length > 0 ? products[0] : null;
+    }
+
+    async createProduct(productData) {
+        const { name, description, price, category, image_url, in_stock = true, sku } = productData;
+        const result = await this.run(
+            'INSERT INTO products (name, description, price, category, image_url, in_stock, sku) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+            [name, description, price, category, image_url, in_stock, sku]
+        );
+        return { id: result.id, ...productData };
+    }
+
+    async updateProduct(id, updateData) {
+        const fields = [];
+        const values = [];
+        let paramIndex = 1;
+
+        for (const [key, value] of Object.entries(updateData)) {
+            fields.push(`${key} = $${paramIndex}`);
+            values.push(value);
+            paramIndex++;
         }
-        if (updates.password_hash !== undefined) {
-            sets.push(`password_hash = $${idx++}`);
-            values.push(updates.password_hash);
+        
+        values.push(id);
+        
+        await this.run(
+            `UPDATE products SET ${fields.join(', ')}, updated_at = CURRENT_TIMESTAMP WHERE id = $${paramIndex}`,
+            values
+        );
+    }
+
+    async deleteProduct(id) {
+        await this.run('DELETE FROM products WHERE id = $1', [id]);
+    }
+
+    // Order methods
+    async createOrder(orderData) {
+        const { order_number, customer_email, customer_name, total, status = 'pending' } = orderData;
+        const result = await this.run(
+            'INSERT INTO orders (order_number, customer_email, customer_name, total, status) VALUES ($1, $2, $3, $4, $5)',
+            [order_number, customer_email, customer_name, total, status]
+        );
+        return { id: result.id, ...orderData };
+    }
+
+    async getAllOrders(limit = 50, offset = 0) {
+        return await this.query('SELECT * FROM orders ORDER BY created_at DESC LIMIT $1 OFFSET $2', [limit, offset]);
+    }
+
+    async getOrdersByEmail(email, limit = 50, offset = 0) {
+        return await this.query('SELECT * FROM orders WHERE customer_email = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3', [email, limit, offset]);
+    }
+
+    async updateOrder(id, updateData) {
+        const fields = [];
+        const values = [];
+        let paramIndex = 1;
+
+        for (const [key, value] of Object.entries(updateData)) {
+            fields.push(`${key} = $${paramIndex}`);
+            values.push(value);
+            paramIndex++;
         }
-        if (updates.role !== undefined) {
-            sets.push(`role = $${idx++}`);
-            values.push(updates.role);
-        }
-        if (updates.verified !== undefined) {
-            sets.push(`verified = $${idx++}`);
-            values.push(!!updates.verified);
-        }
-
-        if (sets.length === 0) return null;
-
-        sets.push('updated_at = NOW()');
-        values.push(e);
-
-        await q(`UPDATE users SET ${sets.join(', ')} WHERE email = $${idx}`, values);
-        return await this.getUserByEmail(e);
-    }
-
-    static async createOTP(email, code, expiresAt) {
-        await this.initializeDatabase();
-        const e = normalizeEmail(email);
-
-        await q('DELETE FROM otp_codes WHERE email = $1', [e]);
-
-        const res = await q(
-            `INSERT INTO otp_codes (email, code, expires_at)
-             VALUES ($1, $2, $3)
-             RETURNING id`,
-            [e, code, expiresAt.toISOString()]
+        
+        values.push(id);
+        
+        await this.run(
+            `UPDATE orders SET ${fields.join(', ')}, updated_at = CURRENT_TIMESTAMP WHERE id = $${paramIndex}`,
+            values
         );
-
-        return await this.getOTPById(res.rows[0].id);
     }
 
-    static async getOTPById(id) {
-        await this.initializeDatabase();
-        const res = await q(
-            `SELECT id, email, code, expires_at, attempts, created_at
-             FROM otp_codes WHERE id = $1`,
-            [id]
+    // OTP methods
+    async createOTP(email, otpCode, expiresAt) {
+        const result = await this.run(
+            'INSERT INTO otps (email, otp_code, expires_at) VALUES ($1, $2, $3)',
+            [email, otpCode, expiresAt]
         );
-        return res.rows && res.rows[0] ? res.rows[0] : null;
+        return { id: result.id, email, otpCode, expiresAt };
     }
 
-    static async getOTP(email) {
-        await this.initializeDatabase();
-        const e = normalizeEmail(email);
-        const res = await q(
-            `SELECT id, email, code, expires_at, attempts, created_at
-             FROM otp_codes WHERE email = $1`,
-            [e]
+    async getValidOTP(email, otpCode) {
+        const otps = await this.query(
+            'SELECT * FROM otps WHERE email = $1 AND otp_code = $2 AND used = false AND expires_at > NOW() ORDER BY created_at DESC LIMIT 1',
+            [email, otpCode]
         );
-        return res.rows && res.rows[0] ? res.rows[0] : null;
+        return otps.length > 0 ? otps[0] : null;
     }
 
-    static async updateOTPAttempts(email, attempts) {
-        await this.initializeDatabase();
-        const e = normalizeEmail(email);
-        await q('UPDATE otp_codes SET attempts = $1 WHERE email = $2', [attempts, e]);
-        return await this.getOTP(e);
-    }
-
-    static async deleteOTP(email) {
-        await this.initializeDatabase();
-        const e = normalizeEmail(email);
-        await q('DELETE FROM otp_codes WHERE email = $1', [e]);
-    }
-
-    static async createEmailToken(token, email, expiresAt) {
-        await this.initializeDatabase();
-        const e = normalizeEmail(email);
-        const res = await q(
-            `INSERT INTO email_tokens (token, email, expires_at)
-             VALUES ($1, $2, $3)
-             RETURNING id`,
-            [token, e, expiresAt.toISOString()]
+    async getOTP(email) {
+        const otps = await this.query(
+            'SELECT *, NOW() as current_time FROM otps WHERE email = $1 ORDER BY created_at DESC LIMIT 1',
+            [email]
         );
-        return await this.getEmailTokenById(res.rows[0].id);
+        if (otps.length === 0) return null;
+        
+        const otp = otps[0];
+        return {
+            ...otp,
+            code: otp.otp_code, // Map otp_code to code for server compatibility
+            expires_at: otp.expires_at
+        };
     }
 
-    static async getEmailTokenById(id) {
-        await this.initializeDatabase();
-        const res = await q(
-            `SELECT id, token, email, expires_at, created_at
-             FROM email_tokens WHERE id = $1`,
-            [id]
+    async markOTPAsUsed(email, otpCode) {
+        await this.run(
+            'UPDATE otps SET used = true WHERE email = $1 AND otp_code = $2',
+            [email, otpCode]
         );
-        return res.rows && res.rows[0] ? res.rows[0] : null;
     }
 
-    static async getEmailToken(token) {
-        await this.initializeDatabase();
-        const res = await q(
-            `SELECT id, token, email, expires_at, created_at
-             FROM email_tokens WHERE token = $1`,
+    async deleteOTP(email) {
+        await this.run('DELETE FROM otps WHERE email = $1', [email]);
+    }
+
+    async updateOTPAttempts(email, attempts) {
+        await this.run(
+            'UPDATE otps SET attempts = $1 WHERE email = $2',
+            [attempts, email]
+        );
+    }
+
+    async cleanupExpiredOTPs() {
+        await this.run('DELETE FROM otps WHERE expires_at < NOW() OR used = true');
+    }
+
+    // Email token methods
+    async createEmailToken(token, email, expiresAt) {
+        const result = await this.run(
+            'INSERT INTO email_tokens (token, email, expires_at) VALUES ($1, $2, $3)',
+            [token, email, expiresAt]
+        );
+        return { id: result.id, token, email, expiresAt };
+    }
+
+    async getEmailToken(token) {
+        const tokens = await this.query(
+            'SELECT *, NOW() as current_time FROM email_tokens WHERE token = $1 LIMIT 1',
             [token]
         );
-        return res.rows && res.rows[0] ? res.rows[0] : null;
+        return tokens.length > 0 ? tokens[0] : null;
     }
 
-    static async deleteEmailToken(token) {
-        await this.initializeDatabase();
-        await q('DELETE FROM email_tokens WHERE token = $1', [token]);
-    }
-
-    static async getAllProducts(limit = 50, offset = 0) {
-        await this.initializeDatabase();
-        const safeLimit = Number.isFinite(Number(limit)) ? Math.max(0, Math.min(200, Number(limit))) : 50;
-        const safeOffset = Number.isFinite(Number(offset)) ? Math.max(0, Number(offset)) : 0;
-
-        const res = await q(
-            `SELECT id, sku, name, description, price, image_url, image_urls, category, in_stock, created_at, updated_at
-             FROM products
-             ORDER BY created_at DESC
-             LIMIT $1 OFFSET $2`,
-            [safeLimit, safeOffset]
-        );
-
-        return (res.rows || []).map((row) => {
-            const imageUrls = safeJsonParseArray(row.image_urls);
-            const primaryImage = row.image_url || imageUrls[0] || null;
-            return {
-                ...row,
-                image_url: primaryImage,
-                image_urls: imageUrls
-            };
-        });
-    }
-
-    static async countProducts() {
-        await this.initializeDatabase();
-        const res = await q('SELECT COUNT(*)::int as count FROM products', []);
-        return res.rows && res.rows[0] ? Number(res.rows[0].count) : 0;
-    }
-
-    static async createProduct(productData) {
-        await this.initializeDatabase();
-
-        const imageUrls = Array.isArray(productData.image_urls)
-            ? productData.image_urls
-            : (productData.image_url ? [productData.image_url] : []);
-
-        const primaryImage = productData.image_url || imageUrls[0] || null;
-
-        const res = await q(
-            `INSERT INTO products (sku, name, description, price, image_url, image_urls, category, in_stock)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-             RETURNING id`,
-            [
-                productData.sku || null,
-                productData.name,
-                productData.description || null,
-                productData.price || null,
-                primaryImage,
-                JSON.stringify(imageUrls),
-                productData.category || null,
-                productData.in_stock !== undefined ? Number(productData.in_stock) : 0
-            ]
-        );
-
-        return await this.getProductById(res.rows[0].id);
-    }
-
-    static async getProductById(id) {
-        await this.initializeDatabase();
-        const res = await q(
-            `SELECT id, sku, name, description, price, image_url, image_urls, category, in_stock, created_at, updated_at
-             FROM products WHERE id = $1`,
-            [id]
-        );
-
-        const row = res.rows && res.rows[0] ? res.rows[0] : null;
-        if (!row) return null;
-
-        const imageUrls = safeJsonParseArray(row.image_urls);
-        const primaryImage = row.image_url || imageUrls[0] || null;
-
-        return {
-            ...row,
-            image_url: primaryImage,
-            image_urls: imageUrls
-        };
-    }
-
-    static async getProductBySku(sku) {
-        await this.initializeDatabase();
-        const normalized = String(sku || '').trim();
-        if (!normalized) return null;
-
-        const res = await q(
-            `SELECT id, sku, name, description, price, image_url, image_urls, category, in_stock, created_at, updated_at
-             FROM products WHERE sku = $1`,
-            [normalized]
-        );
-
-        const row = res.rows && res.rows[0] ? res.rows[0] : null;
-        if (!row) return null;
-
-        const imageUrls = safeJsonParseArray(row.image_urls);
-        const primaryImage = row.image_url || imageUrls[0] || null;
-
-        return {
-            ...row,
-            image_url: primaryImage,
-            image_urls: imageUrls
-        };
-    }
-
-    static async skuExists(sku, excludeProductId = null) {
-        await this.initializeDatabase();
-        const normalized = String(sku || '').trim();
-        if (!normalized) return false;
-
-        if (excludeProductId !== null && excludeProductId !== undefined) {
-            const res = await q(
-                'SELECT id FROM products WHERE sku = $1 AND id != $2 LIMIT 1',
-                [normalized, excludeProductId]
-            );
-            return !!(res.rows && res.rows[0]);
-        }
-
-        const res = await q('SELECT id FROM products WHERE sku = $1 LIMIT 1', [normalized]);
-        return !!(res.rows && res.rows[0]);
-    }
-
-    static async updateProduct(id, updates) {
-        await this.initializeDatabase();
-
-        const sets = [];
-        const values = [];
-        let idx = 1;
-
-        let imageUrlsToPersist;
-        if (updates.image_urls !== undefined) {
-            imageUrlsToPersist = Array.isArray(updates.image_urls) ? updates.image_urls : [];
-            if (updates.image_url === undefined) {
-                updates.image_url = imageUrlsToPersist[0] || null;
-            }
-        }
-
-        if (updates.name !== undefined) {
-            sets.push(`name = $${idx++}`);
-            values.push(updates.name);
-        }
-        if (updates.sku !== undefined) {
-            sets.push(`sku = $${idx++}`);
-            values.push(updates.sku || null);
-        }
-        if (updates.description !== undefined) {
-            sets.push(`description = $${idx++}`);
-            values.push(updates.description);
-        }
-        if (updates.price !== undefined) {
-            sets.push(`price = $${idx++}`);
-            values.push(updates.price);
-        }
-        if (updates.image_url !== undefined) {
-            sets.push(`image_url = $${idx++}`);
-            values.push(updates.image_url);
-        }
-        if (updates.image_urls !== undefined) {
-            sets.push(`image_urls = $${idx++}`);
-            values.push(JSON.stringify(imageUrlsToPersist || []));
-        }
-        if (updates.category !== undefined) {
-            sets.push(`category = $${idx++}`);
-            values.push(updates.category);
-        }
-        if (updates.in_stock !== undefined) {
-            sets.push(`in_stock = $${idx++}`);
-            values.push(Number(updates.in_stock));
-        }
-
-        if (sets.length === 0) return null;
-
-        sets.push('updated_at = NOW()');
-        values.push(id);
-
-        await q(`UPDATE products SET ${sets.join(', ')} WHERE id = $${idx}`, values);
-        return await this.getProductById(id);
-    }
-
-    static async deleteProduct(id) {
-        await this.initializeDatabase();
-        await q('DELETE FROM products WHERE id = $1', [id]);
-    }
-
-    static async cleanupExpiredRecords() {
-        await this.initializeDatabase();
-        const now = new Date().toISOString();
-        try {
-            await q('DELETE FROM otp_codes WHERE expires_at < $1', [now]);
-            await q('DELETE FROM email_tokens WHERE expires_at < $1', [now]);
-        } catch (error) {
-            console.error('Error cleaning expired records:', error);
+    async deleteEmailToken(tokenOrEmail) {
+        if (tokenOrEmail.includes('@')) {
+            // Delete by email
+            await this.run('DELETE FROM email_tokens WHERE email = $1', [tokenOrEmail]);
+        } else {
+            // Delete by token
+            await this.run('DELETE FROM email_tokens WHERE token = $1', [tokenOrEmail]);
         }
     }
 
-    static async close() {
-        try {
-            await pool.end();
-        } catch {
-            // ignore
+    // Admin methods
+    async getAllUsers(limit = 50, offset = 0) {
+        return await this.query('SELECT id, email, first_name, last_name, role, created_at FROM users ORDER BY created_at DESC LIMIT $1 OFFSET $2', [limit, offset]);
+    }
+
+    async countUsers() {
+        const result = await this.query('SELECT COUNT(*) as count FROM users');
+        return result[0].count;
+    }
+
+    async close() {
+        if (this.pool) {
+            await this.pool.end();
         }
     }
 }
 
-module.exports = Database;
+module.exports = new PostgresDatabase();

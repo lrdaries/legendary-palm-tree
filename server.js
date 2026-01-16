@@ -7,7 +7,11 @@ const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const xss = require('xss-clean');
 const mongoSanitize = require('express-mongo-sanitize');
-const Database = require('./database');
+
+// Database selection based on environment
+const isVercel = process.env.NODE_ENV === 'production' && process.env.VERCEL;
+const Database = isVercel ? require('./database-postgres') : require('./database');
+
 const { generateJWT, hashPassword, verifyPassword } = require('./utils/auth');
 const { initializeResend, sendOTPEmail, sendLoginLinkEmail, sendWelcomeEmail, sendEmailVerificationEmail, generateOTP } = require('./services/email');
 const path = require('path');
@@ -38,6 +42,28 @@ const { verifyAdminToken } = require('./utils/admin-auth');
 // Initialize Express app
 const app = express();
 
+// Serve static files from frontend/dist directory (production build) - MUST be first
+app.use(express.static(path.join(__dirname, 'dist'), {
+    setHeaders: (res, filePath) => {
+        console.log('Serving static file:', filePath);
+        // Set proper MIME types
+        if (filePath.endsWith('.js')) {
+            res.set('Content-Type', 'application/javascript');
+        }
+        // Remove CSP headers that might be blocking the app
+        // res.set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://images.pexels.com https://*.supabase.co https://picsum.photos; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://open.er-api.com https://*.supabase.co");
+    }
+}));
+
+// Serve admin static files
+app.use('/admin', express.static(path.join(__dirname, 'admin', 'dist')));
+
+// Serve admin root files (like config.js)
+app.use('/admin', express.static(path.join(__dirname, 'admin')));
+
+// Serve uploaded files
+app.use('/uploads', express.static('uploads'));
+
 // Server configuration
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
@@ -53,51 +79,52 @@ const EMAIL_TOKEN_EXPIRY_HOURS = 24;
 const generateToken = () => crypto.randomBytes(32).toString('hex');
 
 // Middleware - order matters!
-app.use(helmet({
-    contentSecurityPolicy: {
-        directives: {
-            defaultSrc: ["'self'"],
-            scriptSrc: [
-                "'self'",
-                "https://cdn.tailwindcss.com",
-                "'unsafe-inline'" // Needed for Tailwind
-            ],
-            styleSrc: [
-                "'self'",
-                "https://cdn.tailwindcss.com",
-                "https://cdnjs.cloudflare.com",
-                "https://fonts.googleapis.com",
-                "'unsafe-inline'" // Needed for Tailwind and Font Awesome
-            ],
-            imgSrc: [
-                "'self'",
-                "data:",
-                "blob:",
-                "https://images.pexels.com", // Specific domain for your images
-                "https://*.supabase.co"
-            ],
-            connectSrc: [
-                "'self'",
-                "http://localhost:*",
-                "http://127.0.0.1:*",
-                "https://open.er-api.com",
-                "https://*.supabase.co"
-            ],
-            fontSrc: [
-                "'self'",
-                "data:",
-                "https://cdnjs.cloudflare.com",
-                "https://fonts.gstatic.com"
-            ],
-            objectSrc: ["'none'"],
-            mediaSrc: ["'self'"],
-            frameSrc: ["'self'"],
-            upgradeInsecureRequests: process.env.NODE_ENV === 'production' ? [] : null
-        }
-    },
-    crossOriginEmbedderPolicy: false,
-    crossOriginResourcePolicy: { policy: "cross-origin" }
-}));
+// Temporarily disabled helmet to debug the blank page issue
+// app.use(helmet({
+//     contentSecurityPolicy: {
+//         directives: {
+//             defaultSrc: ["'self'"],
+//             scriptSrc: [
+//                 "'self'",
+//                 "https://cdn.tailwindcss.com",
+//                 "'unsafe-inline'" // Needed for Tailwind
+//             ],
+//             styleSrc: [
+//                 "'self'",
+//                 "https://cdn.tailwindcss.com",
+//                 "https://cdnjs.cloudflare.com",
+//                 "https://fonts.googleapis.com",
+//                 "'unsafe-inline'" // Needed for Tailwind and Font Awesome
+//             ],
+//             imgSrc: [
+//                 "'self'",
+//                 "data:",
+//                 "blob:",
+//                 "https://images.pexels.com", // Specific domain for your images
+//                 "https://*.supabase.co"
+//             ],
+//             connectSrc: [
+//                 "'self'",
+//                 "http://localhost:*",
+//                 "http://127.0.0.1:*",
+//                 "https://open.er-api.com",
+//                 "https://*.supabase.co"
+//             ],
+//             fontSrc: [
+//                 "'self'",
+//                 "data:",
+//                 "https://cdnjs.cloudflare.com",
+//                 "https://fonts.gstatic.com"
+//             ],
+//             objectSrc: ["'none'"],
+//             mediaSrc: ["'self'"],
+//             frameSrc: ["'self'"],
+//             upgradeInsecureRequests: process.env.NODE_ENV === 'production' ? [] : null
+//         }
+//     },
+//     crossOriginEmbedderPolicy: false,
+//     crossOriginResourcePolicy: { policy: "cross-origin" }
+// }));
 
 // Trust first proxy if behind a reverse proxy (e.g., Nginx)
 app.set('trust proxy', 1);
@@ -139,7 +166,6 @@ app.use((req, res, next) => {
     });
     next();
 });
-app.use('/uploads', express.static('uploads'));
 
 // Rate limiting middleware
 const limiter = rateLimit({
@@ -228,7 +254,7 @@ async function ensureAdminUser() {
     }
 }
 
-Database.initializeDatabase()
+Database.init()
     .then(() => ensureAdminUser())
     .catch((error) => {
         console.error('Failed to initialize database:', error);
@@ -341,7 +367,8 @@ app.post('/api/auth/verify-otp', async (req, res) => {
             success: true,
             message: 'OTP verified successfully',
             token,
-            data: {
+            user: {
+                id: user.id,
                 email: user.email,
                 firstName: user.first_name,
                 lastName: user.last_name,
@@ -468,24 +495,7 @@ app.get('/api/auth/verify-email', async (req, res) => {
 // ============================================
 // STATIC FILE SERVING
 // ============================================
-
-// Serve static files from client directory
-app.use(express.static(path.join(__dirname, 'client'), {
-    setHeaders: (res, path) => {
-        // Set proper MIME types
-        if (path.endsWith('.js')) {
-            res.set('Content-Type', 'application/javascript');
-        }
-        // Add CSP headers for static files
-        res.set('Content-Security-Policy', "default-src 'self'; script-src 'self' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com 'unsafe-inline'; style-src 'self' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://fonts.googleapis.com 'unsafe-inline'; img-src 'self' data: blob: https://images.pexels.com https://*.supabase.co; font-src 'self' data: https://cdnjs.cloudflare.com https://fonts.gstatic.com; connect-src 'self' https://open.er-api.com https://*.supabase.co");
-    }
-}));
-
-// Serve pages directory for nested routes
-app.use('/pages', express.static(path.join(__dirname, 'client/pages')));
-
-// Serve admin static files
-app.use('/admin', express.static(path.join(__dirname, 'admin')));
+// Note: Static file serving is now configured at the top of the middleware stack
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -498,11 +508,14 @@ app.get('/health', (req, res) => {
 
 // Handle SPA routing - serve index.html for all other routes
 app.get('*', (req, res) => {
+    console.log('Catch-all route hit:', req.path);
     // Check if it's an admin route
     if (req.path.startsWith('/admin')) {
-        res.sendFile(path.join(__dirname, 'admin', 'index.html'));
+        console.log('Serving admin React app from admin/dist');
+        res.sendFile(path.join(__dirname, 'admin', 'dist', 'index.html'));
     } else {
-        res.sendFile(path.join(__dirname, 'client', 'index.html'));
+        console.log('Serving main index.html from dist');
+        res.sendFile(path.join(__dirname, 'dist', 'index.html'));
     }
 });
 

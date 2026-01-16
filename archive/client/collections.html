@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Primary Meta Tags -->
+    <title>Shop All Products - Diva's Kloset | Designer Fashion Collection</title>
+    <meta name="description" content="Browse our complete collection of luxury fashion. Filter by category, price, color and more. Free shipping on orders over $100.">
+    <meta name="keywords" content="luxury fashion, designer clothing, shop online, fashion collection">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Shop All Products - Diva's Kloset">
+    <meta property="og:description" content="Browse our complete collection of luxury fashion.">
+    
+    <link rel="canonical" href="https://divaskloset.com/products">
+    <meta name="theme-color" content="#E47026">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/auth-guard.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .playfair {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .product-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .filter-sidebar {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .price-range-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+        }
+
+        .price-range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #E47026;
+            cursor: pointer;
+        }
+
+        .price-range-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #E47026;
+            cursor: pointer;
+            border: none;
+        }
+
+        .category-badge {
+            transition: all 0.3s ease;
+        }
+
+        .category-badge:hover {
+            transform: scale(1.05);
+        }
+
+        .quick-view-btn {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover .quick-view-btn {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .modal-overlay {
+            backdrop-filter: blur(4px);
+        }
+
+        @media (max-width: 768px) {
+            .filter-sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                height: 100vh;
+                z-index: 50;
+                background: white;
+                width: 100%;
+                max-width: 320px;
+                transform: translateX(-100%);
+            }
+
+            .filter-sidebar.active {
+                transform: translateX(0);
+            }
+        }
+    </style>
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+    <link rel="manifest" href="../site.webmanifest">
+    <link rel="shortcut icon" href="../favicon.ico">
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="glass-effect sticky top-0 z-40 shadow-sm">
+        <nav class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <div class="flex items-center space-x-2">
+                    <a href="index.html" class="flex items-center space-x-2">
+                        <div class="w-12 h-12 bg-gradient-to-br from-orange-400 to-pink-400 rounded-full flex items-center justify-center">
+                            <span class="text-white font-bold text-xl">DK</span>
+                        </div>
+                        <h1 class="playfair text-2xl md:text-3xl font-bold text-gray-900">Diva's Kloset</h1>
+                    </a>
+                </div>
+                
+                <!-- Navigation -->
+                <div class="hidden lg:flex items-center space-x-8">
+                    <a href="index.html" class="text-gray-700 hover:text-black transition">Home</a>
+                    <a href="collections.html" class="text-gray-700 hover:text-black transition">Collections</a>
+                </div>
+                
+                <!-- Right Actions -->
+                <div class="flex items-center space-x-4">
+                    <!-- Currency Selector -->
+                    <select id="currency-selector" class="bg-transparent border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:border-black" aria-label="Select Currency">
+                        <option value="USD">$ USD</option>
+                        <option value="EUR">€ EUR</option>
+                        <option value="GBP">£ GBP</option>
+                        <option value="NGN">₦ NGN</option>
+                        <option value="JPY">¥ JPY</option>
+                        <option value="AUD">A$ AUD</option>
+                        <option value="CAD">C$ CAD</option>
+                        <option value="CNY">¥ CNY</option>
+                        <option value="INR">₹ INR</option>
+                    </select>
+                    
+                    <!-- Search -->
+                    <button onclick="ProductPage.toggleSearch()" class="text-gray-700 hover:text-black transition" aria-label="Search">
+                        <i class="fas fa-search text-xl"></i>
+                    </button>
+                    
+                    <!-- User -->
+                    <button onclick="ProductPage.toggleAuth()" class="text-gray-700 hover:text-black transition" aria-label="User Account">
+                        <i class="fas fa-user text-xl"></i>
+                    </button>
+                    
+                    <!-- Cart - COMMENTED OUT (Site is catalogue only, not a store) -->
+                    <!-- <button onclick="ProductPage.toggleCart()" class="relative text-gray-700 hover:text-black transition" aria-label="Shopping Cart">
+                        <i class="fas fa-shopping-bag text-xl"></i>
+                        <span id="cart-count" class="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                    </button> -->
+                    
+                    <!-- Mobile Menu -->
+                    <button onclick="ProductPage.toggleMobileMenu()" class="lg:hidden" aria-label="Menu">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="bg-white border-b">
+        <div class="container mx-auto px-4 py-3">
+            <nav class="flex items-center space-x-2 text-sm">
+                <a href="index.html" class="text-gray-500 hover:text-black">Home</a>
+                <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
+                <a href="collections.html">Collection</a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Filter Sidebar -->
+            <aside id="filter-sidebar" class="filter-sidebar lg:w-64 flex-shrink-0">
+                <div class="bg-white rounded-lg shadow-sm p-6 sticky top-24">
+                    <div class="flex justify-between items-center mb-6 lg:hidden">
+                        <h3 class="text-xl font-bold">Filters</h3>
+                        <button onclick="ProductPage.toggleFilters()" class="text-gray-500 hover:text-black">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+
+                    <h3 class="text-xl font-bold mb-6 hidden lg:block">Filters</h3>
+                    
+                    <!-- Categories -->
+                    <div class="mb-6">
+                        <h4 class="font-semibold mb-3 text-gray-700">Categories</h4>
+                        <div class="space-y-2">
+                            <label class="flex items-center cursor-pointer group">
+                                <input type="checkbox" value="all" class="category-filter mr-3 w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500" checked>
+                                <span class="text-gray-700 group-hover:text-black">All Products</span>
+                                <span class="ml-auto text-sm text-gray-500" id="count-all">0</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer group">
+                                <input type="checkbox" value="Bag" class="category-filter mr-3 w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500">
+                                <span class="text-gray-700 group-hover:text-black">Bags</span>
+                                <span class="ml-auto text-sm text-gray-500" id="count-bag">0</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer group">
+                                <input type="checkbox" value="accessories" class="category-filter mr-3 w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500">
+                                <span class="text-gray-700 group-hover:text-black">Accessories</span>
+                                <span class="ml-auto text-sm text-gray-500" id="count-accessories">0</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer group">
+                                <input type="checkbox" value="dresses" class="category-filter mr-3 w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500">
+                                <span class="text-gray-700 group-hover:text-black">Dresses</span>
+                                <span class="ml-auto text-sm text-gray-500" id="count-dresses">0</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer group">
+                                <input type="checkbox" value="suits" class="category-filter mr-3 w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500">
+                                <span class="text-gray-700 group-hover:text-black">Suits</span>
+                                <span class="ml-auto text-sm text-gray-500" id="count-suits">0</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Price Range -->
+                    <div class="mb-6 border-t pt-6">
+                        <h4 class="font-semibold mb-3 text-gray-700">Price Range</h4>
+                        <div class="space-y-3">
+                            <input type="range" id="price-slider" min="0" max="5000" step="50" value="5000" class="price-range-slider">
+                            <div class="flex justify-between text-sm text-gray-600">
+                                <span>$0</span>
+                                <span id="price-display">$5000+</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Colors -->
+                    <div class="mb-6 border-t pt-6">
+                        <h4 class="font-semibold mb-3 text-gray-700">Colors</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <button class="color-filter w-8 h-8 rounded-full border-2 border-gray-300 hover:border-black transition" style="background: black" data-color="black" title="Black"></button>
+                            <button class="color-filter w-8 h-8 rounded-full border-2 border-gray-300 hover:border-black transition" style="background: white" data-color="white" title="White"></button>
+                            <button class="color-filter w-8 h-8 rounded-full border-2 border-gray-300 hover:border-black transition" style="background: #FF0000" data-color="red" title="Red"></button>
+                            <button class="color-filter w-8 h-8 rounded-full border-2 border-gray-300 hover:border-black transition" style="background: #0000FF" data-color="blue" title="Blue"></button>
+                            <button class="color-filter w-8 h-8 rounded-full border-2 border-gray-300 hover:border-black transition" style="background: #00FF00" data-color="green" title="Green"></button>
+                            <button class="color-filter w-8 h-8 rounded-full border-2 border-gray-300 hover:border-black transition" style="background: #FFC0CB" data-color="pink" title="Pink"></button>
+                            <button class="color-filter w-8 h-8 rounded-full border-2 border-gray-300 hover:border-black transition" style="background: #964B00" data-color="brown" title="Brown"></button>
+                            <button class="color-filter w-8 h-8 rounded-full border-2 border-gray-300 hover:border-black transition" style="background: #808080" data-color="gray" title="Gray"></button>
+                        </div>
+                    </div>
+
+                    <!-- Sizes -->
+                    <div class="mb-6 border-t pt-6">
+                        <h4 class="font-semibold mb-3 text-gray-700">Sizes</h4>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button class="size-filter px-3 py-2 border border-gray-300 rounded hover:border-black hover:bg-black hover:text-white transition text-sm" data-size="XS">XS</button>
+                            <button class="size-filter px-3 py-2 border border-gray-300 rounded hover:border-black hover:bg-black hover:text-white transition text-sm" data-size="S">S</button>
+                            <button class="size-filter px-3 py-2 border border-gray-300 rounded hover:border-black hover:bg-black hover:text-white transition text-sm" data-size="M">M</button>
+                            <button class="size-filter px-3 py-2 border border-gray-300 rounded hover:border-black hover:bg-black hover:text-white transition text-sm" data-size="L">L</button>
+                            <button class="size-filter px-3 py-2 border border-gray-300 rounded hover:border-black hover:bg-black hover:text-white transition text-sm" data-size="XL">XL</button>
+                            <button class="size-filter px-3 py-2 border border-gray-300 rounded hover:border-black hover:bg-black hover:text-white transition text-sm" data-size="XXL">XXL</button>
+                        </div>
+                    </div>
+
+                    <!-- Clear Filters -->
+                    <button onclick="ProductPage.clearFilters()" class="w-full py-2 border border-gray-300 rounded hover:bg-gray-50 transition text-sm font-medium">
+                        <i class="fas fa-redo mr-2"></i>Clear All Filters
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Products Grid -->
+            <main class="flex-1">
+                <!-- Toolbar -->
+                <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div class="flex items-center gap-4 w-full md:w-auto">
+                            <button onclick="ProductPage.toggleFilters()" class="lg:hidden flex items-center gap-2 px-4 py-2 border border-gray-300 rounded hover:bg-gray-50">
+                                <i class="fas fa-filter"></i>
+                                <span>Filters</span>
+                            </button>
+                            <div class="flex-1 md:flex-none">
+                                <p class="text-gray-600">
+                                    <span id="product-count" class="font-semibold text-black">0</span> Products Found
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-4 w-full md:w-auto">
+                            <select id="sort-select" class="flex-1 md:flex-none bg-white border border-gray-300 rounded px-4 py-2 focus:outline-none focus:border-black" aria-label="Sort products">
+                                <option value="featured">Featured</option>
+                                <option value="newest">Newest First</option>
+                                <option value="price-low">Price: Low to High</option>
+                                <option value="price-high">Price: High to Low</option>
+                                <option value="name">Name: A-Z</option>
+                            </select>
+
+                            <div class="flex gap-2">
+                                <button onclick="ProductPage.setView('grid')" id="grid-view" class="p-2 border border-gray-300 rounded hover:bg-gray-50 bg-black text-white" aria-label="Grid view">
+                                    <i class="fas fa-th"></i>
+                                </button>
+                                <button onclick="ProductPage.setView('list')" id="list-view" class="p-2 border border-gray-300 rounded hover:bg-gray-50" aria-label="List view">
+                                    <i class="fas fa-list"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Filters Display -->
+                <div id="active-filters" class="mb-6 hidden">
+                    <div class="flex flex-wrap gap-2">
+                        <!-- Active filter tags will be added here dynamically -->
+                    </div>
+                </div>
+
+                <!-- Products Grid/List -->
+                <div id="products-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Loading skeletons -->
+                    <div class="skeleton-card">
+                        <div class="bg-white rounded-lg overflow-hidden shadow-sm">
+                            <div class="aspect-square skeleton"></div>
+                            <div class="p-4 space-y-2">
+                                <div class="h-4 skeleton rounded w-3/4"></div>
+                                <div class="h-4 skeleton rounded w-1/2"></div>
+                                <div class="h-6 skeleton rounded w-1/4"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="skeleton-card">
+                        <div class="bg-white rounded-lg overflow-hidden shadow-sm">
+                            <div class="aspect-square skeleton"></div>
+                            <div class="p-4 space-y-2">
+                                <div class="h-4 skeleton rounded w-3/4"></div>
+                                <div class="h-4 skeleton rounded w-1/2"></div>
+                                <div class="h-6 skeleton rounded w-1/4"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="skeleton-card">
+                        <div class="bg-white rounded-lg overflow-hidden shadow-sm">
+                            <div class="aspect-square skeleton"></div>
+                            <div class="p-4 space-y-2">
+                                <div class="h-4 skeleton rounded w-3/4"></div>
+                                <div class="h-4 skeleton rounded w-1/2"></div>
+                                <div class="h-6 skeleton rounded w-1/4"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div id="pagination" class="mt-8 flex justify-center hidden">
+                    <nav class="flex items-center space-x-2">
+                        <button id="prev-page" class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <div id="page-numbers" class="flex space-x-2">
+                            <!-- Page numbers will be added here -->
+                        </div>
+                        <button id="next-page" class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </nav>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Cart Sidebar 
+    <div id="cart-sidebar" class="fixed right-0 top-0 h-full w-full md:w-96 bg-white shadow-2xl transform translate-x-full transition-transform z-50">
+        <div class="p-6 border-b">
+            <div class="flex justify-between items-center">
+                <h3 class="text-2xl font-bold">Shopping Cart</h3>
+                <button onclick="ProductPage.toggleCart()" class="text-gray-500 hover:text-black" aria-label="Close cart">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+        </div>
+        <div id="cart-items" class="flex-1 overflow-y-auto p-6 h-[calc(100vh-280px)]">
+            <p class="text-gray-500 text-center">Your cart is empty</p>
+        </div>
+        <div class="border-t p-6">
+            <div class="flex justify-between mb-4">
+                <span class="font-semibold">Subtotal:</span>
+                <span id="cart-subtotal" class="font-bold">$0.00</span>
+            </div>
+            <button onclick="window.location.href='checkout.html'" class="w-full bg-black text-white py-3 rounded hover:bg-gray-800 transition disabled:opacity-50" id="checkout-btn" disabled>
+                Proceed to Checkout
+            </button>
+            <button onclick="ProductPage.toggleCart()" class="w-full border border-gray-300 py-3 rounded mt-2 hover:bg-gray-50 transition">
+                Continue Shopping
+            </button>
+        </div>
+    </div>-->
+
+    <!-- Quick View Modal -->
+    <div id="quick-view-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden modal-overlay overflow-y-auto">
+        <div class="min-h-screen flex items-center justify-center px-4 py-8">
+            <div class="bg-white w-full max-w-4xl rounded-lg shadow-2xl">
+                <div class="p-6 border-b flex justify-between items-center">
+                    <h3 class="text-2xl font-bold">Product Details</h3>
+                    <button onclick="ProductPage.closeQuickView()" class="text-gray-500 hover:text-black" aria-label="Close">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div id="quick-view-content" class="p-6">
+                    <!-- Product details will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Modal -->
+    <div id="search-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden modal-overlay">
+        <div class="flex items-start justify-center pt-20 px-4">
+            <div class="bg-white rounded-lg p-6 w-full max-w-2xl">
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-search text-gray-400"></i>
+                    <input type="text" id="search-input" placeholder="Search for products..." class="flex-1 text-lg outline-none">
+                    <button onclick="ProductPage.toggleSearch()" class="text-gray-500 hover:text-black" aria-label="Close search">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div id="search-results" class="mt-4">
+                    <div class="text-sm text-gray-500">
+                        Type to search products...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="fixed right-0 top-0 h-full w-80 bg-white shadow-2xl transform translate-x-full transition-transform z-50">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="text-2xl font-bold">Menu</h3>
+                <button onclick="ProductPage.toggleMobileMenu()" class="text-gray-500 hover:text-black" aria-label="Close menu">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <nav class="space-y-4">
+                <a href="index.html" class="block text-lg font-medium hover:text-gray-600 py-2">Home</a>
+                <a href="collections.html" class="block text-lg font-medium hover:text-gray-600 py-2">Collections</a>
+            </nav>
+        </div>
+    </div>
+
+    <script>
+        // Products Page Application
+        const ProductPage = (() => {
+            const CURRENCY_KEY = 'dk_currency';
+            const FX_CACHE_KEY = 'dk_fx_rates_usd_v1';
+            const FX_TTL_MS = 12 * 60 * 60 * 1000; // 12 hours
+
+            const SELLER_WHATSAPP_NUMBER = '+2347073994915';
+            const toWhatsAppDigits = (num) => String(num || '').replace(/[^0-9]/g, '');
+            const buildWhatsAppUrl = ({ productName, productUrl } = {}) => {
+                const digits = toWhatsAppDigits(SELLER_WHATSAPP_NUMBER);
+                const url = digits ? `https://wa.me/${digits}` : 'https://wa.me/';
+                const text = `Hello, I'm interested in: ${productName || 'a product'}${productUrl ? `\n${productUrl}` : ''}`;
+                return `${url}?text=${encodeURIComponent(text)}`;
+            };
+
+            // State Management
+            let state = {
+                products: [],
+                filteredProducts: [],
+                // cart: [], // Commented out - site is catalogue only
+                currentCurrency: 'NGN',
+                currentView: 'grid',
+                currentPage: 1,
+                itemsPerPage: 12,
+                filters: {
+                    categories: ['all'],
+                    priceMax: 5000,
+                    colors: [],
+                    sizes: []
+                },
+                exchangeRates: {
+                    USD: 1, EUR: 0.85, GBP: 0.73, JPY: 110.0,
+                    NGN: 1550.0, AUD: 1.35, CAD: 1.25, CNY: 6.45, INR: 74.5
+                }
+            };
+
+            function readFxCache() {
+                try {
+                    const raw = localStorage.getItem(FX_CACHE_KEY);
+                    if (!raw) return null;
+                    const parsed = JSON.parse(raw);
+                    if (!parsed || typeof parsed.ts !== 'number' || typeof parsed.rates !== 'object') return null;
+                    if (Date.now() - parsed.ts > FX_TTL_MS) return null;
+                    return parsed.rates;
+                } catch {
+                    return null;
+                }
+            }
+
+            function writeFxCache(rates) {
+                try {
+                    localStorage.setItem(FX_CACHE_KEY, JSON.stringify({ ts: Date.now(), rates }));
+                } catch {
+                    // ignore
+                }
+            }
+
+            async function initCurrency() {
+                try {
+                    const saved = (localStorage.getItem(CURRENCY_KEY) || '').trim().toUpperCase();
+                    if (saved) state.currentCurrency = saved;
+                } catch {
+                    // ignore
+                }
+
+                const cached = readFxCache();
+                if (cached) {
+                    state.exchangeRates = { ...state.exchangeRates, ...cached };
+                    return;
+                }
+
+                try {
+                    const res = await fetch('https://open.er-api.com/v6/latest/USD');
+                    if (!res.ok) throw new Error('FX fetch failed');
+                    const json = await res.json();
+                    const fetched = json && json.rates && typeof json.rates === 'object' ? json.rates : null;
+                    if (fetched) {
+                        state.exchangeRates = { ...state.exchangeRates, ...fetched };
+                        writeFxCache(fetched);
+                    }
+                } catch {
+                    // keep fallback rates
+                }
+            }
+
+            // API for fetching products from backend
+            const API = {
+                async fetchProducts() {
+                    try {
+                        const response = await fetch('/api/products?limit=200&offset=0&sort=featured');
+                        if (!response.ok) {
+                            throw new Error(`API error: ${response.status}`);
+                        }
+                        const data = await response.json();
+                        
+                        // Transform database products to match the UI format
+                        const products = (data.data || []).map(product => ({
+                            id: product.id,
+                            name: product.name || 'Unnamed Product',
+                            description: product.description || product.details || product.long_description || '',
+                            price: parseFloat(product.price) || 0,
+                            category: utils.normalizeCategory(product.category || 'Uncategorized'),
+                            color: product.category ? product.category.toLowerCase().split(' ')[0] : 'gray',
+                            size: ['One Size'],
+                            stock: Number(product.in_stock) || 0,
+                            rating: 4.5,
+                            reviews: 0,
+                            image_url: (() => {
+                                const urls = Array.isArray(product.image_urls) ? product.image_urls : [];
+                                return product.image_url || urls[0] || '';
+                            })()
+                        }));
+                        
+                        return products;
+                    } catch (error) {
+                        console.error('❌ Failed to fetch products:', error);
+                        // Return empty array on error
+                        return [];
+                    }
+                }
+            };
+
+            const CACHE_KEY = 'dk_collections_products_cache_v1';
+            const CACHE_TTL_MS = 60 * 1000; // 60 seconds
+
+            function readCache() {
+                try {
+                    const raw = localStorage.getItem(CACHE_KEY);
+                    if (!raw) return null;
+                    const parsed = JSON.parse(raw);
+                    if (!parsed || !Array.isArray(parsed.products) || typeof parsed.ts !== 'number') return null;
+                    if (Date.now() - parsed.ts > CACHE_TTL_MS) return null;
+                    return parsed.products;
+                } catch {
+                    return null;
+                }
+            }
+
+            function writeCache(products) {
+                try {
+                    localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), products }));
+                } catch {
+                    // ignore
+                }
+            }
+
+            // Utility Functions
+            const utils = {
+                sanitizeHTML(str) {
+                    const div = document.createElement('div');
+                    div.textContent = str;
+                    return div.innerHTML;
+                },
+
+                normalizeCategory(category) {
+                    const raw = String(category || '').trim();
+                    if (!raw) return 'Uncategorized';
+                    const k = raw.toLowerCase();
+
+                    if (k === 'shoes' || k === 'shoe') return 'Shoes';
+                    if (k === 'bags' || k === 'bag' || k === 'handbag' || k === 'handbags' || k === 'purse' || k === 'purses') return 'Bags';
+                    if (k === 'clothing' || k === 'clothes' || k === 'apparel') return 'Clothing';
+                    if (k === 'jewelry' || k === 'jewellery') return 'Jewelry';
+                    if (k === 'accessories' || k === 'accessory') return 'Accessories';
+
+                    return raw;
+                },
+
+                normalizeImageUrl(url) {
+                    const raw = String(url || '').trim();
+                    if (!raw) return '';
+                    if (/^https?:\/\//i.test(raw)) return raw;
+                    if (raw.startsWith('/')) return raw;
+                    return `/${raw}`;
+                },
+
+                convertCurrency(amount, from, to) {
+                    if (from === to) return amount;
+                    const amountInUSD = amount / state.exchangeRates[from];
+                    return amountInUSD * state.exchangeRates[to];
+                },
+
+                formatPrice(price) {
+                    const symbols = {
+                        USD: '$', EUR: '€', GBP: '£', NGN: '₦',
+                        JPY: '¥', AUD: 'A$', CAD: 'C$', CNY: '¥', INR: '₹'
+                    };
+                    const converted = this.convertCurrency(price, 'USD', state.currentCurrency);
+                    return `${symbols[state.currentCurrency]}${converted.toFixed(2)}`;
+                },
+
+                showNotification(message, type = 'success') {
+                    const colors = {
+                        success: 'bg-green-500',
+                        error: 'bg-red-500',
+                        info: 'bg-blue-500'
+                    };
+                    
+                    const notification = document.createElement('div');
+                    notification.className = `fixed top-20 right-4 ${colors[type]} text-white px-6 py-3 rounded shadow-lg z-50 fade-in`;
+                    notification.textContent = message;
+                    document.body.appendChild(notification);
+                    
+                    setTimeout(() => notification.remove(), 3000);
+                },
+
+                saveToStorage(key, data) {
+                    try {
+                        localStorage.setItem(key, JSON.stringify(data));
+                    } catch (e) {
+                        console.error('Storage error:', e);
+                    }
+                },
+
+                loadFromStorage(key) {
+                    try {
+                        const data = localStorage.getItem(key);
+                        return data ? JSON.parse(data) : null;
+                    } catch (e) {
+                        console.error('Storage error:', e);
+                        return null;
+                    }
+                }
+            };
+
+            // Filter Management
+            const filterManager = {
+                apply() {
+                    let filtered = [...state.products];
+
+                    // Category filter
+                    if (!state.filters.categories.includes('all')) {
+                        filtered = filtered.filter(p => state.filters.categories.includes(utils.normalizeCategory(p.category)));
+                    }
+
+                    // Price filter
+                    filtered = filtered.filter(p => p.price <= state.filters.priceMax);
+
+                    // Color filter
+                    if (state.filters.colors.length > 0) {
+                        filtered = filtered.filter(p => state.filters.colors.includes(p.color));
+                    }
+
+                    // Size filter
+                    if (state.filters.sizes.length > 0) {
+                        filtered = filtered.filter(p => 
+                            p.size.some(s => state.filters.sizes.includes(s))
+                        );
+                    }
+
+                    state.filteredProducts = filtered;
+                    state.currentPage = 1;
+                    this.updateActiveFilters();
+                    productDisplay.render();
+                },
+
+                updateCounts() {
+                    const categories = ['Clothing', 'Shoes', 'Bags', 'Jewelry', 'Accessories'];
+                    
+                    document.getElementById('count-all').textContent = state.products.length;
+                    
+                    categories.forEach(cat => {
+                        const count = state.products.filter(p => utils.normalizeCategory(p.category) === cat).length;
+                        const element = document.getElementById(`count-${cat.toLowerCase()}`);
+                        if (element) element.textContent = count;
+                    });
+                },
+
+                updateActiveFilters() {
+                    const container = document.getElementById('active-filters');
+                    const tags = [];
+
+                    // Category tags
+                    state.filters.categories.forEach(cat => {
+                        if (cat !== 'all') {
+                            tags.push(`<span class="inline-flex items-center gap-2 px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm">
+                                ${cat}
+                                <button onclick="ProductPage.removeFilter('category', '${cat}')" class="hover:text-orange-900">
+                                    <i class="fas fa-times text-xs"></i>
+                                </button>
+                            </span>`);
+                        }
+                    });
+
+                    // Price tag
+                    if (state.filters.priceMax < 5000) {
+                        tags.push(`<span class="inline-flex items-center gap-2 px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm">
+                            Up to ${utils.formatPrice(state.filters.priceMax)}
+                            <button onclick="ProductPage.removeFilter('price')" class="hover:text-orange-900">
+                                <i class="fas fa-times text-xs"></i>
+                            </button>
+                        </span>`);
+                    }
+
+                    // Color tags
+                    state.filters.colors.forEach(color => {
+                        tags.push(`<span class="inline-flex items-center gap-2 px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm">
+                            ${color}
+                            <button onclick="ProductPage.removeFilter('color', '${color}')" class="hover:text-orange-900">
+                                <i class="fas fa-times text-xs"></i>
+                            </button>
+                        </span>`);
+                    });
+
+                    // Size tags
+                    state.filters.sizes.forEach(size => {
+                        tags.push(`<span class="inline-flex items-center gap-2 px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm">
+                            Size ${size}
+                            <button onclick="ProductPage.removeFilter('size', '${size}')" class="hover:text-orange-900">
+                                <i class="fas fa-times text-xs"></i>
+                            </button>
+                        </span>`);
+                    });
+
+                    if (tags.length > 0) {
+                        container.innerHTML = tags.join('');
+                        container.classList.remove('hidden');
+                    } else {
+                        container.classList.add('hidden');
+                    }
+                },
+
+                clear() {
+                    state.filters = {
+                        categories: ['all'],
+                        priceMax: 5000,
+                        colors: [],
+                        sizes: []
+                    };
+
+                    // Reset UI
+                    document.querySelectorAll('.category-filter').forEach(cb => {
+                        cb.checked = cb.value === 'all';
+                    });
+                    document.getElementById('price-slider').value = 5000;
+                    document.getElementById('price-display').textContent = '$5000+';
+                    document.querySelectorAll('.color-filter').forEach(btn => {
+                        btn.classList.remove('border-black', 'border-4');
+                        btn.classList.add('border-gray-300', 'border-2');
+                    });
+                    document.querySelectorAll('.size-filter').forEach(btn => {
+                        btn.classList.remove('bg-black', 'text-white');
+                    });
+
+                    this.apply();
+                }
+            };
+
+            // Product Display
+            const productDisplay = {
+                render() {
+                    const container = document.getElementById('products-container');
+                    const products = this.getCurrentPageProducts();
+                    
+                    if (products.length === 0) {
+                        container.innerHTML = `
+                            <div class="col-span-full text-center py-12">
+                                <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
+                                <p class="text-gray-500 text-lg">No products found</p>
+                                <button onclick="ProductPage.clearFilters()" class="mt-4 px-6 py-2 bg-black text-white rounded hover:bg-gray-800">
+                                    Clear Filters
+                                </button>
+                            </div>
+                        `;
+                        document.getElementById('pagination').classList.add('hidden');
+                        return;
+                    }
+
+                    // Update grid/list class
+                    if (state.currentView === 'list') {
+                        container.className = 'space-y-4';
+                    } else {
+                        container.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
+                    }
+
+                    container.innerHTML = products.map(product => 
+                        state.currentView === 'grid' 
+                            ? this.renderGridCard(product)
+                            : this.renderListCard(product)
+                    ).join('');
+
+                    document.getElementById('product-count').textContent = state.filteredProducts.length;
+                    this.renderPagination();
+                },
+
+                renderProductImage(product, className) {
+                    const img = utils.normalizeImageUrl(product?.image_url);
+                    const alt = utils.sanitizeHTML(product?.name || 'Product');
+                    if (!img) {
+                        return `<div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-image text-4xl text-gray-400"></i></div>`;
+                    }
+                    return `<img src="${utils.sanitizeHTML(img)}" alt="${alt}" class="${className}" loading="lazy" onerror="this.style.display='none'">`;
+                },
+
+                renderGridCard(product) {
+                    return `
+                        <div class="product-card bg-white rounded-lg overflow-hidden shadow-sm">
+                            <div class="aspect-square bg-gradient-to-br from-${product.color === 'white' ? 'gray' : product.color}-100 to-${product.color === 'white' ? 'gray' : product.color}-200 relative group">
+                                ${this.renderProductImage(product, 'absolute inset-0 w-full h-full object-cover')}
+                                ${product.stock < 5 ? `<div class="absolute top-4 right-4 bg-red-500 text-white text-xs px-2 py-1 rounded">Only ${product.stock} left</div>` : ''}
+                                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition"></div>
+                                <div class="absolute bottom-4 left-4 right-4 space-y-2">
+                                    <button onclick="ProductPage.quickView(${product.id})" class="w-full quick-view-btn bg-white text-black py-2 rounded hover:bg-gray-100 transition" aria-label="Quick view ${product.name}">
+                                        Quick View
+                                    </button>
+                                    <!-- <button onclick="ProductPage.addToCart(${product.id})" class="w-full quick-view-btn bg-black text-white py-2 rounded hover:bg-gray-800 transition" aria-label="Add ${product.name} to cart">
+                                        Add to Cart
+                                    </button> -->
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <div class="flex items-center mb-2">
+                                    <div class="flex text-yellow-400 text-sm">
+                                        ${this.renderStars(product.rating)}
+                                    </div>
+                                    <span class="text-gray-500 text-sm ml-2">(${product.reviews})</span>
+                                </div>
+                                <h4 class="font-semibold text-lg mb-1 truncate">${utils.sanitizeHTML(product.name)}</h4>
+                                <p class="text-gray-500 text-sm mb-2 capitalize">${utils.sanitizeHTML(product.category)}</p>
+                                <p class="font-bold text-lg">${utils.formatPrice(product.price)}</p>
+                            </div>
+                        </div>
+                    `;
+                },
+
+                renderListCard(product) {
+                    return `
+                        <div class="product-card bg-white rounded-lg overflow-hidden shadow-sm flex">
+                            <div class="w-48 h-48 flex-shrink-0 bg-gradient-to-br from-${product.color === 'white' ? 'gray' : product.color}-100 to-${product.color === 'white' ? 'gray' : product.color}-200 rounded-lg overflow-hidden relative">
+                                ${this.renderProductImage(product, 'absolute inset-0 w-full h-full object-cover')}
+                            </div>
+                            <div class="flex-1 p-6 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="flex items-center">
+                                            <div class="flex text-yellow-400 text-sm">
+                                                ${this.renderStars(product.rating)}
+                                            </div>
+                                            <span class="text-gray-500 text-sm ml-2">(${product.reviews})</span>
+                                        </div>
+                                        <span class="text-gray-500 text-sm capitalize">${utils.sanitizeHTML(product.category)}</span>
+                                    </div>
+                                    <h4 class="font-semibold text-xl mb-2">${utils.sanitizeHTML(product.name)}</h4>
+                                    <p class="text-gray-600 mb-4">Available in sizes: ${product.size.join(', ')}</p>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <p class="font-bold text-2xl">${utils.formatPrice(product.price)}</p>
+                                    <div class="flex gap-2">
+                                        <button onclick="ProductPage.quickView(${product.id})" class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition">
+                                            Quick View
+                                        </button>
+                                        <!-- <button onclick="ProductPage.addToCart(${product.id})" class="px-6 py-2 bg-black text-white rounded hover:bg-gray-800 transition">
+                                            Add to Cart
+                                        </button> -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                },
+
+                renderStars(rating) {
+                    const fullStars = Math.floor(rating);
+                    const hasHalfStar = rating % 1 >= 0.5;
+                    let stars = '';
+
+                    for (let i = 0; i < fullStars; i++) {
+                        stars += '<i class="fas fa-star"></i>';
+                    }
+                    if (hasHalfStar) {
+                        stars += '<i class="fas fa-star-half-alt"></i>';
+                    }
+                    for (let i = fullStars + (hasHalfStar ? 1 : 0); i < 5; i++) {
+                        stars += '<i class="far fa-star"></i>';
+                    }
+
+                    return stars;
+                },
+
+                getCurrentPageProducts() {
+                    const start = (state.currentPage - 1) * state.itemsPerPage;
+                    const end = start + state.itemsPerPage;
+                    return state.filteredProducts.slice(start, end);
+                },
+
+                renderPagination() {
+                    const totalPages = Math.ceil(state.filteredProducts.length / state.itemsPerPage);
+                    
+                    if (totalPages <= 1) {
+                        document.getElementById('pagination').classList.add('hidden');
+                        return;
+                    }
+
+                    document.getElementById('pagination').classList.remove('hidden');
+                    
+                    const pageNumbers = document.getElementById('page-numbers');
+                    let pages = '';
+
+                    for (let i = 1; i <= totalPages; i++) {
+                        if (i === 1 || i === totalPages || (i >= state.currentPage - 1 && i <= state.currentPage + 1)) {
+                            pages += `
+                                <button onclick="ProductPage.goToPage(${i})" class="px-4 py-2 border rounded ${i === state.currentPage ? 'bg-black text-white border-black' : 'border-gray-300 hover:bg-gray-50'}">
+                                    ${i}
+                                </button>
+                            `;
+                        } else if (i === state.currentPage - 2 || i === state.currentPage + 2) {
+                            pages += '<span class="px-2">...</span>';
+                        }
+                    }
+
+                    pageNumbers.innerHTML = pages;
+
+                    document.getElementById('prev-page').disabled = state.currentPage === 1;
+                    document.getElementById('next-page').disabled = state.currentPage === totalPages;
+                },
+
+                sort(sortBy) {
+                    let sorted = [...state.filteredProducts];
+                    
+                    switch(sortBy) {
+                        case 'price-low':
+                            sorted.sort((a, b) => a.price - b.price);
+                            break;
+                        case 'price-high':
+                            sorted.sort((a, b) => b.price - a.price);
+                            break;
+                        case 'name':
+                            sorted.sort((a, b) => a.name.localeCompare(b.name));
+                            break;
+                        case 'newest':
+                            sorted.sort((a, b) => b.id - a.id);
+                            break;
+                        default:
+                            break;
+                    }
+                    
+                    state.filteredProducts = sorted;
+                    this.render();
+                }
+            };
+
+            // Quick View
+            const quickView = {
+                open(productId) {
+                    const product = state.products.find(p => p.id === productId);
+                    if (!product) return;
+
+                    const content = document.getElementById('quick-view-content');
+                    const img = utils.normalizeImageUrl(product?.image_url);
+                    const productUrl = window.location.href;
+                    const waUrl = buildWhatsAppUrl({ productName: product?.name || 'a product', productUrl });
+                    content.innerHTML = `
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="aspect-square bg-gradient-to-br from-${product.color === 'white' ? 'gray' : product.color}-100 to-${product.color === 'white' ? 'gray' : product.color}-200 rounded-lg overflow-hidden relative flex items-center justify-center">
+                                ${img ? `<img src="${utils.sanitizeHTML(img)}" alt="${utils.sanitizeHTML(product.name)}" class="absolute inset-0 w-full h-full object-cover" loading="lazy" onerror="this.style.display='none'">` : '<i class="fas fa-image text-6xl text-gray-400"></i>'}
+                            </div>
+                            <div>
+                                <h3 class="text-3xl font-bold mb-2">${utils.sanitizeHTML(product.name)}</h3>
+                                <div class="flex items-center mb-4">
+                                    <div class="flex text-yellow-400">
+                                        ${productDisplay.renderStars(product.rating)}
+                                    </div>
+                                    <span class="text-gray-600 ml-2">(${product.reviews} reviews)</span>
+                                </div>
+                                <p class="text-3xl font-bold mb-6">${utils.formatPrice(product.price)}</p>
+
+                                <div class="mb-6">
+                                    <h4 class="font-semibold mb-2">Category:</h4>
+                                    <span class="inline-block px-3 py-1 bg-gray-100 rounded-full text-sm capitalize">${utils.sanitizeHTML(product.category)}</span>
+                                </div>
+                                ${product?.description ? `
+                                    <div class="mb-6">
+                                        <h4 class="font-semibold mb-2">Description:</h4>
+                                        <p class="text-gray-600">${utils.sanitizeHTML(product.description)}</p>
+                                    </div>
+                                ` : ''}
+                                
+                                <div class="mb-6">
+                                    <h4 class="font-semibold mb-2">Available Sizes:</h4>
+                                    <div class="flex flex-wrap gap-2">
+                                        ${product.size.map(s => `
+                                            <button class="px-4 py-2 border border-gray-300 rounded hover:border-black hover:bg-black hover:text-white transition">
+                                                ${s}
+                                            </button>
+                                        `).join('')}
+                                    </div>
+                                </div>
+
+                                <div class="mb-6">
+                                    <p class="text-gray-600">
+                                        ${product.stock < 5 ? `<span class="text-red-500 font-semibold">Only ${product.stock} left in stock!</span>` : `<span class="text-green-600">In Stock (${product.stock} available)</span>`}
+                                    </p>
+                                </div>
+
+                                <a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center w-full bg-green-600 text-white py-4 rounded-lg hover:bg-green-700 transition text-lg font-semibold">
+                                    <i class="fab fa-whatsapp mr-2"></i>
+                                    Message Seller on WhatsApp
+                                </a>
+
+                                <!-- <button onclick="ProductPage.addToCart(${product.id}); ProductPage.closeQuickView();" class="w-full bg-black text-white py-4 rounded-lg hover:bg-gray-800 transition text-lg font-semibold">
+                                    Add to Cart
+                                </button> -->
+                            </div>
+                        </div>
+                    `;
+
+                    document.getElementById('quick-view-modal').classList.remove('hidden');
+                },
+
+                close() {
+                    document.getElementById('quick-view-modal').classList.add('hidden');
+                }
+            };
+
+            // UI Controls
+            const ui = {
+                // toggleCart() {
+                //     document.getElementById('cart-sidebar').classList.toggle('translate-x-full');
+                // },
+
+                toggleSearch() {
+                    const modal = document.getElementById('search-modal');
+                    modal.classList.toggle('hidden');
+                    
+                    if (!modal.classList.contains('hidden')) {
+                        setTimeout(() => document.getElementById('search-input').focus(), 100);
+                    }
+                },
+
+                toggleMobileMenu() {
+                    document.getElementById('mobile-menu').classList.toggle('translate-x-full');
+                },
+
+                toggleFilters() {
+                    document.getElementById('filter-sidebar').classList.toggle('active');
+                },
+
+                setView(view) {
+                    state.currentView = view;
+                    
+                    document.getElementById('grid-view').classList.toggle('bg-black', view === 'grid');
+                    document.getElementById('grid-view').classList.toggle('text-white', view === 'grid');
+                    document.getElementById('list-view').classList.toggle('bg-black', view === 'list');
+                    document.getElementById('list-view').classList.toggle('text-white', view === 'list');
+                    
+                    productDisplay.render();
+                },
+
+                handleCurrencyChange(currency) {
+                    state.currentCurrency = currency;
+                    try { localStorage.setItem(CURRENCY_KEY, currency); } catch {}
+                    productDisplay.render();
+                    // cart.update(); // Commented out - site is catalogue only
+                    const slider = document.getElementById('price-slider');
+                    const display = document.getElementById('price-display');
+                    if (slider && display) {
+                        const value = parseInt(slider.value);
+                        display.textContent = value >= 5000 ? '$5000+' : utils.formatPrice(value);
+                    }
+                }
+            };
+
+            // Initialize
+            async function init() {
+                await initCurrency();
+
+                const currencySelector = document.getElementById('currency-selector');
+                if (currencySelector) currencySelector.value = state.currentCurrency;
+
+                // Fast path: render cached products immediately (if available)
+                const cached = readCache();
+                if (cached && cached.length) {
+                    state.products = cached;
+                    state.filteredProducts = [...state.products];
+                    filterManager.updateCounts();
+                    productDisplay.render();
+                }
+
+                // Always refresh in background
+                try {
+                    const fresh = await API.fetchProducts();
+                    state.products = fresh;
+                    state.filteredProducts = [...state.products];
+                    filterManager.updateCounts();
+                    productDisplay.render();
+                    writeCache(fresh);
+                } catch (e) {
+                    console.error('❌ Collections init failed:', e);
+                }
+
+                // Load saved cart - COMMENTED OUT (Site is catalogue only)
+                // const savedCart = utils.loadFromStorage('cart');
+                // if (savedCart) {
+                //     state.cart = savedCart;
+                //     cart.update();
+                // }
+
+                // Event listeners
+                document.getElementById('currency-selector').addEventListener('change', (e) => {
+                    ui.handleCurrencyChange(e.target.value);
+                });
+
+                document.getElementById('sort-select').addEventListener('change', (e) => {
+                    productDisplay.sort(e.target.value);
+                });
+
+                // Category filters
+                document.querySelectorAll('.category-filter').forEach(checkbox => {
+                    checkbox.addEventListener('change', (e) => {
+                        if (e.target.value === 'all') {
+                            if (e.target.checked) {
+                                state.filters.categories = ['all'];
+                                document.querySelectorAll('.category-filter').forEach(cb => {
+                                    cb.checked = cb.value === 'all';
+                                });
+                            }
+                        } else {
+                            const allCheckbox = document.querySelector('.category-filter[value="all"]');
+                            allCheckbox.checked = false;
+                            
+                            if (e.target.checked) {
+                                state.filters.categories = state.filters.categories.filter(c => c !== 'all');
+                                state.filters.categories.push(e.target.value);
+                            } else {
+                                state.filters.categories = state.filters.categories.filter(c => c !== e.target.value);
+                                
+                                if (state.filters.categories.length === 0) {
+                                    state.filters.categories = ['all'];
+                                    allCheckbox.checked = true;
+                                }
+                            }
+                        }
+                        filterManager.apply();
+                    });
+                });
+
+                // Price slider
+                document.getElementById('price-slider').addEventListener('input', (e) => {
+                    const value = parseInt(e.target.value);
+                    state.filters.priceMax = value;
+                    document.getElementById('price-display').textContent = value >= 5000 ? '$5000+' : utils.formatPrice(value);
+                    filterManager.apply();
+                });
+
+                // Color filters
+                document.querySelectorAll('.color-filter').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const color = this.dataset.color;
+                        
+                        if (state.filters.colors.includes(color)) {
+                            state.filters.colors = state.filters.colors.filter(c => c !== color);
+                            this.classList.remove('border-black', 'border-4');
+                            this.classList.add('border-gray-300', 'border-2');
+                        } else {
+                            state.filters.colors.push(color);
+                            this.classList.remove('border-gray-300', 'border-2');
+                            this.classList.add('border-black', 'border-4');
+                        }
+                        filterManager.apply();
+                    });
+                });
+
+                // Size filters
+                document.querySelectorAll('.size-filter').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const size = this.dataset.size;
+                        
+                        if (state.filters.sizes.includes(size)) {
+                            state.filters.sizes = state.filters.sizes.filter(s => s !== size);
+                            this.classList.remove('bg-black', 'text-white');
+                        } else {
+                            state.filters.sizes.push(size);
+                            this.classList.add('bg-black', 'text-white');
+                        }
+                        filterManager.apply();
+                    });
+                });
+
+                // Pagination
+                document.getElementById('prev-page').addEventListener('click', () => {
+                    if (state.currentPage > 1) {
+                        state.currentPage--;
+                        productDisplay.render();
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                });
+
+                document.getElementById('next-page').addEventListener('click', () => {
+                    const totalPages = Math.ceil(state.filteredProducts.length / state.itemsPerPage);
+                    if (state.currentPage < totalPages) {
+                        state.currentPage++;
+                        productDisplay.render();
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                });
+
+                // Search
+                document.getElementById('search-input').addEventListener('input', (e) => {
+                    const query = e.target.value.toLowerCase();
+                    
+                    if (!query) {
+                        document.getElementById('search-results').innerHTML = `
+                            <div class="text-sm text-gray-500">
+                                Type to search products...
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    const results = state.products.filter(p => 
+                        p.name.toLowerCase().includes(query) ||
+                        p.category.toLowerCase().includes(query)
+                    );
+
+                    if (results.length === 0) {
+                        document.getElementById('search-results').innerHTML = `
+                            <div class="text-sm text-gray-500 py-4">No products found for "${utils.sanitizeHTML(query)}"</div>
+                        `;
+                        return;
+                    }
+
+                    document.getElementById('search-results').innerHTML = `
+                        <div class="mt-4 space-y-2 max-h-96 overflow-y-auto">
+                            ${results.slice(0, 10).map(product => `
+                                <div class="p-3 hover:bg-gray-50 rounded cursor-pointer flex items-center gap-4" onclick="ProductPage.quickView(${product.id}); ProductPage.toggleSearch();">
+                                    <div class="w-12 h-12 bg-gradient-to-br from-purple-100 to-pink-100 rounded flex-shrink-0 flex items-center justify-center">
+                                        <i class="fas fa-image text-gray-400"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="font-semibold">${utils.sanitizeHTML(product.name)}</div>
+                                        <div class="text-sm text-gray-500">${utils.formatPrice(product.price)}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                });
+
+                // Close modals on backdrop click
+                ['search-modal', 'quick-view-modal'].forEach(id => {
+                    document.getElementById(id).addEventListener('click', (e) => {
+                        if (e.target.id === id) {
+                            e.target.classList.add('hidden');
+                        }
+                    });
+                });
+
+                // Close filter sidebar on backdrop click (mobile)
+                document.getElementById('filter-sidebar').addEventListener('click', (e) => {
+                    if (e.target.id === 'filter-sidebar' && window.innerWidth < 1024) {
+                        ui.toggleFilters();
+                    }
+                });
+
+                // Escape key closes modals
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        // document.getElementById('cart-sidebar').classList.add('translate-x-full'); // Commented out
+                        document.getElementById('mobile-menu').classList.add('translate-x-full');
+                        document.getElementById('search-modal').classList.add('hidden');
+                        document.getElementById('quick-view-modal').classList.add('hidden');
+                        document.getElementById('filter-sidebar').classList.remove('active');
+                    }
+                });
+            }
+
+            // Public API
+            return {
+                init,
+                // addToCart: (id) => cart.add(id), // Commented out - site is catalogue only
+                // removeFromCart: (id) => cart.remove(id), // Commented out
+                // updateCartQuantity: (id, qty) => cart.updateQuantity(id, qty), // Commented out
+                // toggleCart: () => ui.toggleCart(), // Commented out
+                toggleSearch: () => ui.toggleSearch(),
+                toggleMobileMenu: () => ui.toggleMobileMenu(),
+                toggleFilters: () => ui.toggleFilters(),
+                setView: (view) => ui.setView(view),
+                clearFilters: () => filterManager.clear(),
+                goToPage: (page) => {
+                    state.currentPage = page;
+                    productDisplay.render();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                },
+                removeFilter: (type, value) => {
+                    if (type === 'category') {
+                        state.filters.categories = state.filters.categories.filter(c => c !== value);
+                        if (state.filters.categories.length === 0) {
+                            state.filters.categories = ['all'];
+                        }
+                        document.querySelectorAll('.category-filter').forEach(cb => {
+                            if (cb.value === value) cb.checked = false;
+                            if (cb.value === 'all' && state.filters.categories.includes('all')) cb.checked = true;
+                        });
+                    } else if (type === 'price') {
+                        state.filters.priceMax = 5000;
+                        document.getElementById('price-slider').value = 5000;
+                        document.getElementById('price-display').textContent = '$5000+';
+                    } else if (type === 'color') {
+                        state.filters.colors = state.filters.colors.filter(c => c !== value);
+                        document.querySelectorAll('.color-filter').forEach(btn => {
+                            if (btn.dataset.color === value) {
+                                btn.classList.remove('border-black', 'border-4');
+                                btn.classList.add('border-gray-300', 'border-2');
+                            }
+                        });
+                    } else if (type === 'size') {
+                        state.filters.sizes = state.filters.sizes.filter(s => s !== value);
+                        document.querySelectorAll('.size-filter').forEach(btn => {
+                            if (btn.dataset.size === value) {
+                                btn.classList.remove('bg-black', 'text-white');
+                            }
+                        });
+                    }
+                    filterManager.apply();
+                },
+                quickView: (id) => quickView.open(id),
+                closeQuickView: () => quickView.close()
+            };
+        })();
+
+        // Initialize app when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            ProductPage.init();
+        });
+    </script>
+
+    <!-- Footer -->
+    <footer class="bg-black text-white py-12 mt-16">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="playfair text-2xl font-bold mb-4">Diva's Kloset</h4>
+                    <p class="text-gray-400">Your destination for international luxury fashion.</p>
+                    <div class="flex space-x-4 mt-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition" aria-label="Instagram"><i class="fab fa-instagram text-xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition" aria-label="Facebook"><i class="fab fa-facebook text-xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition" aria-label="Twitter"><i class="fab fa-twitter text-xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition" aria-label="Pinterest"><i class="fab fa-pinterest text-xl"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h5 class="font-semibold mb-4">Customer Service</h5>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="pages/contact.html" class="hover:text-white transition">Contact Us</a></li>
+                        <li><a href="pages/shipping.html" class="hover:text-white transition">Shipping Info</a></li>
+                        <li><a href="pages/returns.html" class="hover:text-white transition">Returns & Exchanges</a></li>
+                        <li><a href="pages/guide.html" class="hover:text-white transition">Size Guide</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-semibold mb-4">About</h5>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="pages/ourstory.html" class="hover:text-white transition">Our Story</a></li>
+                        <li><a href="pages/sustainability.html" class="hover:text-white transition">Sustainability</a></li>
+                        <li><a href="#" class="hover:text-white transition">Press</a></li>
+                        <li><a href="pages/careers.html" class="hover:text-white transition">Careers</a></li>
+                    </ul>
+                </div>
+                <!--<div>
+                    <h5 class="font-semibold mb-4">Payment & Security</h5>
+                    <div class="flex space-x-2 mb-4">
+                        <i class="fab fa-cc-visa text-2xl"></i>
+                        <i class="fab fa-cc-mastercard text-2xl"></i>
+                        <i class="fab fa-cc-amex text-2xl"></i>
+                        <i class="fab fa-cc-paypal text-2xl"></i>
+                    </div>
+                    <p class="text-gray-400 text-sm">Secure payments powered by Stripe</p>
+                </div>-->
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 Diva's Kloset. All rights reserved. | <a href="#" class="hover:text-white transition">Privacy Policy</a> | <a href="#" class="hover:text-white transition">Terms of Service</a></p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

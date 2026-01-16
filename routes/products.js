@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
     const total = await Database.countProducts();
     
     // Filter by category if specified
-    if (category) {
+    if (category && category !== 'All') {
       products = products.filter(p => 
         p.category && p.category.toLowerCase() === category.toLowerCase()
       );
