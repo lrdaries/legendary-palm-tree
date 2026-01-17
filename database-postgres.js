@@ -55,11 +55,23 @@ class PostgresDatabase {
                 name VARCHAR(255) NOT NULL,
                 description TEXT,
                 price DECIMAL(10,2) NOT NULL,
+                compare_price DECIMAL(10,2),
                 category VARCHAR(100),
+                brand VARCHAR(100),
                 image_url TEXT,
                 image_urls TEXT,
                 in_stock BOOLEAN DEFAULT true,
-                sku VARCHAR(100),
+                stock_quantity INTEGER DEFAULT 0,
+                low_stock_alert INTEGER DEFAULT 5,
+                sku VARCHAR(100) UNIQUE,
+                barcode VARCHAR(100),
+                tags TEXT,
+                sizes TEXT,
+                colors TEXT,
+                status VARCHAR(20) DEFAULT 'active',
+                meta_title VARCHAR(255),
+                meta_description TEXT,
+                url_slug VARCHAR(255),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -109,11 +121,40 @@ class PostgresDatabase {
             await client.query(createOTPsTable);
             await client.query(createEmailTokensTable);
             
+            // Add missing columns if they don't exist
+            await this.addMissingColumns(client);
+            
             client.release();
             console.log('All tables created successfully');
         } catch (error) {
             console.error('Error creating tables:', error);
             throw error;
+        }
+    }
+
+    async addMissingColumns(client) {
+        const columnsToAdd = [
+            'ALTER TABLE products ADD COLUMN IF NOT EXISTS compare_price DECIMAL(10,2)',
+            'ALTER TABLE products ADD COLUMN IF NOT EXISTS brand VARCHAR(100)',
+            'ALTER TABLE products ADD COLUMN IF NOT EXISTS stock_quantity INTEGER DEFAULT 0',
+            'ALTER TABLE products ADD COLUMN IF NOT EXISTS low_stock_alert INTEGER DEFAULT 5',
+            'ALTER TABLE products ADD COLUMN IF NOT EXISTS barcode VARCHAR(100)',
+            'ALTER TABLE products ADD COLUMN IF NOT EXISTS tags TEXT',
+            'ALTER TABLE products ADD COLUMN IF NOT EXISTS sizes TEXT',
+            'ALTER TABLE products ADD COLUMN IF NOT EXISTS colors TEXT',
+            'ALTER TABLE products ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT \'active\'',
+            'ALTER TABLE products ADD COLUMN IF NOT EXISTS meta_title VARCHAR(255)',
+            'ALTER TABLE products ADD COLUMN IF NOT EXISTS meta_description TEXT',
+            'ALTER TABLE products ADD COLUMN IF NOT EXISTS url_slug VARCHAR(255)',
+            'ALTER TABLE products ADD CONSTRAINT IF NOT EXISTS products_sku_unique UNIQUE (sku)'
+        ];
+
+        for (const query of columnsToAdd) {
+            try {
+                await client.query(query);
+            } catch (error) {
+                console.log('Note:', error.message);
+            }
         }
     }
 
@@ -226,6 +267,10 @@ class PostgresDatabase {
         
         return {
             ...product,
+            price: parseFloat(product.price),
+            compare_price: product.compare_price ? parseFloat(product.compare_price) : null,
+            stock_quantity: parseInt(product.stock_quantity) || 0,
+            low_stock_alert: parseInt(product.low_stock_alert) || 5,
             images: images,
             // Keep backward compatibility
             image_url: product.image_url,
@@ -234,10 +279,57 @@ class PostgresDatabase {
     }
 
     async createProduct(productData) {
-        const { name, description, price, category, image_urls, in_stock = true, sku } = productData;
+        const { 
+            name, 
+            description, 
+            price, 
+            compare_price,
+            category, 
+            brand,
+            image_urls, 
+            in_stock = true, 
+            stock_quantity = 0,
+            low_stock_alert = 5,
+            sku, 
+            barcode,
+            tags,
+            sizes,
+            colors,
+            status = 'active',
+            meta_title,
+            meta_description,
+            url_slug
+        } = productData;
+        
         const result = await this.run(
-            'INSERT INTO products (name, description, price, category, image_urls, in_stock, sku) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id',
-            [name, description, price, category, JSON.stringify(image_urls || []), in_stock, sku]
+            `INSERT INTO products (
+                name, description, price, compare_price, category, brand, image_urls, 
+                in_stock, stock_quantity, low_stock_alert, sku, barcode, tags, sizes, 
+                colors, status, meta_title, meta_description, url_slug
+            ) VALUES (
+                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19
+            ) RETURNING id`,
+            [
+                name, 
+                description, 
+                price, 
+                compare_price,
+                category, 
+                brand,
+                JSON.stringify(image_urls || []), 
+                in_stock, 
+                stock_quantity,
+                low_stock_alert,
+                sku, 
+                barcode,
+                tags,
+                sizes,
+                colors,
+                status,
+                meta_title,
+                meta_description,
+                url_slug
+            ]
         );
         return { id: result.id, ...productData };
     }

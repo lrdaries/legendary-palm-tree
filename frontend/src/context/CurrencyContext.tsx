@@ -162,10 +162,14 @@ export const CurrencyProvider: React.FC<CurrencyProviderProps> = ({ children }) 
     
     if (isLoading) return `₦${numericPrice.toFixed(2)}`;
     
-    // If price is already in NGN and current currency is NGN, don't convert
+    // Base currency is NGN, convert to target currency
     let convertedPrice = numericPrice;
     if (currentCurrency.code !== 'NGN') {
-      convertedPrice = numericPrice * currentCurrency.rate;
+      // Convert from NGN to target currency
+      // NGN rate is 1650, USD rate is 1, so NGN → USD = price / 1650
+      // NGN → EUR = (price / 1650) * 0.92
+      const ngnRate = currencies.find(c => c.code === 'NGN')?.rate || 1650;
+      convertedPrice = (numericPrice / ngnRate) * currentCurrency.rate;
     }
     
     // Handle different decimal places for different currencies

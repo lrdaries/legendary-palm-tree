@@ -4,6 +4,12 @@ const { body, param, query, validationResult } = require('express-validator');
 const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    console.log('❌ Validation Errors:', errors.array().map(err => ({
+      field: err.param,
+      message: err.msg,
+      value: err.value
+    })));
+    
     return res.status(400).json({
       success: false,
       message: 'Validation failed',
@@ -36,15 +42,81 @@ const validateProductCreate = [
   body('price')
     .notEmpty().withMessage('Price is required')
     .isFloat({ min: 0 }).withMessage('Price must be a positive number'),
+
+  body('compare_price')
+    .optional()
+    .isFloat({ min: 0 }).withMessage('Compare price must be a positive number'),
   
   body('category')
     .optional()
     .trim()
     .isLength({ max: 100 }).withMessage('Category max 100 characters'),
+
+  body('brand')
+    .optional()
+    .trim()
+    .isLength({ max: 100 }).withMessage('Brand max 100 characters'),
   
   body('in_stock')
     .optional()
-    .isInt({ min: 0 }).withMessage('Stock must be a positive integer'),
+    .custom((value) => {
+      // Accept various formats and convert to boolean
+      if (typeof value === 'boolean') return true;
+      if (typeof value === 'string') {
+        return value === 'true' || value === 'false';
+      }
+      if (typeof value === 'number') {
+        return value === 0 || value === 1;
+      }
+      return false;
+    }).withMessage('Stock status must be true or false'),
+
+  body('stock_quantity')
+    .optional()
+    .isInt({ min: 0 }).withMessage('Stock quantity must be a positive integer'),
+
+  body('low_stock_alert')
+    .optional()
+    .isInt({ min: 0 }).withMessage('Low stock alert must be a positive integer'),
+
+  body('barcode')
+    .optional()
+    .trim()
+    .isLength({ max: 100 }).withMessage('Barcode max 100 characters'),
+
+  body('tags')
+    .optional()
+    .trim()
+    .isLength({ max: 500 }).withMessage('Tags max 500 characters'),
+
+  body('sizes')
+    .optional()
+    .trim()
+    .isLength({ max: 500 }).withMessage('Sizes max 500 characters'),
+
+  body('colors')
+    .optional()
+    .trim()
+    .isLength({ max: 500 }).withMessage('Colors max 500 characters'),
+
+  body('status')
+    .optional()
+    .isIn(['active', 'inactive', 'draft']).withMessage('Status must be active, inactive, or draft'),
+
+  body('meta_title')
+    .optional()
+    .trim()
+    .isLength({ max: 255 }).withMessage('Meta title max 255 characters'),
+
+  body('meta_description')
+    .optional()
+    .trim()
+    .isLength({ max: 500 }).withMessage('Meta description max 500 characters'),
+
+  body('url_slug')
+    .optional()
+    .trim()
+    .isLength({ max: 255 }).withMessage('URL slug max 255 characters'),
   
   body('image_urls')
     .optional()
@@ -81,14 +153,80 @@ const validateProductUpdate = [
     .optional()
     .isFloat({ min: 0 }).withMessage('Price must be a positive number'),
   
+  body('compare_price')
+    .optional()
+    .isFloat({ min: 0 }).withMessage('Compare price must be a positive number'),
+  
   body('category')
     .optional()
     .trim()
     .isLength({ max: 100 }).withMessage('Category max 100 characters'),
+
+  body('brand')
+    .optional()
+    .trim()
+    .isLength({ max: 100 }).withMessage('Brand max 100 characters'),
   
   body('in_stock')
     .optional()
-    .isInt({ min: 0 }).withMessage('Stock must be a positive integer'),
+    .custom((value) => {
+      // Accept various formats and convert to boolean
+      if (typeof value === 'boolean') return true;
+      if (typeof value === 'string') {
+        return value === 'true' || value === 'false';
+      }
+      if (typeof value === 'number') {
+        return value === 0 || value === 1;
+      }
+      return false;
+    }).withMessage('Stock status must be true or false'),
+
+  body('stock_quantity')
+    .optional()
+    .isInt({ min: 0 }).withMessage('Stock quantity must be a positive integer'),
+
+  body('low_stock_alert')
+    .optional()
+    .isInt({ min: 0 }).withMessage('Low stock alert must be a positive integer'),
+
+  body('barcode')
+    .optional()
+    .trim()
+    .isLength({ max: 100 }).withMessage('Barcode max 100 characters'),
+
+  body('tags')
+    .optional()
+    .trim()
+    .isLength({ max: 500 }).withMessage('Tags max 500 characters'),
+
+  body('sizes')
+    .optional()
+    .trim()
+    .isLength({ max: 500 }).withMessage('Sizes max 500 characters'),
+
+  body('colors')
+    .optional()
+    .trim()
+    .isLength({ max: 500 }).withMessage('Colors max 500 characters'),
+
+  body('status')
+    .optional()
+    .isIn(['active', 'inactive', 'draft']).withMessage('Status must be active, inactive, or draft'),
+
+  body('meta_title')
+    .optional()
+    .trim()
+    .isLength({ max: 255 }).withMessage('Meta title max 255 characters'),
+
+  body('meta_description')
+    .optional()
+    .trim()
+    .isLength({ max: 500 }).withMessage('Meta description max 500 characters'),
+
+  body('url_slug')
+    .optional()
+    .trim()
+    .isLength({ max: 255 }).withMessage('URL slug max 255 characters'),
   
   body('image_urls')
     .optional()

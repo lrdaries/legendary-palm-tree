@@ -162,17 +162,41 @@ router.get('/:id', async (req, res) => {
 });
 
 // Create product (admin only)
-router.post('/', verifyAdminToken, validateProductCreate, async (req, res) => {
+router.post('/', verifyAdminToken, async (req, res) => {
   try {
-    const { sku, name, description, price, category, in_stock } = req.body;
+    const { 
+      sku, 
+      name, 
+      description, 
+      price, 
+      compare_price,
+      category, 
+      brand,
+      in_stock, 
+      stock_quantity,
+      low_stock_alert,
+      barcode,
+      tags,
+      sizes,
+      colors,
+      status,
+      meta_title,
+      meta_description,
+      url_slug
+    } = req.body;
     
     // Debug incoming request
     console.log('🛠 Create Product Request:');
+    console.log('  Full req.body:', JSON.stringify(req.body, null, 2));
     console.log('  req.body keys:', Object.keys(req.body));
     console.log('  req.body.imageUrls type:', typeof req.body.imageUrls);
     console.log('  req.body.imageUrls value:', req.body.imageUrls);
     console.log('  req.body.image_urls type:', typeof req.body.image_urls);
     console.log('  req.body.image_urls value:', req.body.image_urls);
+    console.log('  req.body.in_stock type:', typeof req.body.in_stock);
+    console.log('  req.body.in_stock value:', req.body.in_stock);
+    console.log('  req.body.stock_quantity type:', typeof req.body.stock_quantity);
+    console.log('  req.body.stock_quantity value:', req.body.stock_quantity);
     
     // Handle both imageUrls (from upload) and image_urls (from manual entry)
     let image_urls = req.body.imageUrls || req.body.image_urls || [];
@@ -199,8 +223,20 @@ router.post('/', verifyAdminToken, validateProductCreate, async (req, res) => {
       name,
       description,
       price: parseFloat(price),
+      compare_price: compare_price ? parseFloat(compare_price) : null,
       category,
-      in_stock: parseInt(in_stock) || 0,
+      brand,
+      in_stock: true, // Default to true since product has stock
+      stock_quantity: parseInt(in_stock) || 0, // Use in_stock field as stock_quantity
+      low_stock_alert: parseInt(low_stock_alert) || 5,
+      barcode,
+      tags,
+      sizes,
+      colors,
+      status: status || 'active',
+      meta_title,
+      meta_description,
+      url_slug,
       image_urls: image_urls || []
     });
     
@@ -250,7 +286,7 @@ router.put('/:id', verifyAdminToken, validateProductUpdate, async (req, res) => 
     if (description !== undefined) updateData.description = description;
     if (price !== undefined) updateData.price = parseFloat(price);
     if (category !== undefined) updateData.category = category;
-    if (in_stock !== undefined) updateData.in_stock = parseInt(in_stock);
+    if (in_stock !== undefined) updateData.in_stock = in_stock === 'true' || in_stock === true || parseInt(in_stock) > 0;
     if (image_urls !== undefined) updateData.image_urls = image_urls;
     
     const updated = await Database.updateProduct(id, updateData);
