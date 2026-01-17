@@ -16,7 +16,9 @@ class PostgresDatabase {
 
             this.pool = new Pool({
                 connectionString: databaseUrl,
-                ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+                ssl: {
+                    rejectUnauthorized: false
+                }
             });
             
             // Test the connection
@@ -55,6 +57,7 @@ class PostgresDatabase {
                 price DECIMAL(10,2) NOT NULL,
                 category VARCHAR(100),
                 image_url TEXT,
+                image_urls TEXT,
                 in_stock BOOLEAN DEFAULT true,
                 sku VARCHAR(100),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -136,6 +139,13 @@ class PostgresDatabase {
         const client = await this.pool.connect();
         try {
             const result = await client.query(sql, params);
+            
+            // For INSERT operations, return the inserted ID
+            if (result.rows.length > 0 && result.rows[0] && typeof result.rows[0].id !== 'undefined') {
+                return { id: result.rows[0].id, changes: result.rowCount || 0 };
+            }
+            
+            // For other operations, return changes
             return { id: result.rows[0]?.id, changes: result.rowCount || 0 };
         } finally {
             client.release();
@@ -178,19 +188,51 @@ class PostgresDatabase {
 
     // Product methods
     async getAllProducts(limit = 50, offset = 0) {
-        return await this.query('SELECT * FROM products ORDER BY created_at DESC LIMIT $1 OFFSET $2', [limit, offset]);
+        const products = await this.query('SELECT * FROM products ORDER BY created_at DESC LIMIT $1 OFFSET $2', [limit, offset]);
+        return products.map(product => this.transformProductData(product));
     }
 
     async getProductById(id) {
         const products = await this.query('SELECT * FROM products WHERE id = $1', [id]);
-        return products.length > 0 ? products[0] : null;
+        const product = products.length > 0 ? products[0] : null;
+        return product ? this.transformProductData(product) : null;
+    }
+
+    transformProductData(product) {
+        // Handle both image_url (single) and image_urls (array) fields
+        let images = [];
+        
+        if (product.image_urls) {
+            try {
+                // Try to parse as JSON array
+                const parsed = JSON.parse(product.image_urls);
+                images = Array.isArray(parsed) ? parsed : [product.image_urls];
+            } catch (e) {
+                // If parsing fails, treat as single URL or comma-separated
+                if (product.image_urls.includes(',')) {
+                    images = product.image_urls.split(',').map(url => url.trim()).filter(url => url);
+                } else {
+                    images = [product.image_urls];
+                }
+            }
+        } else if (product.image_url) {
+            images = [product.image_url];
+        }
+        
+        return {
+            ...product,
+            images: images,
+            // Keep backward compatibility
+            image_url: product.image_url,
+            image_urls: product.image_urls
+        };
     }
 
     async createProduct(productData) {
-        const { name, description, price, category, image_url, in_stock = true, sku } = productData;
+        const { name, description, price, category, image_urls, in_stock = true, sku } = productData;
         const result = await this.run(
-            'INSERT INTO products (name, description, price, category, image_url, in_stock, sku) VALUES ($1, $2, $3, $4, $5, $6, $7)',
-            [name, description, price, category, image_url, in_stock, sku]
+            'INSERT INTO products (name, description, price, category, image_urls, in_stock, sku) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id',
+            [name, description, price, category, JSON.stringify(image_urls || []), in_stock, sku]
         );
         return { id: result.id, ...productData };
     }
@@ -201,8 +243,13 @@ class PostgresDatabase {
         let paramIndex = 1;
 
         for (const [key, value] of Object.entries(updateData)) {
-            fields.push(`${key} = $${paramIndex}`);
-            values.push(value);
+            if (key === 'image_urls' && Array.isArray(value)) {
+                fields.push(`${key} = $${paramIndex}`);
+                values.push(JSON.stringify(value));
+            } else {
+                fields.push(`${key} = $${paramIndex}`);
+                values.push(value);
+            }
             paramIndex++;
         }
         
@@ -212,6 +259,9 @@ class PostgresDatabase {
             `UPDATE products SET ${fields.join(', ')}, updated_at = CURRENT_TIMESTAMP WHERE id = $${paramIndex}`,
             values
         );
+        
+        // Return updated product with transformed data
+        return await this.getProductById(id);
     }
 
     async deleteProduct(id) {

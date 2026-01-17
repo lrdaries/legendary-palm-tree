@@ -13,6 +13,18 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
   const { convertPrice } = useCurrency();
   const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState(false);
 
+  // Prevent body scroll when cart is open
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   const handleWhatsAppOrder = () => {
     const orderDetails = cart.map(item => ({
       name: item.name,

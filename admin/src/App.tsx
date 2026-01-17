@@ -24,7 +24,12 @@ const App: React.FC = () => {
     // Check for existing session by verifying with the server
     const checkSession = async () => {
       try {
-        const response = await fetch('/api/admin/verify', {
+        // Use direct API URL for production, proxy for development
+        const apiUrl = process.env.NODE_ENV === 'production' 
+          ? '/api/admin/auth/verify' 
+          : '/api/admin/auth/verify';
+          
+        const response = await fetch(apiUrl, {
           credentials: 'include', // Important for cookies
         });
         
@@ -35,7 +40,7 @@ const App: React.FC = () => {
           }
         }
       } catch (error) {
-        console.error('Error checking session:', error);
+        console.error('Session check error:', error);
       } finally {
         setLoading(false);
       }

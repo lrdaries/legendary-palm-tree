@@ -44,7 +44,7 @@ class Database {
                 description TEXT,
                 price REAL NOT NULL,
                 category TEXT,
-                image_url TEXT,
+                image_urls TEXT,
                 in_stock BOOLEAN DEFAULT 1,
                 sku TEXT,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -170,7 +170,8 @@ class Database {
 
     // Product methods
     async getAllProducts(limit = 50, offset = 0) {
-        return await this.query('SELECT * FROM products ORDER BY created_at DESC LIMIT ? OFFSET ?', [limit, offset]);
+        const products = await this.query('SELECT * FROM products ORDER BY created_at DESC LIMIT ? OFFSET ?', [limit, offset]);
+        return products.map(product => this.transformProductData(product));
     }
 
     async countProducts() {
@@ -180,14 +181,43 @@ class Database {
 
     async getProductById(id) {
         const products = await this.query('SELECT * FROM products WHERE id = ?', [id]);
-        return products.length > 0 ? products[0] : null;
+        const product = products.length > 0 ? products[0] : null;
+        return product ? this.transformProductData(product) : null;
+    }
+
+    transformProductData(product) {
+        // Handle image_urls field for frontend compatibility
+        let images = [];
+        
+        if (product.image_urls) {
+            try {
+                // Try to parse as JSON array
+                const parsed = JSON.parse(product.image_urls);
+                images = Array.isArray(parsed) ? parsed : [product.image_urls];
+            } catch (e) {
+                // If parsing fails, treat as single URL or comma-separated
+                if (product.image_urls.includes(',')) {
+                    images = product.image_urls.split(',').map(url => url.trim()).filter(url => url);
+                } else {
+                    images = [product.image_urls];
+                }
+            }
+        }
+        
+        return {
+            ...product,
+            images: images,
+            // Keep backward compatibility
+            image_urls: product.image_urls
+        };
     }
 
     async createProduct(productData) {
-        const { name, description, price, category, image_url, in_stock = true, sku } = productData;
+        const { name, description, price, category, image_urls, in_stock = true, sku } = productData;
+        const imageUrlsJson = JSON.stringify(image_urls || []);
         const result = await this.run(
-            'INSERT INTO products (name, description, price, category, image_url, in_stock, sku) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [name, description, price, category, image_url, in_stock, sku]
+            'INSERT INTO products (name, description, price, category, image_urls, in_stock, sku) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [name, description, price, category, imageUrlsJson, in_stock, sku]
         );
         return { id: result.id, ...productData };
     }
@@ -197,8 +227,13 @@ class Database {
         const params = [];
         
         for (const [key, value] of Object.entries(updateData)) {
-            fields.push(`${key} = ?`);
-            params.push(value);
+            if (key === 'image_urls' && Array.isArray(value)) {
+                fields.push(`${key} = ?`);
+                params.push(JSON.stringify(value));
+            } else {
+                fields.push(`${key} = ?`);
+                params.push(value);
+            }
         }
         params.push(id);
         
@@ -206,6 +241,9 @@ class Database {
             `UPDATE products SET ${fields.join(', ')} WHERE id = ?`,
             params
         );
+        
+        // Return updated product with transformed data
+        return await this.getProductById(id);
     }
 
     async deleteProduct(id) {
@@ -340,6 +378,14 @@ class Database {
                 [tokenOrEmail]
             );
         }
+    }
+
+    async skuExists(sku) {
+        const products = await this.query(
+            'SELECT id FROM products WHERE sku = ? LIMIT 1',
+            [sku]
+        );
+        return products.length > 0;
     }
 }
 

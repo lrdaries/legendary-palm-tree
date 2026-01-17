@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../supabase';
 import { 
   Plus, 
   Edit, 
@@ -9,6 +8,7 @@ import {
   DollarSign,
   TrendingUp
 } from 'lucide-react';
+import ImageUpload from './ImageUpload';
 
 interface Product {
   id: string;
@@ -18,11 +18,23 @@ interface Product {
   category: string;
   image_url?: string;
   image_urls?: string[];
+  images?: string[];
   in_stock: boolean;
   sku?: string;
   created_at: string;
   updated_at: string;
 }
+
+// Helper function to get image URL from product
+const getProductImage = (product: Product): string | undefined => {
+  if (product.images && product.images.length > 0) {
+    return product.images[0];
+  }
+  if (product.image_urls && product.image_urls.length > 0) {
+    return product.image_urls[0];
+  }
+  return product.image_url;
+};
 
 const Products: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -36,7 +48,7 @@ const Products: React.FC = () => {
     description: '',
     price: '',
     category: 'dresses',
-    image_url: '',
+    image_urls: [] as string[],
     in_stock: true,
     sku: ''
   });
@@ -50,15 +62,22 @@ const Products: React.FC = () => {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const { data: productsData, error } = await supabase
-        .from('products')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching products:', error);
+      const token = localStorage.getItem('admin_token');
+      const response = await fetch('/api/admin/products', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
+      }
+      
+      const result = await response.json();
+      if (result.success) {
+        setProducts(result.data || []);
       } else {
-        setProducts(productsData || []);
+        console.error('Error fetching products:', result.message);
       }
     } catch (error) {
       console.error('Error:', error);
@@ -71,34 +90,43 @@ const Products: React.FC = () => {
     e.preventDefault();
     
     try {
-      const { error } = await supabase
-        .from('products')
-        .insert([{
+      const token = localStorage.getItem('admin_token');
+      const response = await fetch('/api/admin/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
           name: formData.name,
           description: formData.description,
           price: parseFloat(formData.price),
           category: formData.category,
-          image_url: formData.image_url,
+          image_urls: formData.image_urls,
           in_stock: formData.in_stock,
-          sku: formData.sku,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }]);
+          sku: formData.sku
+        })
+      });
 
-      if (error) {
-        console.error('Error adding product:', error);
-      } else {
+      if (!response.ok) {
+        throw new Error('Failed to add product');
+      }
+      
+      const result = await response.json();
+      if (result.success) {
         setShowAddModal(false);
         setFormData({
           name: '',
           description: '',
           price: '',
           category: 'dresses',
-          image_url: '',
+          image_urls: [],
           in_stock: true,
           sku: ''
         });
         fetchProducts();
+      } else {
+        console.error('Error adding product:', result.message);
       }
     } catch (error) {
       console.error('Error:', error);
@@ -112,7 +140,7 @@ const Products: React.FC = () => {
       description: product.description,
       price: product.price.toString(),
       category: product.category,
-      image_url: product.image_url || '',
+      image_urls: product.images || product.image_urls || (product.image_url ? [product.image_url] : []),
       in_stock: product.in_stock,
       sku: product.sku || ''
     });
@@ -124,35 +152,43 @@ const Products: React.FC = () => {
     if (!editingProduct) return;
 
     try {
-      const { error } = await supabase
-        .from('products')
-        .update({
-          id: editingProduct.id,
+      const token = localStorage.getItem('admin_token');
+      const response = await fetch(`/api/admin/products/${editingProduct.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
           name: formData.name,
           description: formData.description,
           price: parseFloat(formData.price),
           category: formData.category,
-          image_url: formData.image_url,
+          image_urls: formData.image_urls,
           in_stock: formData.in_stock,
-          sku: formData.sku,
-          updated_at: new Date().toISOString()
+          sku: formData.sku
         })
-        .eq('id', editingProduct.id);
+      });
 
-      if (error) {
-        console.error('Error updating product:', error);
-      } else {
+      if (!response.ok) {
+        throw new Error('Failed to update product');
+      }
+      
+      const result = await response.json();
+      if (result.success) {
         setEditingProduct(null);
         setFormData({
           name: '',
           description: '',
           price: '',
           category: 'dresses',
-          image_url: '',
+          image_urls: [],
           in_stock: true,
           sku: ''
         });
         fetchProducts();
+      } else {
+        console.error('Error updating product:', result.message);
       }
     } catch (error) {
       console.error('Error:', error);
@@ -163,15 +199,23 @@ const Products: React.FC = () => {
     if (!window.confirm('Are you sure you want to delete this product?')) return;
 
     try {
-      const { error } = await supabase
-        .from('products')
-        .delete()
-        .eq('id', id);
+      const token = localStorage.getItem('admin_token');
+      const response = await fetch(`/api/admin/products/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
 
-      if (error) {
-        console.error('Error deleting product:', error);
-      } else {
+      if (!response.ok) {
+        throw new Error('Failed to delete product');
+      }
+      
+      const result = await response.json();
+      if (result.success) {
         fetchProducts();
+      } else {
+        console.error('Error deleting product:', result.message);
       }
     } catch (error) {
       console.error('Error:', error);
@@ -265,7 +309,7 @@ const Products: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900">
-                    ${products.reduce((sum, p) => sum + p.price, 0).toLocaleString()}
+                    ₦{products.reduce((sum, p) => sum + p.price, 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </p>
                   <p className="text-sm text-gray-600">Total Value</p>
                 </div>
@@ -312,9 +356,9 @@ const Products: React.FC = () => {
                       <tr key={product.id} className="border-b hover:bg-gray-50">
                         <td className="py-3 px-4">
                           <div className="flex items-center space-x-3">
-                            {product.image_url && (
+                            {getProductImage(product) && (
                               <img
-                                src={product.image_url}
+                                src={getProductImage(product)}
                                 alt={product.name}
                                 className="w-12 h-12 object-cover rounded"
                               />
@@ -331,7 +375,7 @@ const Products: React.FC = () => {
                           </span>
                         </td>
                         <td className="py-3 px-4">
-                          <span className="font-medium text-gray-900">${product.price}</span>
+                          <span className="font-medium text-gray-900">₦{product.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                         </td>
                         <td className="py-3 px-4">
                           <span className={`px-2 py-1 text-xs font-medium rounded-full ${
@@ -428,12 +472,21 @@ const Products: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
-                <input
-                  type="url"
-                  value={formData.image_url}
-                  onChange={(e) => setFormData({...formData, image_url: e.target.value})}
-                  placeholder="https://example.com/image.jpg"
+                <label className="block text-sm font-medium text-gray-700 mb-2">Product Images</label>
+                <ImageUpload
+                  images={formData.image_urls}
+                  onImagesChange={(images) => setFormData({...formData, image_urls: images})}
+                  maxImages={5}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Or add Image URLs (comma separated)</label>
+                <textarea
+                  value={formData.image_urls.join(', ')}
+                  onChange={(e) => setFormData({...formData, image_urls: e.target.value.split(',').map(url => url.trim()).filter(url => url)})}
+                  placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg"
+                  rows={2}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#722F37]"
                 />
               </div>
@@ -473,7 +526,7 @@ const Products: React.FC = () => {
                       description: '',
                       price: '',
                       category: 'dresses',
-                      image_url: '',
+                      image_urls: [],
                       in_stock: true,
                       sku: ''
                     });

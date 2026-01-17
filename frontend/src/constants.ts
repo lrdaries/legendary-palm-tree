@@ -9,109 +9,8 @@ export const COLORS = {
 
 export const CATEGORIES = ['All', 'Dresses', 'Accessories', 'Bags', 'Suits', 'Tops', 'Sets', 'Outerwear'];
 
-// Fallback products for development/error cases
-export const FALLBACK_PRODUCTS: Product[] = [
-  {
-    id: '1',
-    name: 'Silk Essence Maxi Dress',
-    price: 129,
-    category: 'Dresses',
-    description: 'A flowy, premium silk-blend maxi dress designed for confident woman. Minimalist lines with a sophisticated drape.',
-    images: ['https://picsum.photos/id/1011/800/1000', 'https://picsum.photos/id/1015/800/1000'],
-    sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    colors: ['Cream', 'Champagne', 'Onyx'],
-    isNew: true,
-    rating: 4.8,
-    reviewsCount: 124
-  },
-  {
-    id: '2',
-    name: 'Structured Blazer Set',
-    price: 189,
-    category: 'Sets',
-    description: 'Professional elegance redefined. This structured blazer and trouser set features clean lines and premium tailoring.',
-    images: ['https://picsum.photos/id/1018/800/1000', 'https://picsum.photos/id/1020/800/1000'],
-    sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    colors: ['Navy', 'Black', 'Charcoal'],
-    isBestSeller: true,
-    rating: 4.9,
-    reviewsCount: 89
-  },
-  {
-    id: '3',
-    name: 'Cashmere Blend Sweater',
-    price: 149,
-    category: 'Tops',
-    description: 'Luxurious cashmere blend sweater with a relaxed silhouette. Perfect for layering or wearing alone.',
-    images: ['https://picsum.photos/id/1024/800/1000', 'https://picsum.photos/id/1025/800/1000'],
-    sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    colors: ['Camel', 'Cream', 'Heather Gray'],
-    rating: 4.7,
-    reviewsCount: 156
-  },
-  {
-    id: '4',
-    name: 'Midi Skirt Collection',
-    price: 89,
-    category: 'Dresses',
-    description: 'Versatile midi skirt in our signature stretch fabric. Flattering silhouette that transitions from day to night.',
-    images: ['https://picsum.photos/id/1030/800/1000', 'https://picsum.photos/id/1031/800/1000'],
-    sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    colors: ['Black', 'Navy', 'Burgundy'],
-    rating: 4.6,
-    reviewsCount: 203
-  },
-  {
-    id: '5',
-    name: 'Power Shoulder Top',
-    price: 79,
-    category: 'Tops',
-    description: 'Modern take on the power dressing trend. Structured shoulders with a soft, flowing body for balance.',
-    images: ['https://picsum.photos/id/1035/800/1000', 'https://picsum.photos/id/1036/800/1000'],
-    sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    colors: ['White', 'Black', 'Blush'],
-    isNew: true,
-    rating: 4.5,
-    reviewsCount: 67
-  },
-  {
-    id: '6',
-    name: 'Wide Leg Trousers',
-    price: 119,
-    category: 'Sets',
-    description: 'Effortlessly chic wide-leg trousers with a high waist and clean lines. Professional yet comfortable.',
-    images: ['https://picsum.photos/id/1040/800/1000', 'https://picsum.photos/id/1041/800/1000'],
-    sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    colors: ['Khaki', 'Black', 'Navy'],
-    isBestSeller: true,
-    rating: 4.8,
-    reviewsCount: 178
-  },
-  {
-    id: '7',
-    name: 'Leather Moto Jacket',
-    price: 299,
-    category: 'Outerwear',
-    description: 'Classic moto jacket in premium leather with modern tailoring. An investment piece that never goes out of style.',
-    images: ['https://picsum.photos/id/1045/800/1000', 'https://picsum.photos/id/1046/800/1000'],
-    sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    colors: ['Black', 'Cognac'],
-    rating: 4.9,
-    reviewsCount: 92
-  },
-  {
-    id: '8',
-    name: 'Silk Camisole Set',
-    price: 139,
-    category: 'Sets',
-    description: 'Delicate silk camisole and matching shorts. Perfect for lounging or as layering pieces.',
-    images: ['https://picsum.photos/id/1050/800/1000', 'https://picsum.photos/id/1051/800/1000'],
-    sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    colors: ['Champagne', 'Rose', 'Pearl'],
-    rating: 4.7,
-    reviewsCount: 145
-  }
-];
+// Fallback products for development/error cases (no hardcoded images)
+export const FALLBACK_PRODUCTS: Product[] = [];
 
 // Function to get products from API
 export async function getProducts(
@@ -123,7 +22,25 @@ export async function getProducts(
   try {
     const response = await ProductsService.getAllProducts(limit, offset, category, sort);
     if (response.success && response.data) {
-      return response.data.map(product => ProductsService.transformProduct(product));
+      // Backend provides data with different field names, map to frontend Product type
+      return response.data.map((product: any) => ({
+        id: product.id.toString(),
+        name: product.name,
+        price: product.price || 0,
+        category: product.category || 'Uncategorized',
+        description: product.description || '',
+        images: product.images || [],
+        sizes: ['XS', 'S', 'M', 'L', 'XL'], // Default sizes
+        colors: ['Black', 'White', 'Navy'], // Default colors
+        isNew: false,
+        isBestSeller: false,
+        rating: 4.5,
+        reviewsCount: 0,
+        inStock: (product as any).in_stock !== false,
+        sku: product.sku,
+        createdAt: (product as any).created_at,
+        updatedAt: (product as any).updated_at,
+      }));
     }
     console.warn('Failed to fetch products, using fallback');
     return FALLBACK_PRODUCTS;
@@ -138,7 +55,26 @@ export async function getProductById(id: string): Promise<Product | null> {
   try {
     const response = await ProductsService.getProductById(id);
     if (response.success && response.data) {
-      return ProductsService.transformProduct(response.data);
+      const product = response.data;
+      // Map backend data to frontend Product type
+      return {
+        id: product.id.toString(),
+        name: product.name,
+        price: product.price || 0,
+        category: product.category || 'Uncategorized',
+        description: product.description || '',
+        images: product.images || [],
+        sizes: ['XS', 'S', 'M', 'L', 'XL'],
+        colors: ['Black', 'White', 'Navy'],
+        isNew: false,
+        isBestSeller: false,
+        rating: 4.5,
+        reviewsCount: 0,
+        inStock: (product as any).in_stock !== false,
+        sku: product.sku,
+        createdAt: (product as any).created_at,
+        updatedAt: (product as any).updated_at,
+      };
     }
     return null;
   } catch (error) {
@@ -152,7 +88,25 @@ export async function searchProducts(query: string): Promise<Product[]> {
   try {
     const response = await ProductsService.searchProducts(query);
     if (response.success && response.data) {
-      return response.data.map(product => ProductsService.transformProduct(product));
+      // Map backend data to frontend Product type
+      return response.data.map((product: any) => ({
+        id: product.id.toString(),
+        name: product.name,
+        price: product.price || 0,
+        category: product.category || 'Uncategorized',
+        description: product.description || '',
+        images: product.images || [],
+        sizes: ['XS', 'S', 'M', 'L', 'XL'],
+        colors: ['Black', 'White', 'Navy'],
+        isNew: false,
+        isBestSeller: false,
+        rating: 4.5,
+        reviewsCount: 0,
+        inStock: (product as any).in_stock !== false,
+        sku: product.sku,
+        createdAt: (product as any).created_at,
+        updatedAt: (product as any).updated_at,
+      }));
     }
     return [];
   } catch (error) {

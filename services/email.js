@@ -65,7 +65,7 @@ async function sendLoginLinkEmail(email, token, firstName = 'User') {
       return { success: false, message: 'Email service not configured' };
     }
 
-    const appUrl = process.env.APP_URL || 'http://localhost:3000';
+    const appUrl = process.env.APP_URL || 'https://divaskloset.com';
     const loginLink = `${appUrl}/auth/verify?token=${token}`;
 
     const result = await resend.emails.send({
@@ -104,7 +104,7 @@ async function sendWelcomeEmail(email, firstName = 'User') {
       return { success: false, message: 'Email service not configured' };
     }
 
-    const appUrl = process.env.APP_URL || 'http://localhost:3000';
+    const appUrl = process.env.APP_URL || 'https://divaskloset.com';
 
     const result = await resend.emails.send({
       from: RESEND_FROM_EMAIL,

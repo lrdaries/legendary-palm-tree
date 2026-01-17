@@ -55,7 +55,7 @@ function getUploadMiddleware() {
   return multer({
     storage: isSupabaseStorageConfigured() ? memoryStorage : diskStorage,
     limits: {
-      fileSize: 5 * 1024 * 1024
+      fileSize: 10 * 1024 * 1024 // Increased to 10MB
     },
     fileFilter: (req, file, cb) => {
       if (file.mimetype && file.mimetype.startsWith('image/')) {
@@ -109,12 +109,10 @@ router.post('/upload-images', verifyAdminToken, upload.array('images', 10), asyn
       });
     }
 
-    const imageUrls = req.files.map(file => `/uploads/${file.filename}`);
-
     res.json({
       success: true,
       message: `${req.files.length} images uploaded successfully`,
-      imageUrls
+      imageUrls: req.files.map(file => `/uploads/${file.filename}`)
     });
   } catch (err) {
     console.error('Upload error:', err);
@@ -166,7 +164,25 @@ router.get('/:id', async (req, res) => {
 // Create product (admin only)
 router.post('/', verifyAdminToken, validateProductCreate, async (req, res) => {
   try {
-    const { sku, name, description, price, category, in_stock, image_urls } = req.body;
+    const { sku, name, description, price, category, in_stock } = req.body;
+    
+    // Debug incoming request
+    console.log('🛠 Create Product Request:');
+    console.log('  req.body keys:', Object.keys(req.body));
+    console.log('  req.body.imageUrls type:', typeof req.body.imageUrls);
+    console.log('  req.body.imageUrls value:', req.body.imageUrls);
+    console.log('  req.body.image_urls type:', typeof req.body.image_urls);
+    console.log('  req.body.image_urls value:', req.body.image_urls);
+    
+    // Handle both imageUrls (from upload) and image_urls (from manual entry)
+    let image_urls = req.body.imageUrls || req.body.image_urls || [];
+    
+    // Ensure image_urls is always an array
+    if (req.body.imageUrls && !Array.isArray(req.body.imageUrls)) {
+      console.log('❌ imageUrls is not an array:', typeof req.body.imageUrls, req.body.imageUrls);
+      console.log('❌ Converting imageUrls to string:', JSON.stringify(req.body.imageUrls));
+      image_urls = []; // Reset to empty array if invalid
+    }
 
     let finalSku = (sku || '').trim();
     if (!finalSku) {
@@ -203,7 +219,16 @@ router.post('/', verifyAdminToken, validateProductCreate, async (req, res) => {
 router.put('/:id', verifyAdminToken, validateProductUpdate, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const { sku, name, description, price, category, in_stock, image_urls } = req.body;
+    const { sku, name, description, price, category, in_stock } = req.body;
+    
+    // Handle both imageUrls (from upload) and image_urls (from manual entry)
+    let image_urls = req.body.imageUrls || req.body.image_urls;
+    
+    // Ensure image_urls is always an array
+    if (req.body.imageUrls && !Array.isArray(req.body.imageUrls)) {
+      console.log('❌ Update: imageUrls is not an array:', typeof req.body.imageUrls, req.body.imageUrls);
+      image_urls = []; // Reset to empty array if invalid
+    }
     if (isNaN(id)) return res.status(400).json({ success: false, message: 'Invalid product ID' });
     
     // Check if product exists

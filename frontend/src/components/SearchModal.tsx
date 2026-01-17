@@ -28,10 +28,23 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<SearchFilters>({
     category: 'All',
-    priceRange: { min: 0, max: 1000 },
+    priceRange: { min: 0, max: 100000 },
     inStock: false,
     sortBy: 'featured'
   });
+
+  // Prevent body scroll when modal is open
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   const { convertPrice } = useCurrency();
 
   const itemsPerPage = 12;

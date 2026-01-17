@@ -653,7 +653,10 @@
       }
 
       tbody.innerHTML = items.map(p => {
-        const imgUrl = (p.images && p.images.length) ? escapeHtml(p.images[0]) : '';
+        const images = Array.isArray(p.image_urls) 
+          ? p.image_urls 
+          : (p.image_url ? [p.image_url] : []);
+        const imgUrl = (images && images.length) ? escapeHtml(images[0]) : '';
         const price = (p.price != null) ? `₦${Number(p.price).toFixed(2)}` : '-';
         const stock = (p.stock != null) ? p.stock : '-';
         const statusBadge = getStatusBadge(p.status, p.stock);
@@ -663,7 +666,7 @@
             <td class="px-6 py-4">
               <div class="flex items-center gap-3">
                 <div class="w-14 h-14 bg-slate-100 rounded overflow-hidden">
-                  ${ imgUrl ? `<img src="${imgUrl}" class="thumbnail" alt="">` : `<div class="w-full h-full flex items-center justify-center text-slate-400"><i class="fas fa-image"></i></div>` }
+                  ${ imgUrl ? `<img src="${imgUrl}" class="thumbnail" alt="${escapeHtml(p.name || '')}">` : `<div class="w-full h-full flex items-center justify-center text-slate-400"><i class="fas fa-image"></i></div>` }
                 </div>
                 <div>
                   <div class="font-medium">${escapeHtml(p.name || '')}</div>
@@ -717,18 +720,37 @@
       return str.replace(/[&<>\"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c]));
     }
 
+    // Reset form function
+    function resetForm() {
+      const form = document.getElementById('product-form');
+      if (form) {
+        form.reset();
+        // Clear any existing images preview
+        const imagePreview = document.getElementById('image-preview');
+        if (imagePreview) {
+          imagePreview.innerHTML = '';
+        }
+      }
+    }
+
     // ---------- Save (POST/PUT) with FormData to support multiple images ----------
     async function saveProductToBackend(values, files = []) {
       try {
         // 🆕 ADD THE IMAGE UPLOAD CODE HERE (before the existing fetch)
         try { localStorage.removeItem('adminSession'); } catch {}
         const session = sessionStorage.getItem('adminSession');
+        console.log('🔍 Session from storage:', session);
+        
         if (!session) {
+          console.log('❌ No session found, redirecting to login');
           window.location.href = 'index.html';
           return;
         }
+        
         const sessionData = JSON.parse(session);
         const token = sessionData.token;
+        console.log('🔑 Token from session:', token ? 'Present' : 'Missing');
+        console.log('📧 Session data:', sessionData);
         
         // First, upload images if any
         let imageUrls = [];

@@ -20,11 +20,23 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       <div className="group relative bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300">
         {/* Product Image */}
         <div className="relative aspect-[3/4] overflow-hidden bg-gray-50">
-          <img
-            src={product.images[0]}
-            alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
+          {product.images && product.images.length > 0 ? (
+            <img
+              src={product.images[0]}
+              alt={product.name}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              onError={(e) => {
+                e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="400" viewBox="0 0 300 400"%3E%3Crect width="300" height="400" fill="%23f3f4f6"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%236b7280" font-family="sans-serif" font-size="14"%3ENo Image%3C/text%3E%3C/svg%3E';
+              }}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gray-100">
+              <div className="text-center">
+                <div className="text-gray-400 text-4xl mb-2">📷</div>
+                <p className="text-gray-500 text-sm">No Image</p>
+              </div>
+            </div>
+          )}
           
           {/* Badges */}
           <div className="absolute top-4 left-4 flex flex-col gap-2">

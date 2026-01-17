@@ -8,9 +8,8 @@ const rateLimit = require('express-rate-limit');
 const xss = require('xss-clean');
 const mongoSanitize = require('express-mongo-sanitize');
 
-// Database selection based on environment
-const isVercel = process.env.NODE_ENV === 'production' && process.env.VERCEL;
-const Database = isVercel ? require('./database-postgres') : require('./database');
+// Database selection - always use PostgreSQL for uniformity
+const Database = require('./database-postgres');
 
 const { generateJWT, hashPassword, verifyPassword } = require('./utils/auth');
 const { initializeResend, sendOTPEmail, sendLoginLinkEmail, sendWelcomeEmail, sendEmailVerificationEmail, generateOTP } = require('./services/email');
@@ -289,18 +288,26 @@ app.post('/api/auth/request-otp', async (req, res) => {
             return res.status(400).json({ success: false, message: 'Valid email is required' });
         }
 
+        const emailLower = email.toLowerCase();
+
+        // Check if user exists in database
+        const existingUser = await Database.getUserByEmail(emailLower);
+        if (!existingUser) {
+            return res.status(404).json({ success: false, message: 'No account found with this email. Please sign up first.' });
+        }
+
         const otpCode = generateOTP(); // Fixed: Use imported function
         const expiresAt = new Date(Date.now() + (OTP_EXPIRY_MINUTES * 60 * 1000));
 
-        await Database.createOTP(email, otpCode, expiresAt);
+        await Database.createOTP(emailLower, otpCode, expiresAt);
 
-        const emailSent = await sendOTPEmail(email, otpCode); // Fixed: Use imported function
+        const emailSent = await sendOTPEmail(emailLower, otpCode); // Fixed: Use imported function
         
         if (!emailSent) {
             throw new Error('Failed to send OTP email');
         }
 
-        console.log(`📧 OTP sent to ${email} (expires in ${OTP_EXPIRY_MINUTES} minutes)`);
+        console.log(`📧 OTP sent to ${emailLower} (expires in ${OTP_EXPIRY_MINUTES} minutes)`);
 
         res.json({
             success: true,
@@ -347,14 +354,9 @@ app.post('/api/auth/verify-otp', async (req, res) => {
 
         await Database.deleteOTP(emailLower);
 
-        let user = await Database.getUserByEmail(emailLower);
+        const user = await Database.getUserByEmail(emailLower);
         if (!user) {
-            user = await Database.createUser({
-                email: emailLower,
-                first_name: 'User',
-                last_name: '',
-                verified: true
-            });
+            return res.status(404).json({ success: false, message: 'User not found. Please sign up first.' });
         }
 
         const token = generateJWT({

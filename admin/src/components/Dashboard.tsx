@@ -88,7 +88,12 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 
   const handleLogout = async () => {
     try {
-      await fetch('/api/admin/logout', {
+      // Use direct API URL for production, proxy for development
+      const apiUrl = process.env.NODE_ENV === 'production' 
+        ? '/api/admin/auth/logout' 
+        : '/api/admin/auth/logout';
+        
+      await fetch(apiUrl, {
         method: 'POST',
         credentials: 'include',
       });
@@ -232,7 +237,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
                 </div>
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-                  <p className="text-2xl font-bold text-gray-900">${stats.totalRevenue.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-gray-900">₦{stats.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                 </div>
               </div>
             </div>
@@ -300,7 +305,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
                           <span className="font-medium text-gray-900">#{order.id}</span>
                         </td>
                         <td className="py-3 px-4 text-gray-600">{order.customer_email}</td>
-                        <td className="py-3 px-4 font-medium text-gray-900">${order.total}</td>
+                        <td className="py-3 px-4 font-medium text-gray-900">₦{order.total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                         <td className="py-3 px-4">
                           <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                             order.status === 'delivered' ? 'bg-green-100 text-green-800' :

@@ -1,0 +1,55 @@
+services:
+  # Backend API Service
+  - type: web
+    name: divas-kloset-api
+    envVars:
+      NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      SMTP_FROM: ${SMTP_FROM}
+    buildCommand: npm start
+    startCommand: npm start
+    healthCheckPath: /health
+
+  # Admin Panel Service
+  - type: web
+    name: divas-kloset-admin
+    envVars:
+      NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      SMTP_FROM: ${SMTP_FROM}
+    buildCommand: cd admin && npm run build
+    startCommand: NODE_ENV=production vite
+    healthCheckPath: /health
+
+  # Frontend Service (optional - can be deployed separately)
+  # - type: web
+  #   name: divas-kloset-frontend
+  #   envVars:
+  #     NODE_ENV: production
+  #   buildCommand: cd frontend && npm install && npm run build
+  #   startCommand: NODE_ENV=production vite preview
+  startCommand: npm start
+  
+  # Health check path (optional)
+  healthCheckPath: /health
+
+# Version (optional)
+version: "1.0.0"

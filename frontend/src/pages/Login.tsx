@@ -37,7 +37,11 @@ const Login: React.FC = () => {
         setIsEmailSent(true);
         setShowOtpInput(true);
       } else {
-        setError(data.message || 'Failed to send OTP. Please try again.');
+        if (data.message && data.message.includes('No account found')) {
+          setError('No account found with this email. <a href="#/signup" class="text-[#722F37] hover:underline">Sign up here</a>');
+        } else {
+          setError(data.message || 'Failed to send OTP. Please try again.');
+        }
       }
     } catch (err) {
       setError('Failed to send OTP. Please try again.');
@@ -106,7 +110,10 @@ const Login: React.FC = () => {
 
           {error && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-              <p className="text-sm text-red-600">{error}</p>
+              <p 
+                className="text-sm text-red-600" 
+                dangerouslySetInnerHTML={{ __html: error }}
+              />
             </div>
           )}
 

@@ -19,29 +19,29 @@ const CURRENCY_KEY = 'dk_currency';
 const FX_CACHE_KEY = 'dk_fx_rates_usd_v1';
 const FX_TTL_MS = 12 * 60 * 60 * 1000; // 12 hours
 
-// Fallback rates (same as old client)
+// Fallback rates (updated with realistic exchange rates)
 const FALLBACK_RATES: Record<string, number> = {
   USD: 1,
-  EUR: 0.85,
-  GBP: 0.73,
-  JPY: 110.0,
-  NGN: 1550.0,
-  AUD: 1.35,
-  CAD: 1.25,
-  CNY: 6.45,
-  INR: 74.5
+  EUR: 0.92,
+  GBP: 0.79,
+  JPY: 157.5,
+  NGN: 1650.0,
+  AUD: 1.52,
+  CAD: 1.36,
+  CNY: 7.24,
+  INR: 83.1
 };
 
 const DEFAULT_CURRENCIES: Currency[] = [
   { code: 'USD', name: 'US Dollar', symbol: '$', rate: 1 },
-  { code: 'EUR', name: 'Euro', symbol: '€', rate: 0.85 },
-  { code: 'GBP', name: 'British Pound', symbol: '£', rate: 0.73 },
-  { code: 'JPY', name: 'Japanese Yen', symbol: '¥', rate: 110.0 },
-  { code: 'NGN', name: 'Nigerian Naira', symbol: '₦', rate: 1550.0 },
-  { code: 'AUD', name: 'Australian Dollar', symbol: 'A$', rate: 1.35 },
-  { code: 'CAD', name: 'Canadian Dollar', symbol: 'C$', rate: 1.25 },
-  { code: 'CNY', name: 'Chinese Yuan', symbol: '¥', rate: 6.45 },
-  { code: 'INR', name: 'Indian Rupee', symbol: '₹', rate: 74.5 }
+  { code: 'EUR', name: 'Euro', symbol: '€', rate: 0.92 },
+  { code: 'GBP', name: 'British Pound', symbol: '£', rate: 0.79 },
+  { code: 'JPY', name: 'Japanese Yen', symbol: '¥', rate: 157.5 },
+  { code: 'NGN', name: 'Nigerian Naira', symbol: '₦', rate: 1650.0 },
+  { code: 'AUD', name: 'Australian Dollar', symbol: 'A$', rate: 1.52 },
+  { code: 'CAD', name: 'Canadian Dollar', symbol: 'C$', rate: 1.36 },
+  { code: 'CNY', name: 'Chinese Yuan', symbol: '¥', rate: 7.24 },
+  { code: 'INR', name: 'Indian Rupee', symbol: '₹', rate: 83.1 }
 ];
 
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
@@ -59,7 +59,7 @@ interface CurrencyProviderProps {
 }
 
 export const CurrencyProvider: React.FC<CurrencyProviderProps> = ({ children }) => {
-  const [currentCurrency, setCurrentCurrency] = useState<Currency>(DEFAULT_CURRENCIES[0]); // Default to USD
+  const [currentCurrency, setCurrentCurrency] = useState<Currency>(DEFAULT_CURRENCIES[4]); // Default to NGN (Naira)
   const [currencies, setCurrencies] = useState<Currency[]>(DEFAULT_CURRENCIES);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -157,18 +157,19 @@ export const CurrencyProvider: React.FC<CurrencyProviderProps> = ({ children }) 
   }, [currentCurrency.code]);
 
   const convertPrice = (price: number): string => {
-    if (isLoading) return `$${price.toFixed(2)}`;
+    if (isLoading) return `₦${price.toFixed(2)}`;
     
-    const convertedPrice = price * currentCurrency.rate;
-    const formattedPrice = convertedPrice.toFixed(2);
-    
-    // Handle different decimal places for different currencies
-    let decimals = 2;
-    if (currentCurrency.code === 'JPY' || currentCurrency.code === 'CNY') {
-      decimals = 0; // No decimals for Yen/Yuan
+    // If price is already in NGN and current currency is NGN, don't convert
+    let convertedPrice = price;
+    if (currentCurrency.code !== 'NGN') {
+      convertedPrice = price * currentCurrency.rate;
     }
     
-    return `${currentCurrency.symbol}${formattedPrice}`;
+    // Handle different decimal places for different currencies
+    const decimals = currentCurrency.code === 'JPY' || currentCurrency.code === 'CNY' ? 0 : 2;
+    const finalPrice = convertedPrice.toFixed(decimals);
+    
+    return `${currentCurrency.symbol}${finalPrice}`;
   };
 
   const setCurrency = (currency: Currency) => {

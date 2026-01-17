@@ -18,7 +18,7 @@ const SettingsComponent: React.FC = () => {
     adminEmail: 'admin@divaskloset.com',
     emailNotifications: true,
     maintenanceMode: false,
-    currency: 'USD',
+    currency: 'NGN',
     timezone: 'UTC',
     backupEnabled: true,
     backupFrequency: 'daily'

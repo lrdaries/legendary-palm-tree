@@ -15,6 +15,18 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product })
   const [selectedSize, setSelectedSize] = useState(product?.sizes?.[0] || 'M');
   const [selectedColor] = useState(product?.colors?.[0] || 'Black');
 
+  // Prevent body scroll when modal is open
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   if (!isOpen || !product) return null;
 
   const handleAddToWishlist = () => {

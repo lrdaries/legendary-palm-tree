@@ -101,17 +101,24 @@ class ProductsService {
                           product.category || 
                           'Uncategorized';
 
+    // Use the images array directly from backend transformation
+    let images: string[] = [];
+    
+    // Backend already provides images array, use it directly
+    if (product.images && Array.isArray(product.images)) {
+      images = product.images.filter((url: string) => url && typeof url === 'string');
+    } else if (product.image_url) {
+      // Fallback for single image_url
+      images = [product.image_url];
+    }
+
     return {
       id: product.id.toString(),
       name: product.name,
       price: product.price || 0,
       category: mappedCategory,
       description: product.description || '',
-      images: product.image_urls && product.image_urls.length > 0 
-        ? (typeof product.image_urls === 'string' ? JSON.parse(product.image_urls) : product.image_urls)
-        : product.image_url 
-          ? [product.image_url] 
-          : ['https://picsum.photos/seed/default/800/1000'],
+      images: images,
       sizes: ['XS', 'S', 'M', 'L', 'XL'], // Default sizes
       colors: ['Black', 'White', 'Navy'], // Default colors
       isNew: false, // Could be determined from created_at

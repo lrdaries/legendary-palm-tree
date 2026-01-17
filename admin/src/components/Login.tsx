@@ -16,7 +16,12 @@ const Login: React.FC = () => {
     setError('');
 
     try {
-      const response = await fetch('/api/admin/login', {
+      // Use direct API URL for production, proxy for development
+      const apiUrl = process.env.NODE_ENV === 'production' 
+        ? '/api/admin/auth/login' 
+        : '/api/admin/auth/login';
+      
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -33,6 +38,7 @@ const Login: React.FC = () => {
         setError(data.message || 'Invalid login credentials');
       }
     } catch (err) {
+      console.error('Login error:', err);
       setError('An unexpected error occurred');
     } finally {
       setLoading(false);

@@ -6,11 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "prod": "NODE_ENV=production node server.js",
-    "vercel-build": "cd frontend && npm install && npm run build",
     "migrate": "node migrate.js",
     "migrate-to-postgres": "node migrate-to-postgres.js",
-    "setup-vercel": "node setup-vercel-env.js",
     "setup-admin": "node scripts/setup-admin.js",
     "pm2": "pm2 start ecosystem.config.js",
     "pm2:stop": "pm2 stop ecosystem.config.js",
