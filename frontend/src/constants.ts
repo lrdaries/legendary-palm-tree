@@ -7,6 +7,40 @@ export const COLORS = {
   accent: '#1A1A1A', // Black
 };
 
+// Store Information
+export const STORE_INFO = {
+  name: "Diva's Kloset",
+  description: "Your destination for international luxury fashion.",
+  tagline: "Elegance Redefined",
+  website: 'https://divaskloset.com',
+  email: 'support@divaskloset.com',
+  phone: '+2347073994915',
+  whatsapp: '+2347073994915',
+  address: {
+    street: 'No. 38, Atekon Drive Marian Road',
+    city: 'Calabar',
+    state: 'Cross River State',
+    country: 'Nigeria'
+  },
+  hours: {
+    weekdays: '9:00 AM - 6:00 PM GMT',
+    saturday: '10:00 AM - 4:00 PM GMT',
+    sunday: 'Closed'
+  },
+  shipping: {
+    freeShippingThreshold: 200,
+    international: true
+  },
+  social: {
+    instagram: '#',
+    facebook: '#',
+    twitter: '#',
+    pinterest: '#'
+  },
+  founded: 2019,
+  currencies: ['USD', 'EUR', 'GBP', 'NGN', 'JPY', 'AUD', 'CAD', 'CNY', 'INR']
+};
+
 export const CATEGORIES = ['All', 'Dresses', 'Accessories', 'Bags', 'Suits', 'Tops', 'Sets', 'Outerwear'];
 
 // Fallback products for development/error cases (no hardcoded images)

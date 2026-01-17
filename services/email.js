@@ -206,6 +206,117 @@ async function sendPasswordResetEmail(email, resetLink, firstName = 'Admin') {
   }
 }
 
+// Send newsletter subscription confirmation email
+async function sendNewsletterConfirmation(email, firstName = 'Subscriber') {
+  try {
+    if (!resend) {
+      console.warn('⚠️ Resend not initialized - email not sent');
+      return { success: false, message: 'Email service not configured' };
+    }
+
+    const result = await resend.emails.send({
+      from: RESEND_FROM_EMAIL,
+      to: email,
+      subject: 'Welcome to Diva\'s Kloset Newsletter!',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2>Welcome to the Diva's Kloset Family, ${firstName}!</h2>
+          <p>Thank you for subscribing to our newsletter. You're now part of our exclusive community!</p>
+          <p>Get ready to receive:</p>
+          <ul>
+            <li>🎉 Exclusive offers and early access to sales</li>
+            <li>✨ New collection announcements</li>
+            <li>👗 Style tips and fashion inspiration</li>
+            <li>🎁 Special subscriber-only discounts</li>
+          </ul>
+          <p>Stay tuned for your first newsletter!</p>
+          <p style="color: #666; font-size: 12px;">You can unsubscribe at any time by clicking the unsubscribe link in our emails.</p>
+        </div>
+      `
+    });
+
+    console.log('✅ Newsletter confirmation sent to', email);
+    return { success: true, messageId: result.id };
+  } catch (err) {
+    console.error('❌ Error sending newsletter confirmation:', err.message);
+    return { success: false, message: err.message };
+  }
+}
+
+// Send contact form notification to store
+async function sendContactNotification(contactData) {
+  try {
+    if (!resend) {
+      console.warn('⚠️ Resend not initialized - email not sent');
+      return { success: false, message: 'Email service not configured' };
+    }
+
+    const { name, email, subject, message } = contactData;
+    
+    const result = await resend.emails.send({
+      from: RESEND_FROM_EMAIL,
+      to: 'support@divaskloset.com', // Store email
+      subject: `New Contact Form Submission: ${subject}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2>New Contact Form Submission</h2>
+          <div style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Subject:</strong> ${subject}</p>
+            <p><strong>Message:</strong></p>
+            <p style="white-space: pre-wrap;">${message}</p>
+          </div>
+          <p><strong>Received:</strong> ${new Date().toLocaleString()}</p>
+          <p>Please respond to this inquiry within 24 hours.</p>
+        </div>
+      `
+    });
+
+    console.log('✅ Contact notification sent to store');
+    return { success: true, messageId: result.id };
+  } catch (err) {
+    console.error('❌ Error sending contact notification:', err.message);
+    return { success: false, message: err.message };
+  }
+}
+
+// Send contact form confirmation to customer
+async function sendContactConfirmation(email, name, subject) {
+  try {
+    if (!resend) {
+      console.warn('⚠️ Resend not initialized - email not sent');
+      return { success: false, message: 'Email service not configured' };
+    }
+
+    const result = await resend.emails.send({
+      from: RESEND_FROM_EMAIL,
+      to: email,
+      subject: 'We received your message - Diva\'s Kloset',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2>Thank you for contacting us, ${name}!</h2>
+          <p>We've received your message regarding: <strong>${subject}</strong></p>
+          <p>Our team will review your inquiry and get back to you within 24 hours.</p>
+          <p>In the meantime, feel free to explore our latest collections:</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="https://divaskloset.com" style="display: inline-block; background-color: #722F37; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+              Shop Now
+            </a>
+          </div>
+          <p style="color: #666; font-size: 12px;">If you didn't contact us, please ignore this email.</p>
+        </div>
+      `
+    });
+
+    console.log('✅ Contact confirmation sent to', email);
+    return { success: true, messageId: result.id };
+  } catch (err) {
+    console.error('❌ Error sending contact confirmation:', err.message);
+    return { success: false, message: err.message };
+  }
+}
+
 module.exports = {
   initializeResend,
   generateOTP,
@@ -214,5 +325,8 @@ module.exports = {
   sendWelcomeEmail,
   sendEmailVerificationEmail,
   sendPasswordResetEmail,
+  sendNewsletterConfirmation,
+  sendContactNotification,
+  sendContactConfirmation,
   resend
 };

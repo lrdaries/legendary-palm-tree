@@ -112,6 +112,28 @@ class PostgresDatabase {
             )
         `;
 
+        const createNewsletterTable = `
+            CREATE TABLE IF NOT EXISTS newsletter_subscribers (
+                id SERIAL PRIMARY KEY,
+                email VARCHAR(255) UNIQUE NOT NULL,
+                subscribed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                status VARCHAR(20) DEFAULT 'active',
+                unsubscribe_token VARCHAR(255) UNIQUE
+            )
+        `;
+
+        const createContactMessagesTable = `
+            CREATE TABLE IF NOT EXISTS contact_messages (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                email VARCHAR(255) NOT NULL,
+                subject VARCHAR(255),
+                message TEXT NOT NULL,
+                status VARCHAR(20) DEFAULT 'new',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `;
+
         try {
             const client = await this.pool.connect();
             
@@ -120,6 +142,8 @@ class PostgresDatabase {
             await client.query(createOrdersTable);
             await client.query(createOTPsTable);
             await client.query(createEmailTokensTable);
+            await client.query(createNewsletterTable);
+            await client.query(createContactMessagesTable);
             
             // Add missing columns if they don't exist
             await this.addMissingColumns(client);
@@ -504,6 +528,58 @@ class PostgresDatabase {
     async countUsers() {
         const result = await this.query('SELECT COUNT(*) as count FROM users');
         return result[0].count;
+    }
+
+    // Newsletter methods
+    async addNewsletterSubscriber(email) {
+        const crypto = require('crypto');
+        const unsubscribeToken = crypto.randomBytes(32).toString('hex');
+        
+        try {
+            const result = await this.run(
+                'INSERT INTO newsletter_subscribers (email, unsubscribe_token) VALUES ($1, $2) ON CONFLICT (email) DO NOTHING',
+                [email, unsubscribeToken]
+            );
+            return { success: true, message: 'Successfully subscribed to newsletter', unsubscribeToken };
+        } catch (error) {
+            if (error.code === '23505') { // Unique violation
+                return { success: false, message: 'Email already subscribed' };
+            }
+            throw error;
+        }
+    }
+
+    async getNewsletterSubscribers(limit = 50, offset = 0) {
+        return await this.query('SELECT * FROM newsletter_subscribers WHERE status = $1 ORDER BY subscribed_at DESC LIMIT $2 OFFSET $3', ['active', limit, offset]);
+    }
+
+    async unsubscribeNewsletter(token) {
+        const result = await this.run(
+            'UPDATE newsletter_subscribers SET status = $1 WHERE unsubscribe_token = $2',
+            ['unsubscribed', token]
+        );
+        return result.changes > 0;
+    }
+
+    // Contact message methods
+    async createContactMessage(messageData) {
+        const { name, email, subject, message } = messageData;
+        const result = await this.run(
+            'INSERT INTO contact_messages (name, email, subject, message) VALUES ($1, $2, $3, $4)',
+            [name, email, subject, message]
+        );
+        return { id: result.id, ...messageData };
+    }
+
+    async getContactMessages(limit = 50, offset = 0) {
+        return await this.query('SELECT * FROM contact_messages ORDER BY created_at DESC LIMIT $1 OFFSET $2', [limit, offset]);
+    }
+
+    async updateContactMessageStatus(id, status) {
+        await this.run(
+            'UPDATE contact_messages SET status = $1 WHERE id = $2',
+            [status, id]
+        );
     }
 
     async close() {

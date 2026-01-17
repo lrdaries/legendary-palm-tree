@@ -17,6 +17,7 @@ import OrderHistory from './pages/OrderHistory';
 import { StoreProvider } from './context/StoreContext';
 import { AuthProvider } from './context/AuthContext';
 import { CurrencyProvider } from './context/CurrencyContext';
+import { ToastProvider } from './context/ToastContext';
 import { MessageCircle } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -58,13 +59,14 @@ const App: React.FC = () => {
   }, [currentPath]);
 
   return (
-    <AuthProvider>
-      <CurrencyProvider>
-        <StoreProvider>
-          <div className="min-h-screen bg-white">
-            <Header 
-              onCartClick={() => setIsCartOpen(true)} 
-            />
+    <ToastProvider>
+      <AuthProvider>
+        <CurrencyProvider>
+          <StoreProvider>
+            <div className="min-h-screen bg-white">
+              <Header 
+                onCartClick={() => setIsCartOpen(true)} 
+              />
               
                 <main className="flex-1">
                   {renderPage()}
@@ -89,8 +91,9 @@ const App: React.FC = () => {
                 </a>
               </div>
             </StoreProvider>
-      </CurrencyProvider>
-    </AuthProvider>
+        </CurrencyProvider>
+      </AuthProvider>
+    </ToastProvider>
   );
 };
 

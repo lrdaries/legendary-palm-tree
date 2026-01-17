@@ -1,7 +1,40 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from 'lucide-react';
+import { STORE_INFO } from '../constants';
+import { useToast } from '../context/ToastContext';
 
 const Footer: React.FC = () => {
+  const [email, setEmail] = useState('');
+  const [isSubscribing, setIsSubscribing] = useState(false);
+  const { addToast } = useToast();
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubscribing(true);
+
+    try {
+      const response = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: email.toLowerCase() }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        addToast('🎉 Successfully subscribed to Diva\'s Club! Check your email for confirmation.', 'success');
+        setEmail('');
+      } else {
+        addToast(data.message || 'Failed to subscribe. Please try again.', 'error');
+      }
+    } catch (error) {
+      addToast('Network error. Please try again.', 'error');
+    } finally {
+      setIsSubscribing(false);
+    }
+  };
   return (
     <footer className="bg-[#1A1A1A] text-white">
       <div className="container mx-auto px-4 md:px-8 py-16">
@@ -15,13 +48,13 @@ const Footer: React.FC = () => {
               Premium fashion designed for the modern woman. Sophisticated, minimalist, and uncompromising in quality.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="text-gray-400 hover:text-white transition">
+              <a href={STORE_INFO.social.instagram} className="text-gray-400 hover:text-white transition">
                 <Facebook className="w-5 h-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition">
+              <a href={STORE_INFO.social.instagram} className="text-gray-400 hover:text-white transition">
                 <Instagram className="w-5 h-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition">
+              <a href={STORE_INFO.social.twitter} className="text-gray-400 hover:text-white transition">
                 <Twitter className="w-5 h-5" />
               </a>
             </div>
@@ -59,15 +92,19 @@ const Footer: React.FC = () => {
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-[#722F37]" />
-                <span className="text-gray-400">hello@divaskloset.com</span>
+                <span className="text-gray-400">{STORE_INFO.email}</span>
               </div>
               <div className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-[#722F37]" />
-                <span className="text-gray-400">+1 (555) 123-4567</span>
+                <span className="text-gray-400">{STORE_INFO.phone}</span>
               </div>
-              <div className="flex items-center gap-3">
-                <MapPin className="w-5 h-5 text-[#722F37]" />
-                <span className="text-gray-400">123 Fashion Ave, NY 10001</span>
+              <div className="flex items-start gap-3">
+                <MapPin className="w-5 h-5 text-[#722F37] mt-1 flex-shrink-0" />
+                <span className="text-gray-400 text-sm">
+                  {STORE_INFO.address.street}<br />
+                  {STORE_INFO.address.city}, {STORE_INFO.address.state}<br />
+                  {STORE_INFO.address.country}
+                </span>
               </div>
             </div>
           </div>
@@ -76,19 +113,24 @@ const Footer: React.FC = () => {
         {/* Newsletter */}
         <div className="border-t border-gray-800 pt-12 mb-12">
           <div className="max-w-2xl mx-auto text-center">
-            <h4 className="text-2xl font-bold mb-4">Stay in Style</h4>
-            <p className="text-gray-400 mb-6">Subscribe to receive exclusive offers, new arrivals, and style inspiration.</p>
-            <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+            <h4 className="text-2xl font-bold mb-4">Join the Diva's Club</h4>
+            <p className="text-gray-400 mb-6">Get exclusive access to new collections and member-only sales</p>
+            
+            <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
               <input
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
+                required
                 className="flex-1 px-6 py-3 bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:border-[#722F37] transition"
               />
               <button
                 type="submit"
-                className="bg-[#722F37] text-white px-8 py-3 font-bold uppercase tracking-wider text-sm hover:bg-opacity-90 transition"
+                disabled={isSubscribing}
+                className="bg-[#722F37] text-white px-8 py-3 font-bold uppercase tracking-wider text-sm hover:bg-opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Subscribe
+                {isSubscribing ? 'Subscribing...' : 'Subscribe'}
               </button>
             </form>
           </div>
@@ -98,7 +140,7 @@ const Footer: React.FC = () => {
         <div className="border-t border-gray-800 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-gray-400 text-sm">
-              © 2024 Divas Kloset. All rights reserved.
+              © {STORE_INFO.founded} {STORE_INFO.name}. All rights reserved.
             </p>
             <div className="flex gap-6 text-sm">
               <a href="#/privacy" className="text-gray-400 hover:text-white transition">Privacy Policy</a>

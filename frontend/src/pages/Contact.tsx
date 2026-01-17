@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, MessageSquare, Clock } from 'lucide-react';
+import { STORE_INFO } from '../constants';
+import { useToast } from '../context/ToastContext';
 
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -9,7 +11,7 @@ const Contact: React.FC = () => {
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitMessage, setSubmitMessage] = useState('');
+  const { addToast } = useToast();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -19,7 +21,6 @@ const Contact: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setSubmitMessage('');
 
     try {
       const response = await fetch('/api/contact', {
@@ -33,13 +34,13 @@ const Contact: React.FC = () => {
       const data = await response.json();
 
       if (data.success) {
-        setSubmitMessage('Message sent successfully! We\'ll get back to you within 24 hours.');
+        addToast('✅ Message sent successfully! We\'ll get back to you within 24 hours.', 'success');
         setFormData({ name: '', email: '', subject: '', message: '' });
       } else {
-        setSubmitMessage(data.message || 'Failed to send message. Please try again.');
+        addToast(data.message || 'Failed to send message. Please try again.', 'error');
       }
     } catch (error) {
-      setSubmitMessage('Network error. Please try again.');
+      addToast('Network error. Please try again.', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -63,16 +64,6 @@ const Contact: React.FC = () => {
             <div className="bg-white rounded-lg shadow-lg p-8">
               <h2 className="text-2xl font-serif text-gray-900 mb-6">Send us a Message</h2>
               
-              {submitMessage && (
-                <div className={`mb-6 p-4 rounded-md ${
-                  submitMessage.includes('successfully') 
-                    ? 'bg-green-50 text-green-800 border-green-200' 
-                    : 'bg-red-50 text-red-800 border-red-200'
-                }`}>
-                  <p className="font-medium">{submitMessage}</p>
-                </div>
-              )}
-
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
@@ -158,7 +149,7 @@ const Contact: React.FC = () => {
                     <Mail className="h-6 w-6 text-[#722F37] flex-shrink-0 mt-1" />
                     <div>
                       <h3 className="text-lg font-medium text-gray-900">Email</h3>
-                      <p className="text-gray-600">support@divaskloset.com</p>
+                      <p className="text-gray-600">{STORE_INFO.email}</p>
                     </div>
                   </div>
 
@@ -166,8 +157,8 @@ const Contact: React.FC = () => {
                     <Phone className="h-6 w-6 text-[#722F37] flex-shrink-0 mt-1" />
                     <div>
                       <h3 className="text-lg font-medium text-gray-900">Phone</h3>
-                      <p className="text-gray-600">+234 707 3994 915</p>
-                      <p className="text-sm text-gray-500">Mon-Fri: 9am-6pm WAT</p>
+                      <p className="text-gray-600">{STORE_INFO.phone}</p>
+                      <p className="text-sm text-gray-500">Mon-Fri: {STORE_INFO.hours.weekdays}</p>
                     </div>
                   </div>
 
@@ -175,7 +166,11 @@ const Contact: React.FC = () => {
                     <MapPin className="h-6 w-6 text-[#722F37] flex-shrink-0 mt-1" />
                     <div>
                       <h3 className="text-lg font-medium text-gray-900">Office</h3>
-                      <p className="text-gray-600">123 Fashion Avenue, Lagos, Nigeria</p>
+                      <p className="text-gray-600">
+                        {STORE_INFO.address.street}<br />
+                        {STORE_INFO.address.city}, {STORE_INFO.address.state}<br />
+                        {STORE_INFO.address.country}
+                      </p>
                       <p className="text-sm text-gray-500">Open for walk-ins: Mon-Fri 10am-5pm</p>
                     </div>
                   </div>
@@ -185,9 +180,9 @@ const Contact: React.FC = () => {
                     <div>
                       <h3 className="text-lg font-medium text-gray-900">Business Hours</h3>
                       <div className="text-gray-600 space-y-1">
-                        <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
-                        <p>Saturday: 10:00 AM - 5:00 PM</p>
-                        <p>Sunday: Closed</p>
+                        <p>Monday - Friday: {STORE_INFO.hours.weekdays}</p>
+                        <p>Saturday: {STORE_INFO.hours.saturday}</p>
+                        <p>Sunday: {STORE_INFO.hours.sunday}</p>
                       </div>
                     </div>
                   </div>

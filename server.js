@@ -12,7 +12,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const Database = require('./database-postgres');
 
 const { generateJWT, hashPassword, verifyPassword } = require('./utils/auth');
-const { initializeResend, sendOTPEmail, sendLoginLinkEmail, sendWelcomeEmail, sendEmailVerificationEmail, generateOTP } = require('./services/email');
+const { initializeResend, sendOTPEmail, sendLoginLinkEmail, sendWelcomeEmail, sendEmailVerificationEmail, generateOTP, sendNewsletterConfirmation, sendContactNotification, sendContactConfirmation } = require('./services/email');
 const path = require('path');
 const winston = require('winston');
 const crypto = require('crypto'); // Added for token generation
@@ -490,6 +490,92 @@ app.get('/api/auth/verify-email', async (req, res) => {
         });
     } catch (error) {
         console.error('Error verifying email:', error);
+        res.status(500).json({ success: false, message: error.message || 'Internal server error' });
+    }
+});
+
+// Newsletter subscription endpoint
+app.post('/api/newsletter', async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            return res.status(400).json({ success: false, message: 'Valid email is required' });
+        }
+
+        const result = await Database.addNewsletterSubscriber(email.toLowerCase());
+        
+        if (result.success) {
+            console.log(`📧 Newsletter subscription: ${email}`);
+            
+            // Send confirmation email (non-blocking)
+            try {
+                await sendNewsletterConfirmation(email, email.split('@')[0]);
+            } catch (emailError) {
+                console.error('Failed to send newsletter confirmation:', emailError);
+            }
+            
+            res.json({
+                success: true,
+                message: 'Successfully subscribed to newsletter!'
+            });
+        } else {
+            res.status(400).json({
+                success: false,
+                message: result.message
+            });
+        }
+    } catch (error) {
+        console.error('Error subscribing to newsletter:', error);
+        res.status(500).json({ success: false, message: error.message || 'Internal server error' });
+    }
+});
+
+// Contact form endpoint
+app.post('/api/contact', async (req, res) => {
+    try {
+        const { name, email, subject, message } = req.body;
+
+        // Validation
+        if (!name || !name.trim()) {
+            return res.status(400).json({ success: false, message: 'Name is required' });
+        }
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            return res.status(400).json({ success: false, message: 'Valid email is required' });
+        }
+        if (!message || !message.trim()) {
+            return res.status(400).json({ success: false, message: 'Message is required' });
+        }
+
+        const contactData = {
+            name: name.trim(),
+            email: email.toLowerCase(),
+            subject: subject?.trim() || 'Contact Form Submission',
+            message: message.trim()
+        };
+
+        const result = await Database.createContactMessage(contactData);
+        
+        console.log(`📨 Contact message from: ${contactData.email} - ${contactData.subject}`);
+        
+        // Send emails (non-blocking)
+        try {
+            // Send notification to store
+            await sendContactNotification(contactData);
+            
+            // Send confirmation to customer
+            await sendContactConfirmation(contactData.email, contactData.name, contactData.subject);
+        } catch (emailError) {
+            console.error('Failed to send contact emails:', emailError);
+        }
+        
+        res.json({
+            success: true,
+            message: 'Message sent successfully! We\'ll get back to you within 24 hours.',
+            data: { id: result.id }
+        });
+    } catch (error) {
+        console.error('Error sending contact message:', error);
         res.status(500).json({ success: false, message: error.message || 'Internal server error' });
     }
 });
