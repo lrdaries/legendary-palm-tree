@@ -192,6 +192,11 @@ class PostgresDatabase {
         return products.map(product => this.transformProductData(product));
     }
 
+    async countProducts() {
+        const result = await this.query('SELECT COUNT(*) as count FROM products');
+        return result[0].count;
+    }
+
     async getProductById(id) {
         const products = await this.query('SELECT * FROM products WHERE id = $1', [id]);
         const product = products.length > 0 ? products[0] : null;
@@ -266,6 +271,19 @@ class PostgresDatabase {
 
     async deleteProduct(id) {
         await this.run('DELETE FROM products WHERE id = $1', [id]);
+    }
+
+    async skuExists(sku, excludeProductId = null) {
+        let query = 'SELECT id FROM products WHERE sku = $1';
+        let params = [sku];
+        
+        if (excludeProductId) {
+            query += ' AND id != $2';
+            params.push(excludeProductId);
+        }
+        
+        const result = await this.query(query, params);
+        return result.length > 0;
     }
 
     // Order methods

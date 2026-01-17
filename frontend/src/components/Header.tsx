@@ -43,6 +43,7 @@ const Header: React.FC<HeaderProps> = ({ onCartClick }) => {
   }, [isMenuOpen]);
 
   return (
+    <>
     <header className="sticky top-0 z-50 bg-[#FAF9F6]/90 backdrop-blur-md border-b border-gray-100">
       <div className="container mx-auto px-4 md:px-8 py-4">
         <div className="flex items-center justify-between">
@@ -116,152 +117,157 @@ const Header: React.FC<HeaderProps> = ({ onCartClick }) => {
           </div>
         </div>
       </div>
-
-      {/* Mobile Menu */}
-      {isMenuOpen && (
-        <>
-          {/* Backdrop */}
-          <div 
-            className="fixed inset-0 z-[9999] bg-black/50 lg:hidden"
-            onClick={() => setIsMenuOpen(false)}
-          />
-          {/* Menu Content */}
-          <div className="fixed inset-0 z-[10000] bg-white lg:hidden flex flex-col p-8 overflow-y-auto">
-            <div className="flex justify-between items-center mb-8">
-              <h2 className="text-2xl font-bold">Menu</h2>
-              <button 
-                onClick={() => setIsMenuOpen(false)} 
-                className="p-2 hover:bg-gray-100 rounded-full transition"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-            <nav className="flex flex-col gap-6 text-lg font-medium">
-              <a 
-                href="#" 
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsMenuOpen(false);
-                  window.location.href = '#/';
-                }}
-                className="hover:text-[#722F37] transition py-2"
-              >
-                Home
-              </a>
-              <a 
-                href="#/shop" 
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsMenuOpen(false);
-                  window.location.href = '#/shop';
-                }}
-                className="hover:text-[#722F37] transition py-2"
-              >
-                Shop All
-              </a>
-              <a 
-                href="#/shop?cat=Dresses" 
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsMenuOpen(false);
-                  window.location.href = '#/shop?cat=Dresses';
-                }}
-                className="hover:text-[#722F37] transition py-2"
-              >
-                Dresses
-              </a>
-              <a 
-                href="#/shop?cat=Sets" 
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsMenuOpen(false);
-                  window.location.href = '#/shop?cat=Sets';
-                }}
-                className="hover:text-[#722F37] transition py-2"
-              >
-                Sets
-              </a>
-              <a 
-                href="#/about" 
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsMenuOpen(false);
-                  window.location.href = '#/about';
-                }}
-                className="hover:text-[#722F37] transition py-2"
-              >
-                Our Story
-              </a>
-              <a 
-                href="#/contact" 
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsMenuOpen(false);
-                  window.location.href = '#/contact';
-                }}
-                className="hover:text-[#722F37] transition py-2"
-              >
-                Contact Us
-              </a>
-              <a 
-                href="#/shipping" 
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsMenuOpen(false);
-                  window.location.href = '#/shipping';
-                }}
-                className="hover:text-[#722F37] transition py-2"
-              >
-                Shipping
-              </a>
-              <a 
-                href="#/returns" 
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsMenuOpen(false);
-                  window.location.href = '#/returns';
-                }}
-                className="hover:text-[#722F37] transition py-2"
-              >
-                Returns
-              </a>
-              <a 
-                href="#/order-tracking" 
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsMenuOpen(false);
-                  window.location.href = '#/order-tracking';
-                }}
-                className="hover:text-[#722F37] transition py-2"
-              >
-                Order Tracking
-              </a>
-              <a 
-                href="#/login" 
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsMenuOpen(false);
-                  window.location.href = '#/login';
-                }}
-                className="hover:text-[#722F37] transition py-2"
-              >
-                Sign In
-              </a>
-            </nav>
-            
-            {/* Currency Selector for Mobile */}
-            <div className="mt-8 pt-8 border-t border-gray-200">
-              <CurrencySelector />
-            </div>
+      </header>
+    
+    {/* Mobile Menu - moved outside header */}
+    {isMenuOpen && (
+      <>
+        {/* Backdrop */}
+        <div 
+          className="fixed inset-0 z-[9999] bg-black/50 lg:hidden"
+          onClick={() => setIsMenuOpen(false)}
+        />
+        {/* Menu Content */}
+        <div className="fixed inset-0 z-[10000] bg-white lg:hidden flex flex-col p-8 overflow-y-auto">
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-2xl font-bold">Menu</h2>
+            <button 
+              onClick={() => setIsMenuOpen(false)} 
+              className="p-2 hover:bg-gray-100 rounded-full transition"
+            >
+              <X className="w-6 h-6" />
+            </button>
           </div>
-        </>
-      )}
-      
-      <UserAccountModal 
-        isOpen={isUserAccountOpen} 
-        onClose={() => setIsUserAccountOpen(false)} 
-      />
-    </header>
+          <nav className="flex flex-col gap-6 text-lg font-medium">
+            <a 
+              href="#" 
+              onClick={(e) => {
+                e.preventDefault();
+                setIsMenuOpen(false);
+                window.location.href = '#/';
+              }}
+              className="hover:text-[#722F37] transition py-2"
+            >
+              Home
+            </a>
+            <a 
+              href="#/shop" 
+              onClick={(e) => {
+                e.preventDefault();
+                setIsMenuOpen(false);
+                window.location.href = '#/shop';
+              }}
+              className="hover:text-[#722F37] transition py-2"
+            >
+              Shop All
+            </a>
+            <a 
+              href="#/shop?cat=Dresses" 
+              onClick={(e) => {
+                e.preventDefault();
+                setIsMenuOpen(false);
+                window.location.href = '#/shop?cat=Dresses';
+              }}
+              className="hover:text-[#722F37] transition py-2"
+            >
+              Dresses
+            </a>
+            <a 
+              href="#/shop?cat=Sets" 
+              onClick={(e) => {
+                e.preventDefault();
+                setIsMenuOpen(false);
+                window.location.href = '#/shop?cat=Sets';
+              }}
+              className="hover:text-[#722F37] transition py-2"
+            >
+              Sets
+            </a>
+            <a 
+              href="#/about" 
+              onClick={(e) => {
+                e.preventDefault();
+                setIsMenuOpen(false);
+                window.location.href = '#/about';
+              }}
+              className="hover:text-[#722F37] transition py-2"
+            >
+              Our Story
+            </a>
+            <a 
+              href="#/contact" 
+              onClick={(e) => {
+                e.preventDefault();
+                setIsMenuOpen(false);
+                window.location.href = '#/contact';
+              }}
+              className="hover:text-[#722F37] transition py-2"
+            >
+              Contact Us
+            </a>
+            <a 
+              href="#/shipping" 
+              onClick={(e) => {
+                e.preventDefault();
+                setIsMenuOpen(false);
+                window.location.href = '#/shipping';
+              }}
+              className="hover:text-[#722F37] transition py-2"
+            >
+              Shipping
+            </a>
+            <a 
+              href="#/returns" 
+              onClick={(e) => {
+                e.preventDefault();
+                setIsMenuOpen(false);
+                window.location.href = '#/returns';
+              }}
+              className="hover:text-[#722F37] transition py-2"
+            >
+              Returns
+            </a>
+            <a 
+              href="#/order-tracking" 
+              onClick={(e) => {
+                e.preventDefault();
+                setIsMenuOpen(false);
+                window.location.href = '#/order-tracking';
+              }}
+              className="hover:text-[#722F37] transition py-2"
+            >
+              Order Tracking
+            </a>
+            <a 
+              href="#/login" 
+              onClick={(e) => {
+                e.preventDefault();
+                setIsMenuOpen(false);
+                window.location.href = '#/login';
+              }}
+              className="hover:text-[#722F37] transition py-2"
+            >
+              Sign In
+            </a>
+          </nav>
+          
+          {/* Currency Selector for Mobile */}
+          <div className="mt-8 pt-8 border-t border-gray-200">
+            <CurrencySelector />
+          </div>
+        </div>
+      </>
+    )}
+    
+    <SearchModal 
+      isOpen={isSearchOpen} 
+      onClose={() => setIsSearchOpen(false)} 
+    />
+    <UserAccountModal 
+      isOpen={isUserAccountOpen} 
+      onClose={() => setIsUserAccountOpen(false)} 
+    />
+    </>
   );
 };
 

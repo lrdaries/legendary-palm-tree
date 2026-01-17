@@ -157,12 +157,15 @@ export const CurrencyProvider: React.FC<CurrencyProviderProps> = ({ children }) 
   }, [currentCurrency.code]);
 
   const convertPrice = (price: number): string => {
-    if (isLoading) return `₦${price.toFixed(2)}`;
+    // Ensure price is a valid number
+    const numericPrice = typeof price === 'number' && !isNaN(price) ? price : 0;
+    
+    if (isLoading) return `₦${numericPrice.toFixed(2)}`;
     
     // If price is already in NGN and current currency is NGN, don't convert
-    let convertedPrice = price;
+    let convertedPrice = numericPrice;
     if (currentCurrency.code !== 'NGN') {
-      convertedPrice = price * currentCurrency.rate;
+      convertedPrice = numericPrice * currentCurrency.rate;
     }
     
     // Handle different decimal places for different currencies

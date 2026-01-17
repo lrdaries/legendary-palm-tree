@@ -24,6 +24,25 @@ export interface SearchResponse {
   success: boolean;
   data: Product[];
   query: string;
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasMore: boolean;
+  };
+  suggestions?: string[];
+  filters?: {
+    category: string;
+    minPrice: number;
+    maxPrice: number | null;
+    sortBy: string;
+  };
+}
+
+export interface SearchSuggestionsResponse {
+  success: boolean;
+  suggestions: string[];
 }
 
 class ProductsService {
@@ -69,8 +88,25 @@ class ProductsService {
     return response.json();
   }
 
-  static async searchProducts(query: string): Promise<SearchResponse> {
+  static async searchProducts(
+    query: string, 
+    options: {
+      category?: string;
+      minPrice?: number;
+      maxPrice?: number;
+      sortBy?: string;
+      page?: number;
+      limit?: number;
+    } = {}
+  ): Promise<SearchResponse> {
     const params = new URLSearchParams({ q: query });
+    
+    if (options.category) params.append('category', options.category);
+    if (options.minPrice) params.append('minPrice', options.minPrice.toString());
+    if (options.maxPrice) params.append('maxPrice', options.maxPrice.toString());
+    if (options.sortBy) params.append('sortBy', options.sortBy);
+    if (options.page) params.append('page', options.page.toString());
+    if (options.limit) params.append('limit', options.limit.toString());
 
     const response = await fetch(`${API_BASE_URL}/api/products/search?${params}`, {
       headers: this.getHeaders(),
@@ -78,6 +114,20 @@ class ProductsService {
 
     if (!response.ok) {
       throw new Error(`Failed to search products: ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+
+  static async getSearchSuggestions(query: string): Promise<SearchSuggestionsResponse> {
+    const params = new URLSearchParams({ q: query });
+
+    const response = await fetch(`${API_BASE_URL}/api/products/search/suggestions?${params}`, {
+      headers: this.getHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to get search suggestions: ${response.statusText}`);
     }
 
     return response.json();

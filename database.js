@@ -1,1 +1,1 @@
-module.exports = require('./database-sqlite');
+module.exports = require('./database-postgres');

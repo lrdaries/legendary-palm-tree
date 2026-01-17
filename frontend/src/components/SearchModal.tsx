@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, X, Filter, ChevronDown } from 'lucide-react';
 import { useCurrency } from '../context/CurrencyContext';
-import SearchService from '../services/search';
+import ProductsService from '../services/products';
 import { CATEGORIES } from '../constants';
 
 interface SearchModalProps {
@@ -25,13 +25,25 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
   const [isSearching, setIsSearching] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalResults, setTotalResults] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [filters, setFilters] = useState<SearchFilters>({
     category: 'All',
     priceRange: { min: 0, max: 100000 },
     inStock: false,
-    sortBy: 'featured'
+    sortBy: 'relevance'
   });
+
+  // Load search history from localStorage
+  React.useEffect(() => {
+    const history = localStorage.getItem('searchHistory');
+    if (history) {
+      setSearchHistory(JSON.parse(history));
+    }
+  }, []);
 
   // Prevent body scroll when modal is open
   React.useEffect(() => {
@@ -45,6 +57,45 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
     };
   }, [isOpen]);
 
+  // Get search suggestions
+  const getSuggestions = async (searchQuery: string) => {
+    if (searchQuery.length < 2) {
+      setSuggestions([]);
+      return;
+    }
+
+    try {
+      const response = await ProductsService.getSearchSuggestions(searchQuery);
+      if (response.success) {
+        setSuggestions(response.suggestions);
+      }
+    } catch (error) {
+      console.error('Error getting suggestions:', error);
+    }
+  };
+
+  // Debounced search suggestions
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      if (query.length >= 2) {
+        getSuggestions(query);
+        setShowSuggestions(true);
+      } else {
+        setSuggestions([]);
+        setShowSuggestions(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  // Add to search history
+  const addToSearchHistory = (searchQuery: string) => {
+    const newHistory = [searchQuery, ...searchHistory.filter(h => h !== searchQuery)].slice(0, 5);
+    setSearchHistory(newHistory);
+    localStorage.setItem('searchHistory', JSON.stringify(newHistory));
+  };
+
   const { convertPrice } = useCurrency();
 
   const itemsPerPage = 12;
@@ -54,58 +105,27 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
     
     try {
       setIsSearching(true);
-      const searchResults = await SearchService.searchProducts(query);
+      addToSearchHistory(query.trim());
+      setShowSuggestions(false);
       
-      // Apply filters
-      let filteredResults = searchResults;
+      const searchResponse = await ProductsService.searchProducts(query.trim(), {
+        category: filters.category !== 'All' ? filters.category : undefined,
+        minPrice: filters.priceRange.min,
+        maxPrice: filters.priceRange.max < 100000 ? filters.priceRange.max : undefined,
+        sortBy: filters.sortBy,
+        page: page,
+        limit: itemsPerPage
+      });
       
-      if (filters.category !== 'All') {
-        filteredResults = filteredResults.filter(product => 
-          product.category === filters.category
-        );
+      if (searchResponse.success) {
+        setResults(searchResponse.data);
+        setCurrentPage(searchResponse.pagination?.page || 1);
+        setTotalPages(searchResponse.pagination?.totalPages || 1);
+        setTotalResults(searchResponse.pagination?.total || 0);
       }
-      
-      if (filters.inStock) {
-        filteredResults = filteredResults.filter(product => 
-          product.inStock !== false
-        );
-      }
-      
-      if (filters.priceRange.min > 0 || filters.priceRange.max < 1000) {
-        filteredResults = filteredResults.filter(product => 
-          product.price >= filters.priceRange.min && product.price <= filters.priceRange.max
-        );
-      }
-      
-      // Apply sorting
-      switch (filters.sortBy) {
-        case 'price-low':
-          filteredResults.sort((a, b) => a.price - b.price);
-          break;
-        case 'price-high':
-          filteredResults.sort((a, b) => b.price - a.price);
-          break;
-        case 'name':
-          filteredResults.sort((a, b) => a.name.localeCompare(b.name));
-          break;
-        case 'rating':
-          filteredResults.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-          break;
-        default: // featured
-          filteredResults.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
-          break;
-      }
-      
-      // Pagination
-      const startIndex = (page - 1) * itemsPerPage;
-      const endIndex = startIndex + itemsPerPage;
-      const paginatedResults = filteredResults.slice(startIndex, endIndex);
-      
-      setResults(paginatedResults);
-      setTotalPages(Math.ceil(filteredResults.length / itemsPerPage));
-      setCurrentPage(page);
     } catch (error) {
       console.error('Search error:', error);
+      setResults([]);
     } finally {
       setIsSearching(false);
     }
@@ -122,11 +142,16 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
   const handleClearFilters = () => {
     setFilters({
       category: 'All',
-      priceRange: { min: 0, max: 1000 },
+      priceRange: { min: 0, max: 100000 },
       inStock: false,
-      sortBy: 'featured'
+      sortBy: 'relevance'
     });
     setCurrentPage(1);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    handleSearch(page);
   };
 
   useEffect(() => {
@@ -146,6 +171,11 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
     setShowFilters(false);
     handleClearFilters();
     onClose();
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    setQuery(suggestion);
+    setShowSuggestions(false);
   };
 
   if (!isOpen) return null;
@@ -195,6 +225,22 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
                     <Search className="w-4 h-4" />
                   )}
                 </button>
+
+                {/* Search Suggestions Dropdown */}
+                {showSuggestions && suggestions.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+                    {suggestions.map((suggestion, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleSuggestionClick(suggestion)}
+                        className="w-full text-left px-4 py-3 hover:bg-gray-100 transition flex items-center gap-2"
+                      >
+                        <Search className="w-4 h-4 text-gray-400" />
+                        <span>{suggestion}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -293,7 +339,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
         <div className="px-6 pb-2">
           {results.length > 0 && (
             <p className="text-sm text-gray-600">
-              Found {results.length} results for "{query}" 
+              Found {totalResults} results for "{query}" 
               {totalPages > 1 && ` - Page ${currentPage} of ${totalPages}`}
             </p>
           )}
@@ -359,7 +405,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
           <div className="p-6 border-t">
             <div className="flex items-center justify-between">
               <button
-                onClick={() => handleSearch(currentPage - 1)}
+                onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage <= 1}
                 className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition"
               >
@@ -371,7 +417,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
               </span>
               
               <button
-                onClick={() => handleSearch(currentPage + 1)}
+                onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage >= totalPages}
                 className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition"
               >
