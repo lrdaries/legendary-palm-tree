@@ -70,6 +70,7 @@ Thumbs.db
 
 # Archive folder
 _archive/
+archive/
 
 # PM2
 ecosystem.config.js
