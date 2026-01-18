@@ -37,7 +37,7 @@ export const STORE_INFO = {
     twitter: '#',
     pinterest: '#'
   },
-  founded: 2019,
+  founded: 2026,
   currencies: ['USD', 'EUR', 'GBP', 'NGN', 'JPY', 'AUD', 'CAD', 'CNY', 'INR']
 };
 

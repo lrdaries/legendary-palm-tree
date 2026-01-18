@@ -15,6 +15,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "audit": "npm audit && npx snyk test",
     "build-frontend": "cd frontend && npm install && npm run build",
+    "build-ssr": "node scripts/build-ssr.js",
     "dev:frontend": "cd frontend && npm run dev",
     "install-frontend": "cd frontend && npm install",
     "build-frontend-only": "cd frontend && npm run build"

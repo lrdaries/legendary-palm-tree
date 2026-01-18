@@ -83,38 +83,25 @@ const About: React.FC = () => {
         </div>
       </section>
 
-      {/* Founder Story */}
+      {/* Our Story */}
       <section className="py-20 bg-[#FAF9F6]">
         <div className="container mx-auto px-4 md:px-8">
-          <div className="max-w-4xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div>
-                <img 
-                  src="https://images.unsplash.com/photo-1494790108755-2616b612b786?q=80&w=1887&auto=format&fit=crop" 
-                  alt="Founder" 
-                  className="w-full rounded-lg shadow-lg"
-                />
-              </div>
-              
-              <div>
-                <h2 className="text-4xl font-serif mb-6">From the Founder</h2>
-                <p className="text-gray-700 leading-relaxed mb-6">
-                  "Divas Kloset was born from a simple idea: to create beautiful, 
-                  timeless clothing that makes women feel extraordinary. After years in the 
-                  fashion industry, I saw a need for pieces that combined elegance with 
-                  practicality, luxury with accessibility.
-                </p>
-                <p className="text-gray-700 leading-relaxed mb-6">
-                  Every collection tells a story – of craftsmanship, of attention to detail, 
-                  and of the modern woman who deserves to feel beautiful every single day. 
-                  We don't just sell clothes; we create confidence.
-                </p>
-                <p className="text-gray-700 leading-relaxed">
-                  Thank you for being part of our journey. Welcome to the Divas Kloset family.
-                </p>
-                <p className="mt-8 font-medium">— Alexandra Chen, Founder</p>
-              </div>
-            </div>
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-4xl font-serif mb-6">Our Story</h2>
+            <p className="text-gray-700 leading-relaxed mb-6">
+              Divas Kloset was born from a simple idea: to create beautiful, 
+              timeless clothing that makes women feel extraordinary. After years in the 
+              fashion industry, we saw a need for pieces that combined elegance with 
+              practicality, luxury with accessibility.
+            </p>
+            <p className="text-gray-700 leading-relaxed mb-6">
+              Every collection tells a story – of craftsmanship, of attention to detail, 
+              and of the modern woman who deserves to feel beautiful every single day. 
+              We don't just sell clothes; we create confidence.
+            </p>
+            <p className="text-gray-700 leading-relaxed">
+              Thank you for being part of our journey. Welcome to the Divas Kloset family.
+            </p>
           </div>
         </div>
       </section>

@@ -34,9 +34,12 @@ const logger = winston.createLogger({
 const adminAuthRouter = require('./routes/admin-auth');
 const adminRouter = require('./routes/admin');
 const productsRouter = require('./routes/products');
+const sitemapRouter = require('./routes/sitemap');
+const seoRouter = require('./routes/seo');
 
 // Import middleware
 const { verifyAdminToken } = require('./utils/admin-auth');
+const ssrMiddleware = require('./middleware/ssr');
 
 // Initialize Express app
 const app = express();
@@ -62,6 +65,9 @@ app.use('/admin', express.static(path.join(__dirname, 'admin')));
 
 // Serve uploaded files
 app.use('/uploads', express.static('uploads'));
+
+// Serve static files from root directory (for favicons, manifest, etc.)
+app.use(express.static(path.join(__dirname)));
 
 // Server configuration
 const PORT = process.env.PORT || 3000;
@@ -274,6 +280,12 @@ app.use('/api/admin', verifyAdminToken, adminRouter);
 
 // Public products API routes
 app.use('/api/products', productsRouter);
+
+// Sitemap route
+app.use('/', sitemapRouter);
+
+// SEO routes
+app.use('/', seoRouter);
 
 // ============================================
 // PUBLIC USER AUTHENTICATION ROUTES
@@ -610,8 +622,8 @@ app.get('/debug', (req, res) => {
     });
 });
 
-// Handle SPA routing - serve index.html for all other routes
-app.get('*', (req, res) => {
+// Handle SPA routing with SSR for specific routes
+app.get('*', ssrMiddleware, (req, res) => {
     console.log('Catch-all route hit:', req.path);
     // Check if it's an admin route
     if (req.path.startsWith('/admin')) {

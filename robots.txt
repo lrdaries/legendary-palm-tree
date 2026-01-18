@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://divaskloset.com/sitemap.xml
+
+# Block common non-content paths
+Disallow: /admin/
+Disallow: /api/
+Disallow: /uploads/
+Disallow: /_next/
+Disallow: /node_modules/
+
+# Allow specific assets
+Allow: /css/
+Allow: /js/
+Allow: /images/

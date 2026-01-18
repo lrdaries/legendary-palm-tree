@@ -18,11 +18,13 @@ import { StoreProvider } from './context/StoreContext';
 import { AuthProvider } from './context/AuthContext';
 import { CurrencyProvider } from './context/CurrencyContext';
 import { ToastProvider } from './context/ToastContext';
+import { useSSRData } from './hooks/useSSRData';
 import { MessageCircle } from 'lucide-react';
 
 const App: React.FC = () => {
   const [currentPath, setCurrentPath] = useState(window.location.hash || '#');
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const { data: ssrData } = useSSRData();
 
   useEffect(() => {
     const handleHashChange = () => setCurrentPath(window.location.hash || '#');
@@ -34,8 +36,12 @@ const App: React.FC = () => {
   const renderPage = () => {
     const path = currentPath.split('?')[0];
     
-    if (path === '#' || path === '') return <Home />;
-    if (path === '#/shop') return <Shop />;
+    // Pass SSR data to components
+    const homeProps = ssrData?.page === 'home' ? { featuredProducts: ssrData.featuredProducts || [] } : {};
+    const shopProps = ssrData?.page === 'products' ? { products: ssrData.products || [] } : {};
+    
+    if (path === '#' || path === '') return <Home {...(homeProps as any)} />;
+    if (path === '#/shop') return <Shop {...(shopProps as any)} />;
     if (path === '#/about') return <About />;
     if (path === '#/contact') return <Contact />;
     if (path === '#/shipping') return <Shipping />;
@@ -47,10 +53,11 @@ const App: React.FC = () => {
     if (path === '#/signup') return <Signup />;
     if (path.startsWith('#/product/')) {
       const id = path.split('/').pop();
-      return <ProductDetail productId={id || ''} />;
+      const productProps = ssrData?.page === 'product' ? { initialProduct: ssrData.product } : {};
+      return <ProductDetail productId={id || ''} {...(productProps as any)} />;
     }
     
-    return <Home />;
+    return <Home {...(homeProps as any)} />;
   };
 
   // Scroll to top on path change
