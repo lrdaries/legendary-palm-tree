@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Grid, Heart, ShoppingBag } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
-import { getProducts, CATEGORIES } from '../constants';
+import { getProducts } from '../constants';
+import { getFrontendCategories } from '../config/categories';
 import { Product } from '../types';
 
 const Shop: React.FC = () => {
@@ -9,6 +9,7 @@ const Shop: React.FC = () => {
   const [sortBy, setSortBy] = useState('featured');
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const categories = getFrontendCategories();
 
   // Load products from API
   useEffect(() => {
@@ -31,10 +32,10 @@ const Shop: React.FC = () => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.hash.split('?')[1] || '');
     const category = urlParams.get('cat');
-    if (category && CATEGORIES.includes(category)) {
+    if (category && categories.includes(category)) {
       setSelectedCategory(category);
     }
-  }, []);
+  }, [categories]);
 
   return (
     <div className="min-h-screen bg-[#FAF9F6]">
@@ -51,7 +52,7 @@ const Shop: React.FC = () => {
         <div className="flex flex-col lg:flex-row gap-4 mb-8 pb-8 border-b border-gray-200">
           {/* Categories */}
           <div className="flex flex-wrap gap-2">
-            {CATEGORIES.map((category) => (
+            {categories.map((category: string) => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
@@ -91,7 +92,12 @@ const Shop: React.FC = () => {
         </div>
 
         {/* Products Grid */}
-        {filteredProducts.length > 0 ? (
+        {isLoading ? (
+          <div className="text-center py-16">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#722F37]"></div>
+            <p className="mt-4 text-gray-600">Loading products...</p>
+          </div>
+        ) : filteredProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {filteredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
