@@ -1,5 +1,7 @@
 import { Product } from './types';
 import ProductsService from './services/products';
+import { getFrontendCategories, mapBackendToFrontend } from './config/categories';
+import type { CategoryKey } from './config/categories';
 
 export const COLORS = {
   primary: '#722F37', // Deep Wine
@@ -41,7 +43,7 @@ export const STORE_INFO = {
   currencies: ['USD', 'EUR', 'GBP', 'NGN', 'JPY', 'AUD', 'CAD', 'CNY', 'INR']
 };
 
-export const CATEGORIES = ['All', 'Dresses', 'Accessories', 'Bags', 'Suits', 'Tops', 'Sets', 'Outerwear'];
+export const CATEGORIES = getFrontendCategories();
 
 // Fallback products for development/error cases (no hardcoded images)
 export const FALLBACK_PRODUCTS: Product[] = [];
@@ -61,7 +63,7 @@ export async function getProducts(
         id: product.id.toString(),
         name: product.name,
         price: product.price || 0,
-        category: product.category || 'Uncategorized',
+        category: mapBackendToFrontend(product.category as CategoryKey) || 'Uncategorized',
         description: product.description || '',
         images: product.images || [],
         sizes: ['XS', 'S', 'M', 'L', 'XL'], // Default sizes
@@ -95,7 +97,7 @@ export async function getProductById(id: string): Promise<Product | null> {
         id: product.id.toString(),
         name: product.name,
         price: product.price || 0,
-        category: product.category || 'Uncategorized',
+        category: mapBackendToFrontend(product.category as CategoryKey) || 'Uncategorized',
         description: product.description || '',
         images: product.images || [],
         sizes: ['XS', 'S', 'M', 'L', 'XL'],
@@ -127,7 +129,7 @@ export async function searchProducts(query: string): Promise<Product[]> {
         id: product.id.toString(),
         name: product.name,
         price: product.price || 0,
-        category: product.category || 'Uncategorized',
+        category: mapBackendToFrontend(product.category as CategoryKey) || 'Uncategorized',
         description: product.description || '',
         images: product.images || [],
         sizes: ['XS', 'S', 'M', 'L', 'XL'],

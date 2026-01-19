@@ -241,22 +241,37 @@
             <div class="grid grid-cols-2 gap-3">
               <div>
                 <label class="text-sm text-slate-600">Category *</label>
-                <input id="product-category" required class="w-full px-3 py-2 border rounded-lg" />
+                <select id="product-category" required class="w-full px-3 py-2 border rounded-lg">
+                  <option value="">Select a category</option>
+                </select>
               </div>
               <div>
-                <label class="text-sm text-slate-600">Brand</label>
-                <input id="product-brand" class="w-full px-3 py-2 border rounded-lg" />
+                <label class="text-sm text-slate-600">Subcategory</label>
+                <select id="product-subcategory" class="w-full px-3 py-2 border rounded-lg">
+                  <option value="">Select subcategory (optional)</option>
+                </select>
               </div>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
               <div>
+                <label class="text-sm text-slate-600">Brand</label>
+                <input id="product-brand" class="w-full px-3 py-2 border rounded-lg" />
+              </div>
+              <div>
                 <label class="text-sm text-slate-600">SKU *</label>
                 <input id="product-sku" required class="w-full px-3 py-2 border rounded-lg" />
               </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
               <div>
                 <label class="text-sm text-slate-600">Barcode</label>
                 <input id="product-barcode" class="w-full px-3 py-2 border rounded-lg" />
+              </div>
+              <div>
+                <label class="text-sm text-slate-600">Stock Quantity</label>
+                <input id="product-stock" type="number" min="0" class="w-full px-3 py-2 border rounded-lg" />
               </div>
             </div>
 
@@ -413,6 +428,65 @@
     /*
       Modernized dashboard.html (single file)
       - Dashboard & Products sections (toggle)
+    */
+
+    // ---------- Category Management ----------
+    const CATEGORIES = {
+      clothing: { name: 'Clothing', subcategories: ['dresses', 'tops', 'bottoms', 'outerwear', 'sets', 'activewear', 'loungewear', 'intimates'] },
+      shoes: { name: 'Shoes', subcategories: ['heels', 'flats', 'sneakers', 'boots', 'sandals', 'athletic', 'formal'] },
+      accessories: { name: 'Accessories', subcategories: ['belts', 'scarves', 'hats', 'gloves', 'sunglasses', 'watches', 'tech-accessories'] },
+      jewelry: { name: 'Jewelry', subcategories: ['necklaces', 'earrings', 'bracelets', 'rings', 'brooches', 'fine-jewelry', 'costume-jewelry'] },
+      bags: { name: 'Bags', subcategories: ['handbags', 'totes', 'clutches', 'backpacks', 'crossbody', 'luggage', 'wallets'] },
+      beauty: { name: 'Beauty', subcategories: ['makeup', 'skincare', 'fragrance', 'haircare', 'bodycare', 'tools', 'men-grooming'] },
+      home: { name: 'Home & Living', subcategories: ['decor', 'bedding', 'bath', 'kitchen', 'lighting', 'textiles', 'furniture'] },
+      electronics: { name: 'Electronics', subcategories: ['phones', 'tablets', 'laptops', 'audio', 'wearables', 'gaming', 'accessories'] },
+      sports: { name: 'Sports & Fitness', subcategories: ['activewear', 'equipment', 'accessories', 'outdoor', 'yoga', 'running', 'team-sports'] },
+      kids: { name: 'Kids', subcategories: ['boys-clothing', 'girls-clothing', 'baby', 'shoes', 'accessories', 'toys'] },
+      mens: { name: "Men's", subcategories: ['clothing', 'shoes', 'accessories', 'grooming', 'underwear', 'formal-wear'] },
+      sale: { name: 'Sale', subcategories: ['clearance', 'last-chance', 'seasonal-sale', 'flash-sale'] },
+      other: { name: 'Other', subcategories: [] }
+    };
+
+    // Populate category dropdown
+    function populateCategories() {
+      const categorySelect = document.getElementById('product-category');
+      categorySelect.innerHTML = '<option value="">Select a category</option>';
+      
+      Object.entries(CATEGORIES).forEach(([key, info]) => {
+        const option = document.createElement('option');
+        option.value = key;
+        option.textContent = info.name;
+        categorySelect.appendChild(option);
+      });
+    }
+
+    // Update subcategory dropdown based on selected category
+    function updateSubcategories(categoryKey) {
+      const subcategorySelect = document.getElementById('product-subcategory');
+      subcategorySelect.innerHTML = '<option value="">Select subcategory (optional)</option>';
+      
+      if (categoryKey && CATEGORIES[categoryKey]) {
+        const subcategories = CATEGORIES[categoryKey].subcategories;
+        subcategories.forEach(sub => {
+          const option = document.createElement('option');
+          option.value = sub;
+          option.textContent = sub.charAt(0).toUpperCase() + sub.slice(1).replace(/-/g, ' ');
+          subcategorySelect.appendChild(option);
+        });
+      }
+    }
+
+    // Category change handler
+    document.addEventListener('DOMContentLoaded', () => {
+      populateCategories();
+      
+      const categorySelect = document.getElementById('product-category');
+      categorySelect.addEventListener('change', (e) => {
+        updateSubcategories(e.target.value);
+      });
+    });
+
+    /*
       - Products CRUD via Fetch API (supports multipart FormData -> images[])
       - Multiple image preview + edit/delete + existing images handling
       - Fade transitions between sections
@@ -882,6 +956,9 @@
       document.getElementById('product-name').value = p.name || '';
       document.getElementById('product-description').value = p.description || '';
       document.getElementById('product-category').value = p.category || '';
+      // Update subcategories based on selected category
+      updateSubcategories(p.category || '');
+      document.getElementById('product-subcategory').value = p.subcategory || '';
       document.getElementById('product-brand').value = p.brand || '';
       document.getElementById('product-sku').value = p.sku || '';
       document.getElementById('product-barcode').value = p.barcode || '';
@@ -925,6 +1002,9 @@
       document.getElementById('product-name').value = (p.name || '') + ' (Copy)';
       document.getElementById('product-description').value = p.description || '';
       document.getElementById('product-category').value = p.category || '';
+      // Update subcategories based on selected category
+      updateSubcategories(p.category || '');
+      document.getElementById('product-subcategory').value = p.subcategory || '';
       document.getElementById('product-brand').value = p.brand || '';
       document.getElementById('product-sku').value = generateSkuCandidate((p.sku || p.name || '') + ' COPY');
       document.getElementById('product-barcode').value = p.barcode || '';
@@ -1043,6 +1123,7 @@
         name: document.getElementById('product-name').value,
         description: document.getElementById('product-description').value,
         category: document.getElementById('product-category').value,
+        subcategory: document.getElementById('product-subcategory').value,
         brand: document.getElementById('product-brand').value,
         sku: document.getElementById('product-sku').value,
         barcode: document.getElementById('product-barcode').value,

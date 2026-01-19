@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const { getCategoryKeys, isValidCategory, isValidSubcategory } = require('../config/categories');
 
 const productSchema = new mongoose.Schema(
   {
@@ -35,22 +36,30 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: [true, 'A product must belong to a category'],
       enum: {
-        values: [
-          'clothing',
-          'shoes',
-          'accessories',
-          'jewelry',
-          'bags',
-          'beauty',
-          'home',
-          'electronics',
-          'sports',
-          'other'
-        ],
-        message: 'Category is either: clothing, shoes, accessories, jewelry, bags, beauty, home, electronics, sports, other'
+        values: getCategoryKeys(),
+        message: 'Category must be one of the predefined categories'
+      },
+      validate: {
+        validator: function(val) {
+          return isValidCategory(val);
+        },
+        message: 'Invalid category selected'
       }
     },
-    subcategory: String,
+    subcategory: {
+      type: String,
+      validate: {
+        validator: function(val) {
+          // If subcategory is provided, validate it belongs to the category
+          if (val && this.category) {
+            return isValidSubcategory(this.category, val);
+          }
+          // Subcategory is optional
+          return true;
+        },
+        message: 'Subcategory must belong to the selected category'
+      }
+    },
     brand: {
       type: String,
       required: [true, 'A product must have a brand']
