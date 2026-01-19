@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, MessageCircle } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import { Product } from '../types';
 import { useStore } from '../context/StoreContext';
 import { useCurrency } from '../context/CurrencyContext';
@@ -67,7 +67,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           {/* Quick View Button on Hover */}
           <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => {
+                console.log('Opening modal for product:', product);
+                setIsModalOpen(true);
+              }}
               className="w-full bg-white text-black py-2 rounded-md text-sm font-medium hover:bg-gray-100 transition"
             >
               View Details
@@ -81,7 +84,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">
               {product.category}
             </p>
-            <h3 className="font-medium text-gray-900 group-hover:text-[#722F37] transition-colors cursor-pointer" onClick={() => setIsModalOpen(true)}>
+            <h3 className="font-medium text-gray-900 group-hover:text-[#722F37] transition-colors cursor-pointer" onClick={() => {
+                console.log('Product name clicked, opening modal for:', product);
+                setIsModalOpen(true);
+              }}>
               {product.name}
             </h3>
           </div>

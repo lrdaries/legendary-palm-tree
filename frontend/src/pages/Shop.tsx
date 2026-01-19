@@ -9,15 +9,22 @@ const Shop: React.FC = () => {
   const [sortBy, setSortBy] = useState('featured');
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
   const categories = getFrontendCategories();
+  const PRODUCTS_PER_PAGE = 20;
 
   // Load products from API
   useEffect(() => {
     const loadProducts = async () => {
       try {
         setIsLoading(true);
-        const products = await getProducts(50, 0, selectedCategory, sortBy);
+        setCurrentPage(0);
+        setFilteredProducts([]);
+        const products = await getProducts(PRODUCTS_PER_PAGE, 0, selectedCategory, sortBy);
         setFilteredProducts(products);
+        setHasMore(products.length === PRODUCTS_PER_PAGE);
       } catch (error) {
         console.error('Failed to load products:', error);
       } finally {
@@ -27,6 +34,26 @@ const Shop: React.FC = () => {
 
     loadProducts();
   }, [selectedCategory, sortBy]);
+
+  // Load more products
+  const loadMoreProducts = async () => {
+    if (isLoadingMore || !hasMore) return;
+    
+    try {
+      setIsLoadingMore(true);
+      const nextPage = currentPage + 1;
+      const offset = nextPage * PRODUCTS_PER_PAGE;
+      const moreProducts = await getProducts(PRODUCTS_PER_PAGE, offset, selectedCategory, sortBy);
+      
+      setFilteredProducts(prev => [...prev, ...moreProducts]);
+      setCurrentPage(nextPage);
+      setHasMore(moreProducts.length === PRODUCTS_PER_PAGE);
+    } catch (error) {
+      console.error('Failed to load more products:', error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
 
   // Get category from URL
   useEffect(() => {
@@ -88,6 +115,7 @@ const Shop: React.FC = () => {
           <p className="text-gray-600">
             Showing {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'}
             {selectedCategory !== 'All' && ` in ${selectedCategory}`}
+            {filteredProducts.length > 0 && hasMore && ' (showing first ' + filteredProducts.length + ')'}
           </p>
         </div>
 
@@ -98,10 +126,32 @@ const Shop: React.FC = () => {
             <p className="mt-4 text-gray-600">Loading products...</p>
           </div>
         ) : filteredProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+          <div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              {filteredProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+            
+            {/* Load More Button */}
+            {hasMore && (
+              <div className="text-center mt-12">
+                <button
+                  onClick={loadMoreProducts}
+                  disabled={isLoadingMore}
+                  className="px-8 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                >
+                  {isLoadingMore ? (
+                    <div className="flex items-center gap-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      Loading...
+                    </div>
+                  ) : (
+                    'Load More Products'
+                  )}
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <div className="text-center py-16">

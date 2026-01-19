@@ -679,13 +679,16 @@
         if (!res.ok) throw new Error('Network response was not ok ' + res.status);
         const data = await res.json();
         products = (data.data || []).map(p => {
-          const images = Array.isArray(p.image_urls)
-            ? p.image_urls
-            : (p.image_url ? [p.image_url] : []);
+          const images = Array.isArray(p.images)
+            ? p.images
+            : (Array.isArray(p.image_urls) 
+              ? p.image_urls
+              : (p.image_url ? [p.image_url] : []));
 
           return {
             ...p,
             images,
+            image_urls: images, // Keep for backward compatibility
             stock: p.in_stock
           };
         });
@@ -727,8 +730,8 @@
       }
 
       tbody.innerHTML = items.map(p => {
-        const images = Array.isArray(p.image_urls) 
-          ? p.image_urls 
+        const images = Array.isArray(p.images) 
+          ? p.images 
           : (p.image_url ? [p.image_url] : []);
         const imgUrl = (images && images.length) ? escapeHtml(images[0]) : '';
         const price = (p.price != null) ? `₦${Number(p.price).toFixed(2)}` : '-';
@@ -744,7 +747,7 @@
                 </div>
                 <div>
                   <div class="font-medium">${escapeHtml(p.name || '')}</div>
-                  <div class="text-xs text-slate-500">${(p.colors || []).join(', ')}</div>
+                  <div class="text-xs text-slate-500">${Array.isArray(p.colors) ? p.colors.join(', ') : ''}</div>
                 </div>
               </div>
             </td>
@@ -859,13 +862,26 @@
 
         const mergedImages = [...existingImages, ...imageUrls].filter(Boolean);
 
-        // Now create/update the product with the uploaded image URLs
+        // Now create/update product with uploaded image URLs
         const productData = {
           name: values.name,
           description: values.description,
           price: parseFloat(values.price),
           category: values.category,
+          subcategory: values.subcategory,
+          brand: values.brand,
+          sku: values.sku,
+          barcode: values.barcode,
+          tags: values.tags ? values.tags.split(',').map(tag => tag.trim()) : [],
+          comparePrice: values.comparePrice ? parseFloat(values.comparePrice) : null,
           in_stock: parseInt(values.stock) || 0,
+          lowStock: values.lowStock ? parseInt(values.lowStock) : null,
+          sizes: values.sizes ? values.sizes.split(',').map(size => size.trim()) : [],
+          colors: values.colors ? values.colors.split(',').map(color => color.trim()) : [],
+          status: values.status || 'active',
+          metaTitle: values.metaTitle,
+          metaDescription: values.metaDescription,
+          urlSlug: values.urlSlug,
           ...(mergedImages.length ? { image_urls: mergedImages } : {})
         };
 
@@ -962,21 +978,22 @@
       document.getElementById('product-brand').value = p.brand || '';
       document.getElementById('product-sku').value = p.sku || '';
       document.getElementById('product-barcode').value = p.barcode || '';
-      document.getElementById('product-tags').value = (p.tags || []).join(', ');
+      document.getElementById('product-tags').value = Array.isArray(p.tags) ? p.tags.join(', ') : '';
       document.getElementById('product-price').value = p.price != null ? p.price : '';
       document.getElementById('product-compare-price').value = p.comparePrice != null ? p.comparePrice : '';
       document.getElementById('product-stock').value = p.stock != null ? p.stock : '';
       document.getElementById('product-low-stock').value = p.lowStock || '';
-      document.getElementById('product-colors').value = (p.colors || []).join(', ');
+      document.getElementById('product-colors').value = Array.isArray(p.colors) ? p.colors.join(', ') : '';
       document.getElementById('product-status').value = p.status || 'active';
       document.getElementById('meta-title').value = p.metaTitle || '';
       document.getElementById('meta-description').value = p.metaDescription || '';
       document.getElementById('url-slug').value = p.urlSlug || '';
 
-      // Show existing images (backend should return array of URLs in p.images)
+      // Show existing images (backend should return array of URLs in p.images or p.image_urls)
       const existingEl = document.getElementById('existing-images');
       existingEl.innerHTML = '';
-      (p.images || []).forEach((url, idx) => {
+      const existingImages = p.images || p.image_urls || [];
+      existingImages.forEach((url, idx) => {
         const div = document.createElement('div');
         div.className = 'relative group';
         div.style.height = '96px';
@@ -988,7 +1005,7 @@
       });
 
       // store existing images in dataset for backend to parse if needed
-      document.getElementById('product-form').dataset.existingImages = JSON.stringify(p.images || []);
+      document.getElementById('product-form').dataset.existingImages = JSON.stringify(existingImages || []);
 
       openProductModal();
     }
@@ -1008,12 +1025,12 @@
       document.getElementById('product-brand').value = p.brand || '';
       document.getElementById('product-sku').value = generateSkuCandidate((p.sku || p.name || '') + ' COPY');
       document.getElementById('product-barcode').value = p.barcode || '';
-      document.getElementById('product-tags').value = (p.tags || []).join(', ');
+      document.getElementById('product-tags').value = Array.isArray(p.tags) ? p.tags.join(', ') : '';
       document.getElementById('product-price').value = p.price != null ? p.price : '';
       document.getElementById('product-compare-price').value = p.comparePrice != null ? p.comparePrice : '';
       document.getElementById('product-stock').value = p.stock != null ? p.stock : '';
       document.getElementById('product-low-stock').value = p.lowStock || '';
-      document.getElementById('product-colors').value = (p.colors || []).join(', ');
+      document.getElementById('product-colors').value = Array.isArray(p.colors) ? p.colors.join(', ') : '';
       document.getElementById('product-status').value = p.status || 'active';
 
       // clear previews and existing (so user must add images if desired)
@@ -1120,6 +1137,7 @@
     function collectFormValues() {
       const sizes = Array.from(document.querySelectorAll('.size-checkbox:checked')).map(c => c.value);
       return {
+        id: editingProductId, // Add the product ID for editing
         name: document.getElementById('product-name').value,
         description: document.getElementById('product-description').value,
         category: document.getElementById('product-category').value,

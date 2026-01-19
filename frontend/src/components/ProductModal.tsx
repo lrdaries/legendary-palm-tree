@@ -27,7 +27,10 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product })
     };
   }, [isOpen]);
 
-  if (!isOpen || !product) return null;
+  if (!isOpen || !product) {
+    console.log('ProductModal not rendering:', { isOpen, product });
+    return null;
+  }
 
   const handleAddToWishlist = () => {
     toggleWishlist(product.id);
@@ -63,7 +66,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product })
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
             {/* Product Images */}
             <div className="space-y-4">
-              <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+              <div className="w-96 h-96 bg-gray-100 rounded-lg overflow-hidden mx-auto">
                 <img
                   src={product.images?.[0] || product.image}
                   alt={product.name}
@@ -73,7 +76,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product })
               {product.images && product.images.length > 1 && (
                 <div className="grid grid-cols-4 gap-2">
                   {product.images.map((image: string, index: number) => (
-                    <div key={index} className="aspect-square bg-gray-100 rounded overflow-hidden">
+                    <div key={index} className="w-20 h-20 bg-gray-100 rounded overflow-hidden">
                       <img
                         src={image}
                         alt={`${product.name} ${index + 1}`}
@@ -90,7 +93,9 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product })
               {/* Price and Rating */}
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-3xl font-bold text-gray-900">{convertPrice(product.price)}</span>
+                  <div>
+                    <span className="text-3xl font-bold text-gray-900">{convertPrice(product.price)}</span>
+                  </div>
                   <div className="flex items-center gap-1">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <Star
@@ -144,7 +149,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product })
               <div className="grid grid-cols-1 gap-3 text-sm text-gray-600">
                 <div className="flex items-center gap-2">
                   <Truck className="w-4 h-4 text-[#722F37]" />
-                  <span>Free shipping on orders over ₦50,000</span>
+                  <span>Free shipping on orders over $200</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Shield className="w-4 h-4 text-[#722F37]" />
